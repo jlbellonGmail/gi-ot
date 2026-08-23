@@ -1,0 +1,21 @@
+# Entornos y dependencias
+apps/api/.venv/
+apps/api/**/__pycache__/
+apps/web/node_modules/
+apps/web/.next/
+
+# Secretos locales (mantener los .env.example versionados)
+apps/api/.env
+apps/web/.env.local
+
+# Datos y archivos subidos en desarrollo (SQLite local, uploads)
+apps/api/data/*.db
+apps/api/data/uploads/*
+!apps/api/data/uploads/.gitkeep
+
+# Artefactos sueltos de esta máquina, no parte del proyecto
+gi-ot.zip
+ngrok.log
+apps/api/all_tests_result.txt
+apps/api/test_output.txt
+apps/api/test_people_result.txt

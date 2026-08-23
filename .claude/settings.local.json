@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(PIP_USER=0 \".venv/Scripts/python.exe\" -m alembic init alembic)",
+      "Bash(PIP_USER=0 .venv/Scripts/python.exe -c ' *)",
+      "Bash(PIP_USER=0 nohup \".venv/Scripts/python.exe\" -m uvicorn app.main:app --host 127.0.0.1 --port 8000)",
+      "Bash(curl -s http://127.0.0.1:8000/health)",
+      "Bash(curl -s http://127.0.0.1:8000/openapi.json)",
+      "Bash(cat /tmp/uvicorn.log 2>&1; echo \"---\"; which curl; ps aux | grep -i python)",
+      "Bash(PIP_USER=0 \".venv/Scripts/python.exe\" -m pip install \"email-validator>=2.2\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://127.0.0.1:8000/openapi.json)",
+      "Read(//tmp/**)",
+      "Bash(PIP_USER=0 \".venv/Scripts/python.exe\" scripts/create_platform_owner.py owner@gi-ot.local Owner123! \"Owner Plataforma\")",
+      "Bash(PIP_USER=0 \".venv/Scripts/python.exe\" -m alembic revision --autogenerate -m \"email unico global para PLATFORM_OWNER\")",
+      "Bash(PIP_USER=0 \".venv/Scripts/python.exe\" -m alembic upgrade head)",
+      "Bash(PIP_USER=0 \".venv/Scripts/python.exe\" -m pytest -q)",
+      "Bash(npx tsc *)",
+      "Bash(.venv/Scripts/python -m pytest -q)",
+      "Bash(.venv/Scripts/python -)",
+      "Bash(.venv/Scripts/python -c ' *)",
+      "Bash(.venv/Scripts/pip install *)",
+      "Bash(.venv/Scripts/python -m pip install \"qrcode[pil]\" -q)",
+      "Bash(.venv/Scripts/python -m pip install --no-user \"qrcode[pil]\" -q)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "D:/tools-ai/python/Python314/Scripts/headroom.EXE wrap selfheal --marker headroom-wrap-selfheal",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

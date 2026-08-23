@@ -1,0 +1,65 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { api } from "@/lib/api";
+import { LocationCreate, Customer } from "@/lib/types";
+
+export default function NewLocationPage() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+
+  const [form, setForm] = useState<LocationCreate>({ customer_id: "", name: "", address: "", city: "", province: "", notes: "" });
+
+  useEffect(() => { loadCustomers(); }, []);
+
+  async function loadCustomers() {
+    try { const data = await api.get<Customer[]>("/customers"); setCustomers(data); }
+    catch (e) { console.error(e); }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault(); setError(null); setLoading(true);
+    try { const res = await api.post<{ id: string }>("/locations", form); router.push(`/dashboard/locations/${res.id}`); router.refresh(); }
+    catch (e) { setError(e instanceof Error ? e.message : "Error al crear ubicación"); }
+    finally { setLoading(false); }
+  }
+
+  return (
+    <div style={{ padding: "1rem", maxWidth: "600px", margin: "0 auto" }}>
+      <h1>Nueva Ubicación</h1>
+      {error && <div style={{ background: "#fef2f2", color: "#dc2626", padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: "1rem" }}>
+          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Cliente *</label>
+          <select value={form.customer_id} onChange={e=>setForm({...form, customer_id: e.target.value})} required style={{ width: "100%", padding: "0.75rem" }}>
+            <option value="">Seleccionar cliente</option>
+            {customers.map(c=>(<option key={c.person_id} value={c.person_id}>{c.display_name}</option>))}
+          </select>
+        </div>
+        <div style={{ marginBottom: "1rem" }}>
+          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Nombre *</label>
+          <input value={form.name} onChange={e=>setForm({...form, name: e.target.value})} required style={{ width: "100%", padding: "0.75rem" }} />
+        </div>
+        <div style={{ marginBottom: "1rem" }}>
+          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Dirección</label>
+          <input value={form.address} onChange={e=>setForm({...form, address: e.target.value})} style={{ width: "100%", padding: "0.75rem" }} />
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+          <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Ciudad</label><input value={form.city} onChange={e=>setForm({...form, city: e.target.value})} style={{ width: "100%", padding: "0.75rem" }} /></div>
+          <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Provincia</label><input value={form.province} onChange={e=>setForm({...form, province: e.target.value})} style={{ width: "100%", padding: "0.75rem" }} /></div>
+        </div>
+        <div style={{ marginBottom: "1.5rem" }}>
+          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Observaciones</label>
+          <textarea value={form.notes} onChange={e=>setForm({...form, notes: e.target.value})} rows={3} style={{ width: "100%", padding: "0.75rem" }} />
+        </div>
+        <div style={{ display: "flex", gap: "1rem" }}>
+          <button type="submit" disabled={loading} style={{ flex: 1, padding: "1rem", background: loading?"#93c5fd":"#2563eb", color: "white", border: "none", borderRadius: "0.5rem" }}>{loading?"Guardando...":"Crear Ubicación"}</button>
+          <a href="/dashboard/locations" style={{ flex: 1, padding: "1rem", background: "#f3f4f6", textAlign: "center", textDecoration: "none", borderRadius: "0.5rem" }}>Cancelar</a>
+        </div>
+      </form>
+    </div>
+  );
+}

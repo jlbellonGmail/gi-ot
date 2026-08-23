@@ -1,0 +1,202 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { api } from "@/lib/api";
+import { Technician, TechnicianUpdate, UserAccount } from "@/lib/types";
+
+export default function TechnicianDetailPage() {
+  const params = useParams(); const router = useRouter(); const personId = params.id as string;
+  const [tech, setTech] = useState<Technician | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [editMode, setEditMode] = useState(false);
+
+  const [form, setForm] = useState<TechnicianUpdate>({
+    person_type: "INDIVIDUAL", display_name: "", address: "", phone: "", email: "", notes: "",
+    status: "ACTIVE", profession: "", license_number: "", commission_percentage: 0, technician_status: "ACTIVE"
+  });
+
+  // Vínculo Técnico ↔ Usuario (ROADMAP §06 — necesario para que el
+  // técnico pueda loguearse y usar /tecnico). GET /users es solo para
+  // TENANT_ADMIN; si el usuario logueado es TENANT_OFFICE la lista
+  // queda vacía y se oculta el selector, sin romper la página.
+  const [users, setUsers] = useState<UserAccount[]>([]);
+  const [canManageUsers, setCanManageUsers] = useState(true);
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const [linking, setLinking] = useState(false);
+  const [newUserEmail, setNewUserEmail] = useState("");
+  const [newUserName, setNewUserName] = useState("");
+  const [newUserPassword, setNewUserPassword] = useState("");
+  const [creatingUser, setCreatingUser] = useState(false);
+
+  useEffect(() => { load(); loadUsers(); }, [personId]);
+
+  async function load() {
+    try {
+      setLoading(true);
+      const data = await api.get<Technician>(`/technicians/${personId}`);
+      setTech(data);
+      setForm({ person_type: data.person_type, display_name: data.display_name, address: data.address || "", phone: data.phone || "", email: data.email || "", notes: data.notes || "", status: data.status, profession: data.profession || "", license_number: data.license_number || "", commission_percentage: data.commission_percentage || 0, technician_status: data.technician_status });
+    } catch (e) { setError(e instanceof Error ? e.message : "Error al cargar"); }
+    finally { setLoading(false); }
+  }
+
+  async function loadUsers() {
+    try {
+      const list = await api.get<UserAccount[]>("/users");
+      setUsers(list.filter((u) => u.role_code === "TENANT_TECHNICIAN"));
+    } catch {
+      setCanManageUsers(false);
+    }
+  }
+
+  async function save() {
+    try { setSaving(true); setError(null); await api.patch(`/technicians/${personId}`, form); await load(); setEditMode(false); }
+    catch (e) { setError(e instanceof Error ? e.message : "Error al guardar"); }
+    finally { setSaving(false); }
+  }
+
+  async function linkUser(userId: string | null) {
+    try {
+      setLinking(true); setError(null);
+      await api.patch(`/technicians/${personId}/user`, { user_id: userId });
+      setSelectedUserId("");
+      await load();
+    } catch (e) { setError(e instanceof Error ? e.message : "Error al vincular usuario"); }
+    finally { setLinking(false); }
+  }
+
+  async function createAndLinkUser() {
+    try {
+      setCreatingUser(true); setError(null);
+      const user = await api.post<UserAccount>("/users", {
+        email: newUserEmail, full_name: newUserName, password: newUserPassword, role_code: "TENANT_TECHNICIAN",
+      });
+      await api.patch(`/technicians/${personId}/user`, { user_id: user.id });
+      setNewUserEmail(""); setNewUserName(""); setNewUserPassword("");
+      await loadUsers();
+      await load();
+    } catch (e) { setError(e instanceof Error ? e.message : "Error al crear/vincular usuario"); }
+    finally { setCreatingUser(false); }
+  }
+
+  if (loading) return <div style={{ padding: "1rem", textAlign: "center" }}>Cargando...</div>;
+  if (error && !tech) return <div style={{ padding: "1rem", color: "red" }}>{error}</div>;
+  if (!tech) return <div style={{ padding: "1rem" }}>No encontrado</div>;
+
+  return (
+    <div style={{ padding: "1rem", maxWidth: "800px", margin: "0 auto" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+        <h1>{tech.display_name}</h1>
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <button onClick={()=>setEditMode(!editMode)} style={{ padding: "0.5rem 1rem" }}>{editMode?"Cancelar":"Editar"}</button>
+          <button onClick={()=>router.back()} style={{ padding: "0.5rem 1rem", background: "#f3f4f6" }}>Volver</button>
+        </div>
+      </div>
+      {error && <div style={{ background: "#fef2f2", color: "#dc2626", padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
+      <div style={{ display: "grid", gap: "1rem" }}>
+        <div style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem" }}>
+          <h3 style={{ marginBottom: "0.75rem" }}>Identificaciones</h3>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+            {tech.identifications.map(i=>(<span key={i.id} style={{ background: i.is_primary?"#dbeafe":"#f3f4f6", color: i.is_primary?"#1d4ed8":"#374151", padding: "0.25rem 0.75rem", borderRadius: "9999px", fontSize: "0.875rem" }}>{i.identification_type}: {i.identification_value} {i.is_primary&&"(principal)"}</span>))}
+          </div>
+        </div>
+        <div style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem" }}>
+          <h3 style={{ marginBottom: "0.75rem" }}>Datos</h3>
+          {editMode ? (
+            <div style={{ display: "grid", gap: "1rem" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Tipo</label><select value={form.person_type} onChange={e=>setForm({...form, person_type: e.target.value as "INDIVIDUAL"|"LEGAL"})} style={{ width: "100%", padding: "0.5rem" }}><option value="INDIVIDUAL">Física</option><option value="LEGAL">Jurídica</option></select></div>
+                <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Estado Persona</label><select value={form.status} onChange={e=>setForm({...form, status: e.target.value as "ACTIVE"|"INACTIVE"})} style={{ width: "100%", padding: "0.5rem" }}><option value="ACTIVE">Activo</option><option value="INACTIVE">Inactivo</option></select></div>
+              </div>
+              <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Nombre</label><input value={form.display_name} onChange={e=>setForm({...form, display_name: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} required /></div>
+              <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Dirección</label><input value={form.address} onChange={e=>setForm({...form, address: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} /></div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Teléfono</label><input value={form.phone} onChange={e=>setForm({...form, phone: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} /></div>
+                <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Email</label><input value={form.email} onChange={e=>setForm({...form, email: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} /></div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem" }}>
+                <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Profesión</label><input value={form.profession} onChange={e=>setForm({...form, profession: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} /></div>
+                <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Matrícula</label><input value={form.license_number} onChange={e=>setForm({...form, license_number: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} /></div>
+                <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Comisión %</label><input type="number" step="0.1" value={form.commission_percentage} onChange={e=>setForm({...form, commission_percentage: parseFloat(e.target.value)||0})} style={{ width: "100%", padding: "0.5rem" }} /></div>
+              </div>
+              <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Estado Técnico</label><select value={form.technician_status} onChange={e=>setForm({...form, technician_status: e.target.value as "ACTIVE"|"INACTIVE"})} style={{ width: "100%", padding: "0.5rem" }}><option value="ACTIVE">Activo</option><option value="INACTIVE">Inactivo</option></select></div>
+              <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Observaciones</label><textarea value={form.notes} onChange={e=>setForm({...form, notes: e.target.value})} rows={3} style={{ width: "100%", padding: "0.5rem" }} /></div>
+              <div style={{ display: "flex", justifyContent: "flex-end" }}><button onClick={save} disabled={saving} style={{ padding: "0.5rem 1.5rem", background: "#16a34a", color: "white", border: "none", borderRadius: "0.375rem" }}>{saving?"Guardando...":"Guardar"}</button></div>
+            </div>
+          ) : (
+            <dl style={{ display: "grid", gridTemplateColumns: "150px 1fr", gap: "0.5rem 1rem" }}>
+              <dt>Tipo</dt><dd>{tech.person_type==="LEGAL"?"Jurídica":"Física"}</dd>
+              <dt>Dirección</dt><dd>{tech.address||"—"}</dd>
+              <dt>Teléfono</dt><dd>{tech.phone||"—"}</dd>
+              <dt>Email</dt><dd>{tech.email||"—"}</dd>
+              <dt>Profesión</dt><dd>{tech.profession||"—"}</dd>
+              <dt>Matrícula</dt><dd>{tech.license_number||"—"}</dd>
+              <dt>Comisión</dt><dd>{tech.commission_percentage}%</dd>
+              <dt>Estado Persona</dt><dd><span style={{ background: tech.status==="ACTIVE"?"#dcfce7":"#fef2f2", color: tech.status==="ACTIVE"?"#166534":"#dc2626", padding: "0.125rem 0.5rem", borderRadius: "9999px", fontSize: "0.875rem" }}>{tech.status}</span></dd>
+              <dt>Estado Técnico</dt><dd><span style={{ background: tech.technician_status==="ACTIVE"?"#dcfce7":"#fef2f2", color: tech.technician_status==="ACTIVE"?"#166534":"#dc2626", padding: "0.125rem 0.5rem", borderRadius: "9999px", fontSize: "0.875rem" }}>{tech.technician_status}</span></dd>
+              <dt>Observaciones</dt><dd>{tech.notes||"—"}</dd>
+            </dl>
+          )}
+        </div>
+
+        <div style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem" }}>
+          <h3 style={{ marginBottom: "0.75rem" }}>Cuenta de usuario (acceso técnico)</h3>
+          {tech.user_id ? (
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span>
+                Vinculado a: {users.find((u) => u.id === tech.user_id)?.email || tech.user_id}
+              </span>
+              <button
+                onClick={() => linkUser(null)}
+                disabled={linking}
+                style={{ padding: "0.5rem 1rem", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "0.375rem", cursor: "pointer" }}
+              >
+                Desvincular
+              </button>
+            </div>
+          ) : !canManageUsers ? (
+            <p style={{ color: "#6b7280", fontSize: "0.875rem" }}>
+              Necesitás rol Admin para gestionar usuarios técnicos.
+            </p>
+          ) : (
+            <div style={{ display: "grid", gap: "1rem" }}>
+              {users.length > 0 && (
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <select value={selectedUserId} onChange={(e) => setSelectedUserId(e.target.value)} style={{ flex: 1, padding: "0.5rem" }}>
+                    <option value="">Seleccionar usuario técnico existente</option>
+                    {users.map((u) => (<option key={u.id} value={u.id}>{u.full_name} ({u.email})</option>))}
+                  </select>
+                  <button
+                    onClick={() => linkUser(selectedUserId)}
+                    disabled={!selectedUserId || linking}
+                    style={{ padding: "0.5rem 1rem", background: "#2563eb", color: "white", border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
+                  >
+                    Vincular
+                  </button>
+                </div>
+              )}
+              <div style={{ borderTop: "1px solid #f3f4f6", paddingTop: "0.75rem" }}>
+                <p style={{ fontSize: "0.875rem", color: "#6b7280", marginBottom: "0.5rem" }}>O crear un usuario técnico nuevo y vincularlo:</p>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: "0.5rem" }}>
+                  <input placeholder="Nombre completo" value={newUserName} onChange={(e) => setNewUserName(e.target.value)} style={{ padding: "0.5rem" }} />
+                  <input placeholder="Email" type="email" value={newUserEmail} onChange={(e) => setNewUserEmail(e.target.value)} style={{ padding: "0.5rem" }} />
+                  <input placeholder="Contraseña" type="password" value={newUserPassword} onChange={(e) => setNewUserPassword(e.target.value)} style={{ padding: "0.5rem" }} />
+                  <button
+                    onClick={createAndLinkUser}
+                    disabled={!newUserEmail || !newUserName || !newUserPassword || creatingUser}
+                    style={{ padding: "0.5rem 1rem", background: "#16a34a", color: "white", border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
+                  >
+                    {creatingUser ? "Creando..." : "Crear y vincular"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
