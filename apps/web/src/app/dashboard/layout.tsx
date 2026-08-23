@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { theme } from "@/lib/theme";
 
 const navItems = [
+  { href: "/dashboard", label: "Panel", icon: "🏠", exact: true },
   { href: "/dashboard/ot", label: "Órdenes de Trabajo", icon: "🧾" },
   { href: "/dashboard/customers", label: "Clientes", icon: "👥" },
   { href: "/dashboard/technicians", label: "Técnicos", icon: "🔧" },
@@ -49,15 +50,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </button>
 
           <nav className={`dashboard-nav${menuOpen ? " open" : ""}`}>
-            {navItems.map(item => (
-              <Link key={item.href} href={item.href} style={{
-                padding: "0.5rem 1rem", borderRadius: "0.375rem",
-                background: pathname.startsWith(item.href) ? theme.headerActive : "transparent",
-                color: theme.headerText, textDecoration: "none", fontSize: "0.875rem", display: "flex", alignItems: "center", gap: "0.375rem"
-              }}>
-                {item.icon} {item.label}
-              </Link>
-            ))}
+            {navItems.map(item => {
+              const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
+              return (
+                <Link key={item.href} href={item.href} style={{
+                  padding: "0.5rem 1rem", borderRadius: "0.375rem",
+                  background: active ? theme.headerActive : "transparent",
+                  color: theme.headerText, textDecoration: "none", fontSize: "0.875rem", display: "flex", alignItems: "center", gap: "0.375rem"
+                }}>
+                  {item.icon} {item.label}
+                </Link>
+              );
+            })}
             <button onClick={() => { localStorage.removeItem("access_token"); window.location.href = "/login"; }}
               style={{ padding: "0.5rem 1rem", background: "transparent", border: "1px solid " + theme.headerActive, color: theme.headerText, borderRadius: "0.375rem", cursor: "pointer" }}>
               Salir

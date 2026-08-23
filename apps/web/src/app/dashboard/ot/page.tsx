@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 import { theme } from "@/lib/theme";
 import { Customer, Location, Asset, Technician, Priority, WorkOrderStatus, WorkOrder } from "@/lib/types";
@@ -53,6 +54,7 @@ export default function OTListPage() {
   const [sortOpen, setSortOpen] = useState(false);
 
   const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchParams = useSearchParams();
 
   async function loadRefs() {
     try {
@@ -66,6 +68,18 @@ export default function OTListPage() {
       ]);
       setCustomers(custs); setLocations(locs); setAssets(asts);
       setTechnicians(techs); setPriorities(pris); setStatuses(sts);
+
+      // Deep-link desde el Panel principal (?status=CODE, ?priority_code=CODE):
+      // se aplica una sola vez, al resolver los catálogos necesarios.
+      const statusParam = searchParams.get("status");
+      const priorityCodeParam = searchParams.get("priority_code");
+      if (statusParam || priorityCodeParam) {
+        setFilters((f) => ({
+          ...f,
+          status: statusParam || f.status,
+          priority: priorityCodeParam ? pris.find((p) => p.code === priorityCodeParam)?.id || f.priority : f.priority,
+        }));
+      }
     } catch (e) { console.error(e); }
   }
 

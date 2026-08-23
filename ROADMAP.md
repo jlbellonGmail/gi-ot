@@ -159,13 +159,13 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 ## Panel principal
 
-* [ ] Crear panel principal de Oficina/Admin orientado a situación operativa y no solamente a navegación.
+* [x] Crear panel principal de Oficina/Admin orientado a situación operativa y no solamente a navegación. (`dashboard/page.tsx`, antes solo redirigía al listado)
 
-* [ ] Permitir comprender rápidamente como mínimo las OT abiertas, pendientes, en curso, urgentes/prioritarias y aquellas que requieran atención.
+* [x] Permitir comprender rápidamente como mínimo las OT abiertas, pendientes, en curso, urgentes/prioritarias y aquellas que requieran atención. (indicador "Requieren atención" = OT `UNRESOLVED`)
 
-* [ ] Permitir acceder desde los indicadores del panel al conjunto de OT correspondiente cuando resulte aplicable.
+* [x] Permitir acceder desde los indicadores del panel al conjunto de OT correspondiente cuando resulte aplicable. (deep-link a `/dashboard/ot?status=...` / `?priority_code=...`, el listado resuelve el filtro correspondiente)
 
-* [ ] Evitar saturar el panel con métricas que no ayuden a tomar una acción.
+* [x] Evitar saturar el panel con métricas que no ayuden a tomar una acción. (4 indicadores accionables, nada más)
 
 ---
 
