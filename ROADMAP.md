@@ -171,57 +171,57 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 ## Listado operativo de OT
 
-* [ ] Evolucionar el listado funcional actual hacia una vista operativa clara y responsive.
+* [x] Evolucionar el listado funcional actual hacia una vista operativa clara y responsive. (`dashboard/ot/page.tsx`)
 
-* [ ] Permitir identificar rápidamente como mínimo número de OT, cliente, ubicación/activo cuando corresponda, estado, prioridad, técnico y fecha relevante.
+* [x] Permitir identificar rápidamente como mínimo número de OT, cliente, ubicación/activo cuando corresponda, estado, prioridad, técnico y fecha relevante.
 
-* [ ] Utilizar cards, lista, tabla u otra representación apropiada según dispositivo y necesidad de comparación, sin imponer una grilla tradicional cuando no aporte valor.
+* [x] Utilizar cards, lista, tabla u otra representación apropiada según dispositivo y necesidad de comparación, sin imponer una grilla tradicional cuando no aporte valor. (cards)
 
-* [ ] Evitar llenar cada registro o card con botones. Mantener visible la acción principal y agrupar acciones secundarias mediante el patrón transversal correspondiente.
+* [x] Evitar llenar cada registro o card con botones. Mantener visible la acción principal y agrupar acciones secundarias mediante el patrón transversal correspondiente. (la card entera es la acción primaria; sin botonera)
 
 ---
 
 ## Búsqueda
 
-* [ ] Incorporar búsqueda rápida y directamente accesible para localizar OT sin obligar al usuario a elegir previamente un campo.
+* [x] Incorporar búsqueda rápida y directamente accesible para localizar OT sin obligar al usuario a elegir previamente un campo.
 
-* [ ] Permitir localizar coincidencias por información operativa conocida, incluyendo como mínimo número de OT, cliente, ubicación y activo cuando esos datos estén disponibles.
+* [x] Permitir localizar coincidencias por información operativa conocida, incluyendo como mínimo número de OT, cliente, ubicación y activo cuando esos datos estén disponibles. (`GET /work-orders?q=`, backend + frontend)
 
-* [ ] Permitir que búsqueda, filtros y ordenamiento funcionen conjuntamente.
+* [x] Permitir que búsqueda, filtros y ordenamiento funcionen conjuntamente. (se combinan como query params independientes)
 
-* [ ] Mantener la búsqueda directamente visible cuando sea una operación frecuente, sin esconderla dentro de menús secundarios.
+* [x] Mantener la búsqueda directamente visible cuando sea una operación frecuente, sin esconderla dentro de menús secundarios.
 
 ---
 
 ## Filtros
 
-* [ ] Reemplazar la exposición permanente de múltiples controles de filtrado por un control compacto de `Filtros`.
+* [x] Reemplazar la exposición permanente de múltiples controles de filtrado por un control compacto de `Filtros`.
 
-* [ ] El control deberá abrir una superficie dedicada a filtrado y contener allí los criterios disponibles.
+* [x] El control deberá abrir una superficie dedicada a filtrado y contener allí los criterios disponibles.
 
-* [ ] Incluir como mínimo, cuando sean aplicables: estado, prioridad, técnico, cliente y rango de fechas.
+* [x] Incluir como mínimo, cuando sean aplicables: estado, prioridad, técnico, cliente y rango de fechas.
 
-* [ ] Permitir combinar varios filtros simultáneamente.
+* [x] Permitir combinar varios filtros simultáneamente.
 
-* [ ] Mostrar desde la vista principal si existen filtros aplicados mediante badge, contador u otro indicador comprensible.
+* [x] Mostrar desde la vista principal si existen filtros aplicados mediante badge, contador u otro indicador comprensible. (`Filtros N`)
 
-* [ ] Permitir modificar los filtros aplicados.
+* [x] Permitir modificar los filtros aplicados.
 
-* [ ] Permitir eliminar individualmente filtros activos cuando estos se muestren en la interfaz.
+* [x] Permitir eliminar individualmente filtros activos cuando estos se muestren en la interfaz. (chips con ×)
 
-* [ ] Permitir limpiar todos los filtros.
+* [x] Permitir limpiar todos los filtros.
 
-* [ ] Adaptar la superficie de filtros al dispositivo: popover/panel apropiado en desktop y bottom sheet/diálogo/panel equivalente en mobile según la complejidad.
+* [ ] Adaptar la superficie de filtros al dispositivo: popover/panel apropiado en desktop y bottom sheet/diálogo/panel equivalente en mobile según la complejidad. (hoy usa un único patrón tipo bottom sheet para ambos — funciona en los dos pero no diferencia el patrón visual por dispositivo como pide el estándar)
 
 ---
 
 ## Ordenamiento
 
-* [ ] Incorporar ordenamiento mediante un control compacto en lugar de múltiples botones independientes.
+* [x] Incorporar ordenamiento mediante un control compacto en lugar de múltiples botones independientes.
 
-* [ ] Permitir criterios operativos relevantes como fecha, prioridad, estado o actualización reciente cuando resulten aplicables.
+* [x] Permitir criterios operativos relevantes como fecha, prioridad, estado o actualización reciente cuando resulten aplicables.
 
-* [ ] Mostrar de forma comprensible cuál es el orden aplicado.
+* [x] Mostrar de forma comprensible cuál es el orden aplicado. (el botón muestra el criterio activo)
 
 ---
 

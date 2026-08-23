@@ -16,8 +16,8 @@ from pathlib import Path
 from typing import List, Optional
 from uuid import UUID
 
-from sqlalchemy import func, select
-from sqlalchemy.orm import Session
+from sqlalchemy import String, cast, func, or_, select
+from sqlalchemy.orm import Session, aliased
 
 from app.core.config import get_settings
 from app.enums import HistoryEventType
@@ -30,7 +30,7 @@ from app.exceptions import (
     WorkOrderNotFound,
 )
 from app.models.location import Asset, Location
-from app.models.person import Customer, Technician
+from app.models.person import Customer, Person, Technician
 from app.models.priority import Priority
 from app.models.work_order import WorkOrder, WorkOrderHistory, WorkOrderPhoto
 from app.models.work_order_status import WorkOrderStatus
@@ -234,7 +234,18 @@ class WorkOrderService:
         status_code: Optional[str] = None,
         technician_id: Optional[UUID] = None,
         customer_id: Optional[UUID] = None,
+        priority_id: Optional[UUID] = None,
+        location_id: Optional[UUID] = None,
+        asset_id: Optional[UUID] = None,
+        q: Optional[str] = None,
+        date_from: Optional[datetime] = None,
+        date_to: Optional[datetime] = None,
+        sort: Optional[str] = None,
     ) -> List[WorkOrder]:
+        """Listado operativo de OT (ROADMAP §07): búsqueda, filtros y
+        ordenamiento se combinan libremente sobre el mismo resultado
+        (UI-UX-STANDARDS.md §10) — ningún criterio pisa a los demás.
+        """
         stmt = select(WorkOrder).where(WorkOrder.tenant_id == tenant_id)
 
         if status_code:
@@ -243,8 +254,50 @@ class WorkOrderService:
             stmt = stmt.where(WorkOrder.technician_id == technician_id)
         if customer_id is not None:
             stmt = stmt.where(WorkOrder.customer_id == customer_id)
+        if priority_id is not None:
+            stmt = stmt.where(WorkOrder.priority_id == priority_id)
+        if location_id is not None:
+            stmt = stmt.where(WorkOrder.location_id == location_id)
+        if asset_id is not None:
+            stmt = stmt.where(WorkOrder.asset_id == asset_id)
+        if date_from is not None:
+            stmt = stmt.where(WorkOrder.created_at >= date_from)
+        if date_to is not None:
+            stmt = stmt.where(WorkOrder.created_at <= date_to)
 
-        stmt = stmt.order_by(WorkOrder.number.desc())
+        if q:
+            like = f"%{q.strip()}%"
+            customer_person = aliased(Person)
+            stmt = (
+                stmt.outerjoin(customer_person, WorkOrder.customer_id == customer_person.id)
+                .outerjoin(Location, WorkOrder.location_id == Location.id)
+                .outerjoin(Asset, WorkOrder.asset_id == Asset.id)
+                .where(
+                    or_(
+                        cast(WorkOrder.number, String).ilike(like),
+                        customer_person.display_name.ilike(like),
+                        Location.name.ilike(like),
+                        Asset.name.ilike(like),
+                        WorkOrder.requested_description.ilike(like),
+                    )
+                )
+            )
+
+        if sort == "date_asc":
+            stmt = stmt.order_by(WorkOrder.created_at.asc())
+        elif sort == "priority":
+            stmt = stmt.join(Priority, WorkOrder.priority_id == Priority.id).order_by(
+                Priority.sort_order.desc(), WorkOrder.created_at.desc()
+            )
+        elif sort == "updated":
+            stmt = stmt.order_by(WorkOrder.updated_at.desc())
+        elif sort == "status":
+            stmt = stmt.join(WorkOrderStatus, WorkOrder.status_id == WorkOrderStatus.id).order_by(
+                WorkOrderStatus.code.asc(), WorkOrder.created_at.desc()
+            )
+        else:
+            stmt = stmt.order_by(WorkOrder.created_at.desc())
+
         return list(self.db.scalars(stmt))
 
     # ── Actualizar OT (campos no ejecutivos) ─────────────────────────

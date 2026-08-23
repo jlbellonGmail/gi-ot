@@ -17,6 +17,7 @@ Rutas disponibles (prefix: /api/v1/work-orders):
 - DELETE       /{wo_id}/photos/{photo_id}     — Eliminar fotografía
 """
 import uuid
+from datetime import datetime
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
@@ -112,13 +113,34 @@ def list_wo(
     status_code: Optional[str] = Query(default=None, description="Código de estado (PENDING/IN_PROGRESS/COMPLETED/UNRESOLVED)"),
     technician_id: Optional[uuid.UUID] = Query(default=None),
     customer_id: Optional[uuid.UUID] = Query(default=None),
+    priority_id: Optional[uuid.UUID] = Query(default=None),
+    location_id: Optional[uuid.UUID] = Query(default=None),
+    asset_id: Optional[uuid.UUID] = Query(default=None),
+    q: Optional[str] = Query(default=None, description="Búsqueda libre: número, cliente, ubicación, activo o descripción"),
+    date_from: Optional[datetime] = Query(default=None),
+    date_to: Optional[datetime] = Query(default=None),
+    sort: Optional[str] = Query(default=None, description="date_desc (default) | date_asc | priority | updated | status"),
     db: Session = Depends(get_db),
     tenant_id: uuid.UUID = Depends(get_current_tenant_id),
     _: User = Depends(get_current_user),
 ) -> List[WorkOrderOut]:
-    """Lista OT del tenant con filtros opcionales. Cualquier rol autenticado."""
+    """Lista operativa de OT del tenant: búsqueda + filtros + orden se
+    combinan libremente (ROADMAP §07, UI-UX-STANDARDS.md §10). Cualquier
+    rol autenticado."""
     service = _service(db)
-    wo_list = service.list_wo(tenant_id, status_code=status_code, technician_id=technician_id, customer_id=customer_id)
+    wo_list = service.list_wo(
+        tenant_id,
+        status_code=status_code,
+        technician_id=technician_id,
+        customer_id=customer_id,
+        priority_id=priority_id,
+        location_id=location_id,
+        asset_id=asset_id,
+        q=q,
+        date_from=date_from,
+        date_to=date_to,
+        sort=sort,
+    )
     return [_to_out(wo) for wo in wo_list]
 
 
