@@ -273,9 +273,9 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 ## Interfaz mobile-first Oficina/Admin
 
-* [ ] Rediseñar `apps/web/src/app/dashboard/*` para funcionamiento real en pantallas angostas.
+* [ ] Rediseñar `apps/web/src/app/dashboard/*` para funcionamiento real en pantallas angostas. (shell resuelto; listados, formularios y tablas internas de cada módulo todavía no)
 
-* [ ] Corregir el shell actual de escritorio cuyo menú superior no entra correctamente en determinadas pantallas mobile.
+* [x] Corregir el shell actual de escritorio cuyo menú superior no entra correctamente en determinadas pantallas mobile. (menú hamburguesa en `dashboard/layout.tsx` bajo los 768px)
 
 * [ ] Adaptar navegación, búsqueda, filtros, listados, cards, formularios y acciones a interacción táctil.
 
@@ -303,13 +303,13 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 ## Tema claro/oscuro
 
-* [ ] Implementar sistema centralizado de design tokens para colores y estados visuales.
+* [x] Implementar sistema centralizado de design tokens para colores y estados visuales. (`apps/web/src/app/globals.css` + `apps/web/src/lib/theme.ts`)
 
-* [ ] Eliminar progresivamente estilos de color hardcodeados por pantalla.
+* [ ] Eliminar progresivamente estilos de color hardcodeados por pantalla. (aplicado hasta ahora solo en los shells `dashboard/layout.tsx` y `tecnico/layout.tsx`; quedan ~20 pantallas con hex hardcodeado, a migrar progresivamente al tocarlas)
 
-* [ ] Soportar tema claro y oscuro de forma consistente.
+* [ ] Soportar tema claro y oscuro de forma consistente. (los tokens y `prefers-color-scheme` ya funcionan; falta que el resto de las pantallas los adopten para que la app se vea consistente en oscuro)
 
-* [ ] Evitar problemas de contraste o legibilidad provocados por modos oscuros automáticos del navegador.
+* [x] Evitar problemas de contraste o legibilidad provocados por modos oscuros automáticos del navegador. (`color-scheme: light dark` declarado globalmente — corrige el bug detectado con Android Chrome forced dark mode)
 
 ---
 

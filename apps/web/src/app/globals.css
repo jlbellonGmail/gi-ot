@@ -1,12 +1,50 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Le indica al navegador que la app soporta ambos temas: evita que
+     Chrome/Android "adivine" un modo oscuro propio y rompa el contraste
+     (detectado en validación real desde celular, ROADMAP §07). */
+  color-scheme: light dark;
+
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-border: #e5e7eb;
+  --color-text: #171717;
+  --color-text-secondary: #6b7280;
+  --color-primary: #2563eb;
+  --color-primary-text: #ffffff;
+  --color-danger: #dc2626;
+  --color-danger-bg: #fef2f2;
+  --color-warning: #92400e;
+  --color-warning-bg: #fef3cf;
+  --color-success: #166534;
+  --color-success-bg: #dcfce7;
+  --color-focus: #2563eb;
+
+  /* Barra de encabezado: color de marca, constante en ambos temas
+     (no es una superficie temática, es identidad visual). */
+  --color-header-bg: #0f172a;
+  --color-header-text: #ffffff;
+  --color-header-active: #2563eb;
+
+  --background: var(--color-bg);
+  --foreground: var(--color-text);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-bg: #0f172a;
+    --color-surface: #1e293b;
+    --color-border: #334155;
+    --color-text: #f1f5f9;
+    --color-text-secondary: #94a3b8;
+    --color-primary: #3b82f6;
+    --color-primary-text: #ffffff;
+    --color-danger: #f87171;
+    --color-danger-bg: #450a0a;
+    --color-warning: #fbbf24;
+    --color-warning-bg: #451a03;
+    --color-success: #4ade80;
+    --color-success-bg: #052e16;
+    --color-focus: #60a5fa;
   }
 }
 
@@ -42,8 +80,38 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+/* Shell mobile-first de Oficina/Admin (ROADMAP §07 — "Interfaz
+   mobile-first Oficina/Admin"): el nav de escritorio se colapsa detrás
+   de un botón de menú en pantallas angostas para no desbordar. */
+.dashboard-nav-toggle {
+  display: none;
+}
+
+.dashboard-nav {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .dashboard-nav-toggle {
+    display: flex;
+  }
+
+  .dashboard-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    background: var(--color-header-bg);
+    padding: 0.5rem 1rem 1rem;
+    gap: 0.25rem;
+  }
+
+  .dashboard-nav.open {
+    display: flex;
   }
 }
