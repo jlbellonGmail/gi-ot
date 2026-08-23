@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
+import { theme } from "@/lib/theme";
 import { CurrentUser, WorkOrder } from "@/lib/types";
+import { StatusBadge, PriorityBadge } from "@/components/StatusPriorityBadge";
 
 export default function MisOTPage() {
   const [wos, setWos] = useState<WorkOrder[]>([]);
@@ -30,17 +32,17 @@ export default function MisOTPage() {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-        <h1 style={{ fontSize: "1.25rem" }}>Mis OT</h1>
+        <h1 style={{ fontSize: "1.25rem", color: theme.text }}>Mis OT</h1>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           <Link
             href="/tecnico/qr"
-            style={{ padding: "0.5rem 0.875rem", background: "#f3f4f6", color: "#374151", borderRadius: "0.5rem", textDecoration: "none", fontSize: "0.875rem", fontWeight: 600 }}
+            style={{ padding: "0.5rem 0.875rem", background: theme.bg, color: theme.text, borderRadius: "0.5rem", textDecoration: "none", fontSize: "0.875rem", fontWeight: 600 }}
           >
             📷 QR
           </Link>
           <Link
             href="/tecnico/nueva"
-            style={{ padding: "0.5rem 0.875rem", background: "#dc2626", color: "white", borderRadius: "0.5rem", textDecoration: "none", fontSize: "0.875rem", fontWeight: 600 }}
+            style={{ padding: "0.5rem 0.875rem", background: theme.danger, color: theme.primaryText, borderRadius: "0.5rem", textDecoration: "none", fontSize: "0.875rem", fontWeight: 600 }}
           >
             + OT urgente
           </Link>
@@ -48,33 +50,31 @@ export default function MisOTPage() {
       </div>
 
       {error && (
-        <div style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626", padding: "0.75rem", borderRadius: "0.5rem", marginBottom: "1rem", fontSize: "0.875rem" }}>
+        <div style={{ background: theme.dangerBg, border: `1px solid ${theme.border}`, color: theme.danger, padding: "0.75rem", borderRadius: "0.5rem", marginBottom: "1rem", fontSize: "0.875rem" }}>
           {error}
         </div>
       )}
 
       {loading ? (
-        <div style={{ textAlign: "center", padding: "2rem", color: "#6b7280" }}>Cargando...</div>
+        <div style={{ textAlign: "center", padding: "2rem", color: theme.textSecondary }}>Cargando...</div>
       ) : wos.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "2rem", color: "#6b7280" }}>No tenés OT asignadas.</div>
+        <div style={{ textAlign: "center", padding: "2rem", color: theme.textSecondary }}>No tenés OT asignadas.</div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
           {wos.map((wo) => (
             <Link
               key={wo.id}
               href={`/tecnico/ot/${wo.id}`}
-              style={{ display: "block", background: "white", border: "1px solid #e5e7eb", borderRadius: "0.75rem", padding: "1rem", textDecoration: "none", color: "inherit" }}
+              style={{ display: "block", background: theme.surface, border: `1px solid ${theme.border}`, borderRadius: "0.75rem", padding: "1rem", textDecoration: "none", color: "inherit" }}
             >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontWeight: 600 }}>OT #{wo.number}</span>
-                {wo.priority_code === "URGENT" && (
-                  <span style={{ background: "#fef2f2", color: "#dc2626", padding: "0.125rem 0.5rem", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: 700 }}>
-                    Urgente
-                  </span>
-                )}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+                <span style={{ fontWeight: 600, color: theme.text }}>OT #{wo.number}</span>
+                <PriorityBadge code={wo.priority_code} label={wo.priority_label} />
               </div>
-              <div style={{ fontSize: "0.875rem", color: "#6b7280", marginTop: "0.25rem" }}>{wo.requested_description}</div>
-              <div style={{ fontSize: "0.75rem", color: "#9ca3af", marginTop: "0.375rem" }}>{wo.status_label || wo.status_code}</div>
+              <div style={{ fontSize: "0.875rem", color: theme.textSecondary, marginTop: "0.25rem" }}>{wo.requested_description}</div>
+              <div style={{ marginTop: "0.375rem" }}>
+                <StatusBadge code={wo.status_code} label={wo.status_label} />
+              </div>
             </Link>
           ))}
         </div>

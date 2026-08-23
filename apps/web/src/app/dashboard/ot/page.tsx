@@ -6,13 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 import { theme } from "@/lib/theme";
 import { Customer, Location, Asset, Technician, Priority, WorkOrderStatus, WorkOrder } from "@/lib/types";
-
-const STATUS_TOKENS: Record<string, { bg: string; fg: string }> = {
-  PENDING: { bg: theme.successBg, fg: theme.success },
-  IN_PROGRESS: { bg: theme.warningBg, fg: theme.warning },
-  COMPLETED: { bg: theme.successBg, fg: theme.success },
-  UNRESOLVED: { bg: theme.dangerBg, fg: theme.danger },
-};
+import { StatusBadge, PriorityBadge } from "@/components/StatusPriorityBadge";
 
 const SORT_OPTIONS: { value: string; label: string }[] = [
   { value: "", label: "Más recientes" },
@@ -295,21 +289,14 @@ export default function OTListPage() {
       ) : (
         <div style={{ display: "grid", gap: "0.75rem" }}>
           {wos.map((w) => {
-            const color = STATUS_TOKENS[w.status_code] || { bg: theme.bg, fg: theme.textSecondary };
             return (
               <Link key={w.id} href={`/dashboard/ot/${w.id}`} style={{ textDecoration: "none", color: "inherit" }}>
                 <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.75rem", background: theme.surface, padding: "1rem" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.75rem", flexWrap: "wrap" }}>
                     <div style={{ fontWeight: 600, fontSize: "1.0625rem", color: theme.text }}>OT #{w.number}</div>
                     <div style={{ display: "flex", gap: "0.375rem", flexWrap: "wrap" }}>
-                      {w.priority_code === "URGENT" && (
-                        <span style={{ background: theme.dangerBg, color: theme.danger, padding: "0.1875rem 0.625rem", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: 700 }}>
-                          {w.priority_label || "Urgente"}
-                        </span>
-                      )}
-                      <span style={{ background: color.bg, color: color.fg, padding: "0.1875rem 0.625rem", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: 600 }}>
-                        {w.status_label || w.status_code}
-                      </span>
+                      <PriorityBadge code={w.priority_code} label={w.priority_label} />
+                      <StatusBadge code={w.status_code} label={w.status_label} />
                     </div>
                   </div>
                   <div style={{ marginTop: "0.5rem", fontSize: "0.9375rem", color: theme.text }}>{customerName(w.customer_id)}</div>

@@ -15,13 +15,7 @@ import {
   WorkOrderPhoto,
   CurrentUser,
 } from "@/lib/types";
-
-const STATUS_COLORS: Record<string, { bg: string; fg: string }> = {
-  PENDING: { bg: "#dcfce7", fg: "#166534" },
-  IN_PROGRESS: { bg: "#fef3cf", fg: "#92400e" },
-  COMPLETED: { bg: "#dcfce7", fg: "#166534" },
-  UNRESOLVED: { bg: "#fef2f2", fg: "#dc2626" },
-};
+import { StatusBadge, PriorityBadge } from "@/components/StatusPriorityBadge";
 
 // Detalle de OT compartido entre /dashboard/ot/[id] (Oficina/Admin) y
 // /tecnico/ot/[id] (Técnico) — cada ruta lo envuelve en su propio shell
@@ -158,15 +152,15 @@ export default function OTDetail() {
   const tech = technicians.find(t => t.person_id === wo.technician_id);
 
   const isOffice = me?.role_code === "TENANT_ADMIN" || me?.role_code === "TENANT_OFFICE";
-  const color = STATUS_COLORS[wo.status_code] || { bg: "#f3f4f6", fg: "#6b7280" };
 
   return (
     <div style={{ padding: "1rem", maxWidth: "800px", margin: "0 auto" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", gap: "0.5rem", flexWrap: "wrap" }}>
         <h1>OT #{wo.number}</h1>
-        <span style={{ background: color.bg, color: color.fg, padding: "0.25rem 0.75rem", borderRadius: "9999px", fontSize: "0.875rem" }}>
-          {wo.status_label || wo.status_code}
-        </span>
+        <div style={{ display: "flex", gap: "0.375rem" }}>
+          <PriorityBadge code={wo.priority_code} label={wo.priority_label} />
+          <StatusBadge code={wo.status_code} label={wo.status_label} />
+        </div>
       </div>
 
       {error && <div style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626", padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}

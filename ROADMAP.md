@@ -261,13 +261,13 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 ## Estados y prioridades parametrizadas
 
-* [ ] Representar estados y prioridades mediante componentes visuales consistentes.
+* [x] Representar estados y prioridades mediante componentes visuales consistentes. (`components/StatusPriorityBadge.tsx`, usado en listado OT, detalle OT y "Mis OT" del técnico — antes duplicado y hardcodeado en 3 archivos)
 
-* [ ] No depender exclusivamente del color para transmitir significado.
+* [x] No depender exclusivamente del color para transmitir significado. (badges con texto + color, no solo color)
 
-* [ ] Respetar los valores configurados por cada tenant.
+* [x] Respetar los valores configurados por cada tenant. (el texto viene de `status_label`/`priority_label` de la API, no hardcodeado)
 
-* [ ] No asumir nombres, cantidades, colores ni valores rígidos desde la UI.
+* [x] No asumir nombres, cantidades, colores ni valores rígidos desde la UI. (el mapeo de color usa `code`, la semántica interna estable — nunca el label visible)
 
 ---
 
