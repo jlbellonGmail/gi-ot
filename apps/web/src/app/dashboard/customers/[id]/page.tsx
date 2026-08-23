@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import { Customer, CustomerUpdate } from "@/lib/types";
+import { Customer, CustomerUpdate, WorkOrder } from "@/lib/types";
+import { WorkOrderHistoryList } from "@/components/WorkOrderHistoryList";
 
 export default function CustomerDetailPage() {
   const params = useParams();
@@ -11,6 +12,7 @@ export default function CustomerDetailPage() {
   const personId = params.id as string;
 
   const [customer, setCustomer] = useState<Customer | null>(null);
+  const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,6 +30,7 @@ export default function CustomerDetailPage() {
 
   useEffect(() => {
     loadCustomer();
+    loadWorkOrders();
   }, [personId]);
 
   async function loadCustomer() {
@@ -49,6 +52,13 @@ export default function CustomerDetailPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function loadWorkOrders() {
+    try {
+      const data = await api.get<WorkOrder[]>(`/work-orders?customer_id=${personId}`);
+      setWorkOrders(data);
+    } catch (e) { console.error(e); }
   }
 
   async function handleSave() {
@@ -160,6 +170,11 @@ export default function CustomerDetailPage() {
               <dt>Observaciones</dt><dd>{customer.notes || "—"}</dd>
             </dl>
           )}
+        </div>
+
+        <div style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem" }}>
+          <h3 style={{ marginBottom: "0.75rem" }}>Historial de Órdenes de Trabajo</h3>
+          <WorkOrderHistoryList workOrders={workOrders} emptyText="Este cliente todavía no tiene OT." />
         </div>
       </div>
     </div>

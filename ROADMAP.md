@@ -227,35 +227,35 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 ## Seguimiento de OT
 
-* [ ] Permitir identificar rápidamente la situación actual de cada OT.
+* [x] Permitir identificar rápidamente la situación actual de cada OT. (badges de estado/prioridad al tope del detalle)
 
-* [ ] Desde el listado o panel permitir acceder al seguimiento correspondiente.
+* [x] Desde el listado o panel permitir acceder al seguimiento correspondiente. (listado, panel y ambos "Mis OT" enlazan al detalle)
 
-* [ ] Mostrar de forma clara como mínimo estado actual, prioridad, técnico/responsable, fechas relevantes y acontecimientos significativos de la OT.
+* [x] Mostrar de forma clara como mínimo estado actual, prioridad, técnico/responsable, fechas relevantes y acontecimientos significativos de la OT. (`OTDetail.tsx`: datos clave + historial de eventos)
 
-* [ ] Mantener visibles los datos fundamentales y revelar información secundaria cuando sea necesaria, evitando sobrecargar la pantalla.
+* [x] Mantener visibles los datos fundamentales y revelar información secundaria cuando sea necesaria, evitando sobrecargar la pantalla.
 
 ---
 
 ## Historial por cliente
 
-* [ ] Permitir consultar desde un cliente su historial de OT.
+* [x] Permitir consultar desde un cliente su historial de OT. (`dashboard/customers/[id]/page.tsx`, sección "Historial de Órdenes de Trabajo")
 
-* [ ] Presentar el historial de forma cronológica y comprensible.
+* [x] Presentar el historial de forma cronológica y comprensible. (`components/WorkOrderHistoryList.tsx`, orden descendente por fecha)
 
-* [ ] Permitir identificar trabajos anteriores, estados, ubicación/activo relacionado, fechas, técnicos y resultados relevantes cuando esos datos existan.
+* [ ] Permitir identificar trabajos anteriores, estados, ubicación/activo relacionado, fechas, técnicos y resultados relevantes cuando esos datos existan. (muestra estado, prioridad, descripción, resultado y fechas; falta mostrar el técnico responsable — pendiente)
 
-* [ ] Permitir acceder a la OT histórica correspondiente sin navegación innecesaria.
+* [x] Permitir acceder a la OT histórica correspondiente sin navegación innecesaria. (cada item del historial es un link directo al detalle)
 
 ---
 
 ## Historial por activo
 
-* [ ] Permitir consultar desde un activo el historial completo de intervenciones y OT.
+* [x] Permitir consultar desde un activo el historial completo de intervenciones y OT. (`dashboard/assets/[id]/page.tsx`, sección "Historial de intervenciones", mismo componente compartido)
 
-* [ ] Permitir comprender qué trabajo fue realizado, cuándo, por qué motivo, quién intervino y cuál fue el resultado cuando esos datos estén disponibles.
+* [ ] Permitir comprender qué trabajo fue realizado, cuándo, por qué motivo, quién intervino y cuál fue el resultado cuando esos datos estén disponibles. (falta quién intervino/técnico — mismo pendiente que Historial por cliente)
 
-* [ ] Facilitar visualmente la identificación de antecedentes e intervenciones repetidas.
+* [x] Facilitar visualmente la identificación de antecedentes e intervenciones repetidas. (lista cronológica con badges de estado/prioridad)
 
 ---
 

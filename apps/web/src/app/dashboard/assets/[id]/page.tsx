@@ -3,13 +3,15 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import { Asset, Location, AssetType } from "@/lib/types";
+import { Asset, Location, AssetType, WorkOrder } from "@/lib/types";
+import { WorkOrderHistoryList } from "@/components/WorkOrderHistoryList";
 
 export default function AssetDetailPage() {
   const params = useParams(); const router = useRouter(); const id = params.id as string;
   const [asset, setAsset] = useState<Asset | null>(null);
   const [locations, setLocations] = useState<Location[]>([]);
   const [assetTypes, setAssetTypes] = useState<AssetType[]>([]);
+  const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,7 +19,7 @@ export default function AssetDetailPage() {
 
   const [form, setForm] = useState({ name: "", description: "", brand: "", model: "", serial_number: "", internal_code: "", qr_code: "", notes: "", asset_type_id: "", status: "ACTIVE" });
 
-  useEffect(() => { load(); }, [id]);
+  useEffect(() => { load(); loadWorkOrders(); }, [id]);
 
   async function load() {
     try {
@@ -39,6 +41,13 @@ export default function AssetDetailPage() {
       });
     } catch (e) { setError(e instanceof Error ? e.message : "Error al cargar"); }
     finally { setLoading(false); }
+  }
+
+  async function loadWorkOrders() {
+    try {
+      const data = await api.get<WorkOrder[]>(`/work-orders?asset_id=${id}`);
+      setWorkOrders(data);
+    } catch (e) { console.error(e); }
   }
 
   async function save() {
@@ -104,6 +113,11 @@ export default function AssetDetailPage() {
             </div>
           </div>
         )}
+      </div>
+
+      <div style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem", marginTop: "1rem" }}>
+        <h3 style={{ marginBottom: "0.75rem" }}>Historial de intervenciones</h3>
+        <WorkOrderHistoryList workOrders={workOrders} emptyText="Este activo todavía no tiene OT registradas." />
       </div>
     </div>
   );
