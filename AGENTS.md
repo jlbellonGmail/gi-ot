@@ -14,19 +14,27 @@ No duplicar aquí información disponible en documentos canónicos.
 
 Objetivo:
 
-Construir rápidamente un MVP vertical correcto antes de activar el circuito formal SDD / AI-NATIVE.
+Construir rápidamente un MVP vertical correcto y evolucionarlo de forma controlada antes de activar el circuito formal SDD / AI-NATIVE.
+
+El repositorio Git ya está activo.
+
+La rama de integración durante BOOTSTRAP es:
+
+`develop`
 
 Durante BOOTSTRAP no ejecutar automáticamente:
 
 * feature branches;
 * worktrees;
-* PR;
+* Pull Requests;
 * Analyst / Reviewer / Builder / QA;
 * auditorías formales;
 * HITL por feature;
 * `runs/<feature>/spec.md`.
 
 La activación del circuito AI-NATIVE requiere decisión explícita del usuario.
+
+Git puede utilizarse durante BOOTSTRAP para conservar una línea base limpia y trazable sin activar todavía el circuito agéntico completo.
 
 ---
 
@@ -49,7 +57,10 @@ Leer según la tarea:
 5. `docs/tecnica/modelo-datos.md`
    Persistencia y modelo de datos.
 
-6. `.agentic/`
+6. `docs/ui-ux/UI-UX-STANDARDS.md`
+   Estándar transversal obligatorio para toda interfaz, formulario, listado, navegación e interacción visual.
+
+7. `.agentic/`
    Reglas del circuito formal cuando AI-NATIVE esté activo.
 
 No duplicar contenido de estos documentos dentro de `AGENTS.md`.
@@ -67,7 +78,9 @@ No duplicar contenido de estos documentos dentro de `AGENTS.md`.
 * mobile-first;
 * preparado para offline;
 * simple;
-* extensible.
+* extensible;
+* visualmente consistente;
+* accesible.
 
 No crear variantes del código por cliente.
 
@@ -128,8 +141,74 @@ Ejemplos:
 Separar siempre:
 
 **semántica interna estable**
+
 de
+
 **etiqueta visible configurable**.
+
+La UI no debe asumir cantidades, nombres, colores o valores fijos cuando estos sean parametrizables por tenant.
+
+---
+
+## UI / UX
+
+Toda pantalla o formulario nuevo, y toda modificación significativa de una interfaz existente, debe cumplir:
+
+`docs/ui-ux/UI-UX-STANDARDS.md`
+
+El estándar aplica transversalmente a:
+
+* Oficina/Admin;
+* Técnico;
+* Personas;
+* Clientes;
+* Técnicos;
+* Ubicaciones;
+* Activos;
+* Órdenes de Trabajo;
+* Parametrización;
+* configuración;
+* futuros módulos.
+
+Principios mínimos:
+
+* mobile-first real;
+* baja saturación visual;
+* acciones primarias visibles;
+* acciones secundarias agrupadas;
+* búsqueda frecuente directamente accesible;
+* filtros y opciones complejas bajo controles compactos;
+* feedback visual de filtros, estados y operaciones activas;
+* formularios consistentes;
+* design tokens;
+* tema claro/oscuro;
+* accesibilidad;
+* estados de carga, vacío, error y éxito;
+* ausencia de scroll horizontal en flujos normales;
+* consistencia entre desktop y mobile.
+
+No llenar formularios, cabeceras, listados o cards con botones independientes cuando las acciones puedan organizarse mediante menú, popover, diálogo, drawer o equivalente.
+
+No ocultar una acción primaria o extremadamente frecuente únicamente para reducir elementos visibles.
+
+---
+
+## Skills de diseño
+
+Una Skill de frontend/UI puede utilizarse como herramienta auxiliar cuando la tarea afecte la experiencia visual.
+
+La Skill:
+
+* no sustituye el PRD;
+* no sustituye el ROADMAP;
+* no sustituye `UI-UX-STANDARDS.md`;
+* no decide reglas funcionales;
+* no puede introducir un nuevo design system por iniciativa propia;
+* no puede cambiar el stack aprobado.
+
+Si `frontend-design` u otra Skill equivalente está disponible, utilizarla solamente cuando aporte valor a tareas de diseño o implementación frontend.
+
+No instalar, eliminar o cambiar Skills automáticamente sin instrucción explícita del usuario.
 
 ---
 
@@ -195,9 +274,12 @@ Priorizar tests sobre:
 * reglas de negocio;
 * operaciones críticas;
 * sincronización;
-* regresiones.
+* regresiones;
+* flujos UI críticos cuando corresponda.
 
 No perseguir cobertura artificial.
+
+Las interfaces críticas deben verificarse al menos en viewport mobile y desktop.
 
 ---
 
@@ -209,9 +291,12 @@ Actualizar el documento canónico correspondiente cuando cambie:
 * roadmap;
 * stack;
 * arquitectura;
-* modelo de datos.
+* modelo de datos;
+* estándar UI/UX.
 
 No duplicar información entre documentos.
+
+Las SPEC futuras deben referenciar los documentos transversales en lugar de copiarlos.
 
 ---
 
@@ -223,21 +308,49 @@ Evolución prevista:
 
 Cuando el usuario active AI-NATIVE:
 
-1. reconciliar código, PRD y ROADMAP;
-2. convertir pendientes en features;
+1. reconciliar código, PRD, ROADMAP y documentación;
+2. convertir pendientes en features o milestones;
 3. utilizar `runs/<feature>/spec.md`;
 4. activar las reglas de `.agentic/`;
-5. aplicar auditoría, evidencias, HITL y Git según el template.
+5. aplicar Analyst, Reviewer, Builder, QA y Code Reviewer según el template;
+6. aplicar auditoría y evidencias;
+7. ejecutar HITL;
+8. activar estrategia formal de ramas, worktrees y PR;
+9. activar CI/CD según corresponda.
 
-No reestructurar la aplicación para realizar esta transición.
+Toda SPEC que afecte frontend deberá leer y respetar:
+
+`docs/ui-ux/UI-UX-STANDARDS.md`
+
+La SPEC documentará solamente comportamiento específico de la feature y excepciones justificadas.
+
+No duplicará el estándar UI/UX transversal.
+
+No reestructurar la aplicación únicamente para realizar esta transición.
 
 ---
 
 ## Git
 
-Durante BOOTSTRAP no inicializar ni modificar la estrategia Git sin instrucción explícita.
+Git está activo durante BOOTSTRAP.
 
-Cuando Git esté activo, los mensajes de commit serán en español.
+Rama de integración:
+
+`develop`
+
+Reglas actuales:
+
+* mantener `develop` como línea de trabajo e integración;
+* no trabajar directamente sobre `main`;
+* no crear feature branches, worktrees o PR automáticamente mientras AI-NATIVE no esté activo;
+* no hacer commit ni push sin instrucción explícita del usuario;
+* cuando el usuario solicite commit, incluir únicamente los cambios correspondientes al alcance aprobado;
+* mensajes de commit en español;
+* no utilizar `--force` salvo decisión humana explícita;
+* no crear tags;
+* no fusionar hacia `main` automáticamente.
+
+Cuando el circuito AI-NATIVE sea activado, la estrategia Git formal del template reemplazará estas reglas operativas simplificadas.
 
 ---
 
@@ -248,7 +361,10 @@ Ante varias alternativas válidas, priorizar:
 1. seguridad multitenant;
 2. simplicidad;
 3. parametrización;
-4. experiencia móvil;
-5. funcionamiento offline;
-6. mantenibilidad;
-7. mínima complejidad innecesaria.
+4. experiencia de usuario;
+5. experiencia móvil;
+6. funcionamiento offline;
+7. accesibilidad;
+8. consistencia visual;
+9. mantenibilidad;
+10. mínima complejidad innecesaria.

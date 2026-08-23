@@ -6,13 +6,15 @@
 
 Objetivo actual:
 
-Construir rápidamente un MVP vertical SaaS multitenant que permita completar una Orden de Trabajo de punta a punta.
+Construir rápidamente un MVP vertical SaaS multitenant que permita completar una Orden de Trabajo de punta a punta y evolucionarlo progresivamente hacia una experiencia operativa real.
 
 Evolución prevista:
 
 `PRD → ROADMAP → BOOTSTRAP → MVP vertical → SDD → AI-NATIVE`
 
 Durante BOOTSTRAP se prioriza velocidad, simplicidad y validación funcional sin activar todavía el circuito agéntico formal.
+
+Git ya está activo y `develop` funciona como rama de integración durante esta etapa.
 
 ---
 
@@ -119,7 +121,11 @@ El MVP vertical debe demostrar que:
 
 Cuando este circuito funcione correctamente existe el **primer MVP vertical**.
 
-**Resultado:** circuito validado de punta a punta, tanto a nivel de API (suite automatizada `apps/api/tests/test_work_orders.py`, incluyendo aislamiento multitenant específico de OT) como en ejecución real contra un servidor de desarrollo vivo (creación de tenant, cliente, ubicación, activo, técnico y OT; asignación; inicio; registro de trabajo; cierre; consulta de historial; y verificación de que un segundo tenant recibe 404 al intentar leer u operar sobre la OT del primero). Frontend (`apps/web/src/app/dashboard/ot/`) implementa el flujo completo: alta de OT, listado con filtros, detalle con acciones según rol (asignar, iniciar, registrar avance, cerrar, reabrir) e historial.
+**Resultado:** circuito validado de punta a punta, tanto a nivel de API (suite automatizada `apps/api/tests/test_work_orders.py`, incluyendo aislamiento multitenant específico de OT) como en ejecución real contra un servidor de desarrollo vivo (creación de tenant, cliente, ubicación, activo, técnico y OT; asignación; inicio; registro de trabajo; cierre; consulta de historial; y verificación de que un segundo tenant recibe 404 al intentar leer u operar sobre la OT del primero).
+
+Frontend (`apps/web/src/app/dashboard/ot/`) implementa el flujo funcional completo: alta de OT, listado con filtros funcionales básicos, detalle con acciones según rol (asignar, iniciar, registrar avance, cerrar, reabrir) e historial.
+
+El refinamiento operativo de búsqueda, filtros, cards, dashboard y experiencia visual de Oficina se realizará en §08 siguiendo `docs/ui-ux/UI-UX-STANDARDS.md`.
 
 Este punto constituye el hito recomendado para evaluar la activación progresiva de SDD.
 
@@ -127,7 +133,7 @@ Este punto constituye el hito recomendado para evaluar la activación progresiva
 
 # 06 — Mobile / PWA
 
-* [x] Interfaz mobile-first.
+* [x] Interfaz mobile-first para los flujos móviles incluidos en el MVP.
 * [x] Instalación PWA.
 * [x] Cámara.
 * [x] Fotografías.
@@ -135,9 +141,233 @@ Este punto constituye el hito recomendado para evaluar la activación progresiva
 * [x] OT urgente.
 * [x] Validación de experiencia real desde celular.
 
+La validación real desde celular detectó mejoras pendientes de diseño y responsive en Oficina/Admin y en determinadas pantallas del Técnico.
+
+Estas mejoras se incorporan expresamente en §08 y no invalidan el cierre funcional de esta etapa.
+
 ---
 
-# 07 — Offline y sincronización
+# 07 — Oficina / UX operativa
+
+Esta etapa deberá aplicar transversalmente:
+
+`docs/ui-ux/UI-UX-STANDARDS.md`
+
+Los detalles generales de formularios, acciones, menús, filtros, accesibilidad, responsive, tema e interacción no deberán duplicarse aquí.
+
+El objetivo es convertir las interfaces funcionales del MVP en una experiencia de operación diaria clara, rápida y consistente.
+
+## Panel principal
+
+* [ ] Crear panel principal de Oficina/Admin orientado a situación operativa y no solamente a navegación.
+
+* [ ] Permitir comprender rápidamente como mínimo las OT abiertas, pendientes, en curso, urgentes/prioritarias y aquellas que requieran atención.
+
+* [ ] Permitir acceder desde los indicadores del panel al conjunto de OT correspondiente cuando resulte aplicable.
+
+* [ ] Evitar saturar el panel con métricas que no ayuden a tomar una acción.
+
+---
+
+## Listado operativo de OT
+
+* [ ] Evolucionar el listado funcional actual hacia una vista operativa clara y responsive.
+
+* [ ] Permitir identificar rápidamente como mínimo número de OT, cliente, ubicación/activo cuando corresponda, estado, prioridad, técnico y fecha relevante.
+
+* [ ] Utilizar cards, lista, tabla u otra representación apropiada según dispositivo y necesidad de comparación, sin imponer una grilla tradicional cuando no aporte valor.
+
+* [ ] Evitar llenar cada registro o card con botones. Mantener visible la acción principal y agrupar acciones secundarias mediante el patrón transversal correspondiente.
+
+---
+
+## Búsqueda
+
+* [ ] Incorporar búsqueda rápida y directamente accesible para localizar OT sin obligar al usuario a elegir previamente un campo.
+
+* [ ] Permitir localizar coincidencias por información operativa conocida, incluyendo como mínimo número de OT, cliente, ubicación y activo cuando esos datos estén disponibles.
+
+* [ ] Permitir que búsqueda, filtros y ordenamiento funcionen conjuntamente.
+
+* [ ] Mantener la búsqueda directamente visible cuando sea una operación frecuente, sin esconderla dentro de menús secundarios.
+
+---
+
+## Filtros
+
+* [ ] Reemplazar la exposición permanente de múltiples controles de filtrado por un control compacto de `Filtros`.
+
+* [ ] El control deberá abrir una superficie dedicada a filtrado y contener allí los criterios disponibles.
+
+* [ ] Incluir como mínimo, cuando sean aplicables: estado, prioridad, técnico, cliente y rango de fechas.
+
+* [ ] Permitir combinar varios filtros simultáneamente.
+
+* [ ] Mostrar desde la vista principal si existen filtros aplicados mediante badge, contador u otro indicador comprensible.
+
+* [ ] Permitir modificar los filtros aplicados.
+
+* [ ] Permitir eliminar individualmente filtros activos cuando estos se muestren en la interfaz.
+
+* [ ] Permitir limpiar todos los filtros.
+
+* [ ] Adaptar la superficie de filtros al dispositivo: popover/panel apropiado en desktop y bottom sheet/diálogo/panel equivalente en mobile según la complejidad.
+
+---
+
+## Ordenamiento
+
+* [ ] Incorporar ordenamiento mediante un control compacto en lugar de múltiples botones independientes.
+
+* [ ] Permitir criterios operativos relevantes como fecha, prioridad, estado o actualización reciente cuando resulten aplicables.
+
+* [ ] Mostrar de forma comprensible cuál es el orden aplicado.
+
+---
+
+## Seguimiento de OT
+
+* [ ] Permitir identificar rápidamente la situación actual de cada OT.
+
+* [ ] Desde el listado o panel permitir acceder al seguimiento correspondiente.
+
+* [ ] Mostrar de forma clara como mínimo estado actual, prioridad, técnico/responsable, fechas relevantes y acontecimientos significativos de la OT.
+
+* [ ] Mantener visibles los datos fundamentales y revelar información secundaria cuando sea necesaria, evitando sobrecargar la pantalla.
+
+---
+
+## Historial por cliente
+
+* [ ] Permitir consultar desde un cliente su historial de OT.
+
+* [ ] Presentar el historial de forma cronológica y comprensible.
+
+* [ ] Permitir identificar trabajos anteriores, estados, ubicación/activo relacionado, fechas, técnicos y resultados relevantes cuando esos datos existan.
+
+* [ ] Permitir acceder a la OT histórica correspondiente sin navegación innecesaria.
+
+---
+
+## Historial por activo
+
+* [ ] Permitir consultar desde un activo el historial completo de intervenciones y OT.
+
+* [ ] Permitir comprender qué trabajo fue realizado, cuándo, por qué motivo, quién intervino y cuál fue el resultado cuando esos datos estén disponibles.
+
+* [ ] Facilitar visualmente la identificación de antecedentes e intervenciones repetidas.
+
+---
+
+## Estados y prioridades parametrizadas
+
+* [ ] Representar estados y prioridades mediante componentes visuales consistentes.
+
+* [ ] No depender exclusivamente del color para transmitir significado.
+
+* [ ] Respetar los valores configurados por cada tenant.
+
+* [ ] No asumir nombres, cantidades, colores ni valores rígidos desde la UI.
+
+---
+
+## Interfaz mobile-first Oficina/Admin
+
+* [ ] Rediseñar `apps/web/src/app/dashboard/*` para funcionamiento real en pantallas angostas.
+
+* [ ] Corregir el shell actual de escritorio cuyo menú superior no entra correctamente en determinadas pantallas mobile.
+
+* [ ] Adaptar navegación, búsqueda, filtros, listados, cards, formularios y acciones a interacción táctil.
+
+* [ ] Evitar scroll horizontal, superposiciones y controles fuera del viewport durante flujos normales.
+
+* [ ] No limitar la solución a reducir el diseño desktop: adaptar jerarquía, navegación y presentación al contexto mobile.
+
+---
+
+## Formularios de toda la aplicación
+
+* [ ] Aplicar progresivamente `docs/ui-ux/UI-UX-STANDARDS.md` a todos los formularios que sean creados o modificados.
+
+* [ ] Evitar acumulación de botones y acciones permanentemente visibles.
+
+* [ ] Mantener visible la acción primaria.
+
+* [ ] Agrupar acciones secundarias y contextuales.
+
+* [ ] Aplicar revelado progresivo a opciones avanzadas cuando corresponda.
+
+* [ ] Mantener consistencia entre formularios de Personas, Clientes, Técnicos, Ubicaciones, Activos, OT, parametrización y futuros módulos.
+
+---
+
+## Tema claro/oscuro
+
+* [ ] Implementar sistema centralizado de design tokens para colores y estados visuales.
+
+* [ ] Eliminar progresivamente estilos de color hardcodeados por pantalla.
+
+* [ ] Soportar tema claro y oscuro de forma consistente.
+
+* [ ] Evitar problemas de contraste o legibilidad provocados por modos oscuros automáticos del navegador.
+
+---
+
+## Técnico — revisión UI/UX
+
+* [ ] Revisar `apps/web/src/app/tecnico/*` manteniendo la funcionalidad ya validada.
+
+* [ ] Mejorar jerarquía visual, espaciado, legibilidad, controles táctiles, navegación y consistencia.
+
+* [ ] Aplicar los mismos patrones transversales utilizados por Oficina cuando la función sea equivalente.
+
+* [ ] Mantener las particularidades necesarias del flujo de trabajo del Técnico sin crear un segundo lenguaje de interfaz.
+
+---
+
+## Estados de interfaz
+
+* [ ] Incorporar estados consistentes de carga.
+
+* [ ] Incorporar estados de ausencia inicial de datos.
+
+* [ ] Incorporar estados de búsqueda sin resultados.
+
+* [ ] Incorporar estados de error y recuperación.
+
+* [ ] Incorporar feedback claro de éxito y operaciones pendientes cuando corresponda.
+
+---
+
+## Accesibilidad
+
+* [ ] Aplicar como objetivo mínimo WCAG 2.2 nivel AA a los flujos relevantes.
+
+* [ ] Verificar navegación mediante teclado donde corresponda.
+
+* [ ] Verificar foco visible.
+
+* [ ] Verificar labels y nombres accesibles.
+
+* [ ] Verificar contraste y que la información no dependa exclusivamente del color.
+
+* [ ] Verificar tamaño y separación adecuados de controles interactivos.
+
+---
+
+## Consistencia transversal
+
+* [ ] Utilizar los mismos patrones para búsqueda, filtros, ordenamiento, menús, formularios, estados y acciones equivalentes en toda la aplicación.
+
+* [ ] Evitar que cada módulo resuelva interacciones equivalentes de manera diferente sin una razón funcional.
+
+* [ ] Verificar las pantallas relevantes en viewport mobile y desktop.
+
+**Criterio de cierre:** Oficina/Admin debe poder operar diariamente desde desktop y mobile con una interfaz clara, compacta, consistente y sin depender de conocer estructuras técnicas internas del sistema.
+
+---
+
+# 08 — Offline y sincronización
 
 Preferentemente ejecutar esta etapa mediante SDD si el circuito AI-NATIVE ya fue activado.
 
@@ -153,21 +383,6 @@ Preferentemente ejecutar esta etapa mediante SDD si el circuito AI-NATIVE ya fue
 * [ ] Manejo básico de conflictos.
 * [ ] Fotografías pendientes de sincronización.
 * [ ] Pruebas de recuperación después de pérdida de conectividad.
-
----
-
-# 08 — Oficina
-
-* [ ] Panel principal.
-* [ ] Filtros.
-* [ ] Búsqueda.
-* [ ] Seguimiento de OT.
-* [ ] Historial por cliente.
-* [ ] Historial por activo.
-* [ ] Visualización clara de estados y prioridades parametrizadas.
-* [ ] Interfaz mobile-first para el panel de Oficina/Admin (hoy `apps/web/src/app/dashboard/*` es un shell de escritorio: el menú superior no entra en pantallas angostas). Detectado en validación real desde celular, ROADMAP §06.
-* [ ] Sistema de tema claro/oscuro real (tokens de color), en vez de estilos hardcodeados por página. Sin esto, el modo oscuro automático de algunos navegadores rompe la legibilidad (ver caso detectado en §06).
-* [ ] Revisión de diseño/UX de las pantallas mobile del técnico (`apps/web/src/app/tecnico/*`): hoy son funcionales pero visualmente mínimas, falta una pasada real de diseño.
 
 ---
 
@@ -220,22 +435,29 @@ Antes de considerar el producto apto para producción:
 
 La activación será una decisión explícita del usuario.
 
+El uso de Git durante BOOTSTRAP no implica que el circuito AI-NATIVE ya se encuentre activo.
+
 * [ ] Declarar cierre de BOOTSTRAP.
 * [ ] Reconciliar PRD, ROADMAP, documentación y código.
-* [ ] Inicializar o normalizar Git.
-* [ ] Definir línea base del proyecto.
+* [x] Git inicializado y rama `develop` utilizada como integración durante BOOTSTRAP.
+* [ ] Definir línea base para la activación del circuito formal.
 * [ ] Incorporar la infraestructura AI-NATIVE del template.
-* [ ] Convertir trabajo pendiente en features SDD.
+* [ ] Convertir trabajo pendiente en features/milestones SDD.
 * [ ] Crear especificaciones en `runs/<feature>/spec.md`.
 * [ ] Activar Claude/Codex/OpenCode.
 * [ ] Activar Analyst.
 * [ ] Activar Reviewer.
 * [ ] Activar Builder.
 * [ ] Activar QA.
+* [ ] Activar Code Reviewer según el template vigente.
 * [ ] Activar evidencias en `runs/`.
 * [ ] Activar HITL.
-* [ ] Activar estrategia de ramas y worktrees.
+* [ ] Activar estrategia formal de ramas, worktrees y PR.
 * [ ] Activar CI/CD.
+
+Las SPEC que afecten interfaces deberán leer:
+
+`docs/ui-ux/UI-UX-STANDARDS.md`
 
 La activación AI-NATIVE no debe requerir reestructurar ni reescribir la aplicación.
 
@@ -262,11 +484,11 @@ La activación AI-NATIVE no debe requerir reestructurar ni reescribir la aplicac
 
 El ROADMAP no será reemplazado al activar SDD.
 
-Durante BOOTSTRAP contiene objetivos funcionales relativamente amplios.
+Durante BOOTSTRAP contiene objetivos funcionales relativamente amplios y decisiones de experiencia necesarias para evitar ambigüedad de producto.
 
 Al activar SDD, los trabajos pendientes evolucionarán a:
 
-**features especificadas, construibles, auditables y verificables.**
+**features o milestones especificados, construibles, auditables y verificables.**
 
 Ejemplo:
 
@@ -287,6 +509,10 @@ Cada feature podrá disponer de su especificación correspondiente en:
 
 `runs/<feature>/spec.md`
 
+Los estándares transversales no deberán copiarse dentro de cada SPEC.
+
+La SPEC deberá referenciar el documento canónico correspondiente.
+
 ---
 
 # Fuentes relacionadas
@@ -299,13 +525,25 @@ Stack tecnológico:
 
 `docs/tecnica/stack.md`
 
-Arquitectura, una vez definida:
+Arquitectura:
 
 `docs/tecnica/arquitectura.md`
 
-Modelo de datos, una vez definido:
+Modelo de datos:
 
 `docs/tecnica/modelo-datos.md`
+
+Estándar transversal UI/UX:
+
+`docs/ui-ux/UI-UX-STANDARDS.md`
+
+Reglas generales de agentes:
+
+`AGENTS.md`
+
+Circuito AI-NATIVE cuando sea activado:
+
+`.agentic/`
 
 ---
 
@@ -313,6 +551,8 @@ Modelo de datos, una vez definido:
 
 No incorporar funcionalidades fuera del PRD simplemente porque resulten técnicamente atractivas.
 
+No agregar complejidad visual o técnica únicamente para demostrar sofisticación.
+
 Priorizar siempre el camino más corto que permita alcanzar:
 
-**un MVP SaaS multitenant realmente utilizable de punta a punta.**
+**un MVP SaaS multitenant realmente utilizable de punta a punta, con una experiencia consistente y preparada para evolucionar mediante SDD.**
