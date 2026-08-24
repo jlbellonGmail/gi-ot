@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { ErrorBanner } from "@/components/ErrorBanner";
+import { FilterButton, FilterPanel, FilterChips } from "@/components/FilterPanel";
 import { Location, Customer } from "@/lib/types";
 
 export default function LocationsPage() {
@@ -14,6 +15,8 @@ export default function LocationsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filterCustomer, setFilterCustomer] = useState<string>("");
+  const [draftFilterCustomer, setDraftFilterCustomer] = useState<string>("");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   async function loadCustomers() {
     try { const data = await api.get<Customer[]>("/customers"); setCustomers(data); }
@@ -32,20 +35,39 @@ export default function LocationsPage() {
 
   useEffect(() => { loadCustomers(); loadLocations(); }, [filterCustomer]);
 
+  function openFilters() { setDraftFilterCustomer(filterCustomer); setFiltersOpen(true); }
+  function applyFilters() { setFilterCustomer(draftFilterCustomer); setFiltersOpen(false); }
+  function clearFilters() { setFilterCustomer(""); setDraftFilterCustomer(""); setFiltersOpen(false); }
+
   return (
     <div style={{ padding: "1rem", maxWidth: "900px", margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "1rem" }}>
         <h1>Ubicaciones</h1>
         <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-          <select value={filterCustomer} onChange={e=>setFilterCustomer(e.target.value)} style={{ padding: "0.5rem", minWidth: "250px" }}>
-            <option value="">Todas los clientes</option>
-            {customers.map(c=>(<option key={c.person_id} value={c.person_id}>{c.display_name}</option>))}
-          </select>
+          <FilterButton activeCount={filterCustomer ? 1 : 0} onClick={openFilters} />
           <Link href="/dashboard/locations/new">
             <button style={{ background: theme.primary, color: theme.primaryText, border: "none", padding: "0.75rem 1.5rem", borderRadius: "0.5rem" }}>+ Nueva Ubicación</button>
           </Link>
         </div>
       </div>
+
+      {filterCustomer && (
+        <FilterChips
+          chips={[{ key: "customer", label: `Cliente: ${customers.find((c) => c.person_id === filterCustomer)?.display_name || "—"}` }]}
+          onRemove={() => setFilterCustomer("")}
+          onClearAll={clearFilters}
+        />
+      )}
+
+      <FilterPanel open={filtersOpen} onClose={() => setFiltersOpen(false)} onApply={applyFilters} onClear={clearFilters}>
+        <div>
+          <label htmlFor="loc-filter-customer" style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.875rem", color: theme.textSecondary }}>Cliente</label>
+          <select id="loc-filter-customer" value={draftFilterCustomer} onChange={(e) => setDraftFilterCustomer(e.target.value)} style={{ width: "100%", padding: "0.5rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", background: theme.surface, color: theme.text }}>
+            <option value="">Todos los clientes</option>
+            {customers.map((c) => (<option key={c.person_id} value={c.person_id}>{c.display_name}</option>))}
+          </select>
+        </div>
+      </FilterPanel>
 
       {error && <ErrorBanner message={error} onRetry={loadLocations} />}
 

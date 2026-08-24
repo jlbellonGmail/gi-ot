@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { ErrorBanner } from "@/components/ErrorBanner";
+import { FilterButton, FilterPanel, FilterChips } from "@/components/FilterPanel";
 import { Asset, AssetType, Location } from "@/lib/types";
 
 export default function AssetsPage() {
@@ -16,6 +17,9 @@ export default function AssetsPage() {
   const [error, setError] = useState<string | null>(null);
   const [filterLoc, setFilterLoc] = useState<string>("");
   const [filterType, setFilterType] = useState<string>("");
+  const [draftFilterLoc, setDraftFilterLoc] = useState<string>("");
+  const [draftFilterType, setDraftFilterType] = useState<string>("");
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   async function loadRefs() {
     try {
@@ -44,24 +48,50 @@ export default function AssetsPage() {
 
   useEffect(() => { loadRefs(); loadAssets(); }, [filterLoc, filterType]);
 
+  function openFilters() { setDraftFilterLoc(filterLoc); setDraftFilterType(filterType); setFiltersOpen(true); }
+  function applyFilters() { setFilterLoc(draftFilterLoc); setFilterType(draftFilterType); setFiltersOpen(false); }
+  function clearFilters() { setFilterLoc(""); setFilterType(""); setDraftFilterLoc(""); setDraftFilterType(""); setFiltersOpen(false); }
+  const activeFilterCount = (filterLoc ? 1 : 0) + (filterType ? 1 : 0);
+
   return (
     <div style={{ padding: "1rem", maxWidth: "1000px", margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "1rem" }}>
         <h1>Activos</h1>
         <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-          <select value={filterLoc} onChange={e=>setFilterLoc(e.target.value)} style={{ padding: "0.5rem", minWidth: "200px" }}>
-            <option value="">Todas las ubicaciones</option>
-            {locations.map(l=>(<option key={l.id} value={l.id}>{l.name}</option>))}
-          </select>
-          <select value={filterType} onChange={e=>setFilterType(e.target.value)} style={{ padding: "0.5rem", minWidth: "200px" }}>
-            <option value="">Todos los tipos</option>
-            {assetTypes.map(t=>(<option key={t.id} value={t.id}>{t.label}</option>))}
-          </select>
+          <FilterButton activeCount={activeFilterCount} onClick={openFilters} />
           <Link href="/dashboard/assets/new">
             <button style={{ background: theme.primary, color: theme.primaryText, border: "none", padding: "0.75rem 1.5rem", borderRadius: "0.5rem" }}>+ Nuevo Activo</button>
           </Link>
         </div>
       </div>
+
+      {activeFilterCount > 0 && (
+        <FilterChips
+          chips={[
+            ...(filterLoc ? [{ key: "loc", label: `Ubicación: ${locations.find((l) => l.id === filterLoc)?.name || "—"}` }] : []),
+            ...(filterType ? [{ key: "type", label: `Tipo: ${assetTypes.find((t) => t.id === filterType)?.label || "—"}` }] : []),
+          ]}
+          onRemove={(key) => { if (key === "loc") setFilterLoc(""); if (key === "type") setFilterType(""); }}
+          onClearAll={clearFilters}
+        />
+      )}
+
+      <FilterPanel open={filtersOpen} onClose={() => setFiltersOpen(false)} onApply={applyFilters} onClear={clearFilters}>
+        <div>
+          <label htmlFor="asset-filter-loc" style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.875rem", color: theme.textSecondary }}>Ubicación</label>
+          <select id="asset-filter-loc" value={draftFilterLoc} onChange={(e) => setDraftFilterLoc(e.target.value)} style={{ width: "100%", padding: "0.5rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", background: theme.surface, color: theme.text }}>
+            <option value="">Todas las ubicaciones</option>
+            {locations.map((l) => (<option key={l.id} value={l.id}>{l.name}</option>))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="asset-filter-type" style={{ display: "block", marginBottom: "0.25rem", fontSize: "0.875rem", color: theme.textSecondary }}>Tipo</label>
+          <select id="asset-filter-type" value={draftFilterType} onChange={(e) => setDraftFilterType(e.target.value)} style={{ width: "100%", padding: "0.5rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", background: theme.surface, color: theme.text }}>
+            <option value="">Todos los tipos</option>
+            {assetTypes.map((t) => (<option key={t.id} value={t.id}>{t.label}</option>))}
+          </select>
+        </div>
+      </FilterPanel>
 
       {error && <ErrorBanner message={error} onRetry={loadAssets} />}
 

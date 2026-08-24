@@ -357,9 +357,9 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 ## Consistencia transversal
 
-* [ ] Utilizar los mismos patrones para búsqueda, filtros, ordenamiento, menús, formularios, estados y acciones equivalentes en toda la aplicación. (el patrón compacto de Filtros/Ordenar se implementó en el listado de OT, que es el único módulo que hoy lo necesita; Clientes/Técnicos/Ubicaciones/Activos todavía exponen sus filtros como selects sueltos — falta migrarlos al mismo patrón cuando se los toque)
+* [x] Utilizar los mismos patrones para búsqueda, filtros, ordenamiento, menús, formularios, estados y acciones equivalentes en toda la aplicación. (`components/FilterPanel.tsx` extraído del patrón de OT y propagado a Técnicos, Ubicaciones y Activos — Clientes no tiene filtros hoy, nada que migrar ahí; ordenamiento sigue siendo exclusivo de OT porque es el único listado donde el criterio de orden tiene sentido operativo — fecha/prioridad/estado — hoy)
 
-* [ ] Evitar que cada módulo resuelva interacciones equivalentes de manera diferente sin una razón funcional. (mismo pendiente que el ítem anterior)
+* [x] Evitar que cada módulo resuelva interacciones equivalentes de manera diferente sin una razón funcional. (mismo componente `FilterButton`/`FilterChips`/`FilterPanel` reutilizado en los 4 listados que filtran)
 
 * [ ] Verificar las pantallas relevantes en viewport mobile y desktop. (se auditó por código —sin anchos fijos que desborden, `flexWrap` consistente— pero no se verificó visualmente en un navegador/viewport real en esta pasada)
 

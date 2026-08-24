@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { ErrorBanner } from "@/components/ErrorBanner";
+import { FilterButton, FilterPanel, FilterChips } from "@/components/FilterPanel";
 import { Technician } from "@/lib/types";
 
 export default function TechniciansPage() {
@@ -13,6 +14,8 @@ export default function TechniciansPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeOnly, setActiveOnly] = useState(true);
+  const [draftActiveOnly, setDraftActiveOnly] = useState(true);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   async function loadTechnicians() {
     try {
@@ -30,15 +33,16 @@ export default function TechniciansPage() {
     loadTechnicians();
   }, [activeOnly]);
 
+  function openFilters() { setDraftActiveOnly(activeOnly); setFiltersOpen(true); }
+  function applyFilters() { setActiveOnly(draftActiveOnly); setFiltersOpen(false); }
+  function clearFilters() { setActiveOnly(false); setDraftActiveOnly(false); setFiltersOpen(false); }
+
   return (
     <div style={{ padding: "1rem", maxWidth: "800px", margin: "0 auto" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "0.75rem" }}>
         <h1>Técnicos</h1>
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-          <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", fontSize: "0.875rem" }}>
-            <input type="checkbox" checked={activeOnly} onChange={(e) => setActiveOnly(e.target.checked)} />
-            Solo activos
-          </label>
+          <FilterButton activeCount={activeOnly ? 1 : 0} onClick={openFilters} />
           <Link href="/dashboard/technicians/new" style={{ textDecoration: "none" }}>
             <button style={{ background: theme.successSolid, color: theme.primaryText, border: "none", padding: "0.75rem 1.5rem", borderRadius: "0.5rem", fontSize: "1rem", cursor: "pointer" }}>
               + Nuevo Técnico
@@ -46,6 +50,21 @@ export default function TechniciansPage() {
           </Link>
         </div>
       </div>
+
+      {activeOnly && (
+        <FilterChips
+          chips={[{ key: "activeOnly", label: "Solo activos" }]}
+          onRemove={() => setActiveOnly(false)}
+          onClearAll={clearFilters}
+        />
+      )}
+
+      <FilterPanel open={filtersOpen} onClose={() => setFiltersOpen(false)} onApply={applyFilters} onClear={clearFilters}>
+        <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.9375rem" }}>
+          <input type="checkbox" checked={draftActiveOnly} onChange={(e) => setDraftActiveOnly(e.target.checked)} />
+          Mostrar solo técnicos activos
+        </label>
+      </FilterPanel>
 
       {error && <ErrorBanner message={error} onRetry={loadTechnicians} />}
 
