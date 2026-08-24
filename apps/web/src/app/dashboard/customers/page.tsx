@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { Customer } from "@/lib/types";
+import { ErrorBanner } from "@/components/ErrorBanner";
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -47,11 +48,7 @@ export default function CustomersPage() {
         </Link>
       </div>
 
-      {error && (
-        <div style={{ background: theme.dangerBg, border: `1px solid ${theme.danger}`, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>
-          {error}
-        </div>
-      )}
+      {error && <ErrorBanner message={error} onRetry={loadCustomers} />}
 
       {loading ? (
         <div style={{ textAlign: "center", padding: "2rem" }}>Cargando...</div>

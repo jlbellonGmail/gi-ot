@@ -5,6 +5,7 @@ import { theme } from "@/lib/theme";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
+import { ErrorBanner } from "@/components/ErrorBanner";
 import { Asset, Location, AssetType, WorkOrder } from "@/lib/types";
 import { WorkOrderHistoryList } from "@/components/WorkOrderHistoryList";
 
@@ -73,7 +74,7 @@ export default function AssetDetailPage() {
           <button onClick={()=>router.back()} style={{ padding: "0.5rem 1rem", background: theme.bg }}>Volver</button>
         </div>
       </div>
-      {error && <div style={{ background: theme.dangerBg, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
+      {error && <ErrorBanner message={error} onRetry={load} />}
       <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
         <dl style={{ display: "grid", gridTemplateColumns: "140px 1fr", gap: "0.5rem 1rem" }}>
           <dt>Ubicación</dt><dd>{loc?.name || asset.location_id}</dd>

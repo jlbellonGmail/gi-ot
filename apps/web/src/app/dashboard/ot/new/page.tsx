@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/lib/api";
+import { ErrorBanner } from "@/components/ErrorBanner";
 import { Customer, Location, Asset, Technician, WorkOrderType, Priority, WorkOrderCreate } from "@/lib/types";
 
 export default function NewOTPage() {
@@ -72,12 +73,7 @@ export default function NewOTPage() {
   return (
     <div style={{ padding: "1rem", maxWidth: "600px", margin: "0 auto" }}>
       <h1>Nueva Orden de Trabajo</h1>
-      {error && (
-        <div style={{ background: theme.dangerBg, border: `1px solid ${theme.danger}`, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}
-        >
-          {error}
-        </div>
-      )}
+      {error && <ErrorBanner message={error} />}
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: "1rem" }}>
           <label htmlFor="wo-customer" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Cliente *</label>

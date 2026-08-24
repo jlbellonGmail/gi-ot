@@ -5,6 +5,7 @@ import { theme } from "@/lib/theme";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
+import { ErrorBanner } from "@/components/ErrorBanner";
 import { Technician, TechnicianUpdate, UserAccount } from "@/lib/types";
 
 export default function TechnicianDetailPage() {
@@ -97,7 +98,7 @@ export default function TechnicianDetailPage() {
           <button onClick={()=>router.back()} style={{ padding: "0.5rem 1rem", background: theme.bg }}>Volver</button>
         </div>
       </div>
-      {error && <div style={{ background: theme.dangerBg, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
+      {error && <ErrorBanner message={error} onRetry={load} />}
       <div style={{ display: "grid", gap: "1rem" }}>
         <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
           <h3 style={{ marginBottom: "0.75rem" }}>Identificaciones</h3>

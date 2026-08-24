@@ -5,6 +5,7 @@ import Link from "next/link";
 import { api } from "@/lib/api";
 import { theme } from "@/lib/theme";
 import { WorkOrder } from "@/lib/types";
+import { ErrorBanner } from "@/components/ErrorBanner";
 
 interface Indicator {
   key: string;
@@ -23,15 +24,17 @@ export default function DashboardPanelPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  async function loadWos() {
+    try {
+      setLoading(true); setError(null);
+      const data = await api.get<WorkOrder[]>("/work-orders");
+      setWos(data);
+    } catch (e) { setError(e instanceof Error ? e.message : "Error al cargar el panel"); }
+    finally { setLoading(false); }
+  }
+
   useEffect(() => {
-    (async () => {
-      try {
-        setLoading(true); setError(null);
-        const data = await api.get<WorkOrder[]>("/work-orders");
-        setWos(data);
-      } catch (e) { setError(e instanceof Error ? e.message : "Error al cargar el panel"); }
-      finally { setLoading(false); }
-    })();
+    loadWos();
   }, []);
 
   const indicators: Indicator[] = useMemo(() => {
@@ -65,7 +68,7 @@ export default function DashboardPanelPage() {
         </Link>
       </div>
 
-      {error && <div style={{ background: theme.dangerBg, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
+      {error && <ErrorBanner message={error} onRetry={loadWos} />}
 
       {loading ? (
         <div style={{ textAlign: "center", padding: "3rem", color: theme.textSecondary }}>Cargando...</div>

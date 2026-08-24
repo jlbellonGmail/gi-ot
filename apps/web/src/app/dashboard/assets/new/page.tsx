@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/lib/api";
+import { ErrorBanner } from "@/components/ErrorBanner";
 import { AssetCreate, Location, AssetType } from "@/lib/types";
 
 export default function NewAssetPage() {
@@ -36,7 +37,7 @@ export default function NewAssetPage() {
   return (
     <div style={{ padding: "1rem", maxWidth: "700px", margin: "0 auto" }}>
       <h1>Nuevo Activo</h1>
-      {error && <div style={{ background: theme.dangerBg, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
+      {error && <ErrorBanner message={error} />}
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: "1rem" }}>
           <label htmlFor="asset-location" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Ubicación *</label>

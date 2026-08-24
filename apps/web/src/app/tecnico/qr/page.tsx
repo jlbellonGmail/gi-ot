@@ -1,6 +1,7 @@
 "use client";
 
 import { theme } from "@/lib/theme";
+import { ErrorBanner } from "@/components/ErrorBanner";
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -80,19 +81,7 @@ export default function EscanearQRPage() {
         Apuntá la cámara al código QR del activo.
       </p>
 
-      {error && (
-        <div style={{ background: theme.dangerBg, border: `1px solid ${theme.danger}`, color: theme.danger, padding: "0.75rem", borderRadius: "0.5rem", marginBottom: "1rem", fontSize: "0.875rem" }}>
-          {error}
-          <div style={{ marginTop: "0.5rem" }}>
-            <button
-              onClick={() => { setError(null); setScanning(true); }}
-              style={{ padding: "0.5rem 0.875rem", background: theme.dangerSolid, color: theme.primaryText, border: "none", borderRadius: "0.375rem", cursor: "pointer", fontSize: "0.8rem" }}
-            >
-              Reintentar
-            </button>
-          </div>
-        </div>
-      )}
+      {error && <ErrorBanner message={error} onRetry={() => { setError(null); setScanning(true); }} />}
 
       <div style={{ position: "relative", borderRadius: "0.75rem", overflow: "hidden", background: "#000" }}>
         <video ref={videoRef} playsInline muted style={{ width: "100%", display: scanning ? "block" : "none" }} />

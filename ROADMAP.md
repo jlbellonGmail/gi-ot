@@ -333,7 +333,7 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 * [x] Incorporar estados de búsqueda sin resultados. (listado de OT distingue "sin resultados de búsqueda/filtros" de "todavía no hay OT")
 
-* [ ] Incorporar estados de error y recuperación. (hay banners de error consistentes en toda la app; falta una acción explícita de "reintentar" en la mayoría de las pantallas)
+* [x] Incorporar estados de error y recuperación. (`components/ErrorBanner.tsx` unificado en toda la app — 16 pantallas migradas; incluye botón "Reintentar" en los errores de carga de datos, que vuelve a llamar la función de carga correspondiente; los errores de envío de formulario no lo llevan porque el propio botón de submit ya cumple ese rol)
 
 * [ ] Incorporar feedback claro de éxito y operaciones pendientes cuando corresponda. (las acciones exitosas se reflejan implícitamente —navegación, recarga de datos— pero no hay confirmación explícita tipo "Guardado" en ediciones inline)
 

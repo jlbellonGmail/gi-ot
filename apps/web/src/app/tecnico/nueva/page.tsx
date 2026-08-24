@@ -1,6 +1,7 @@
 "use client";
 
 import { theme } from "@/lib/theme";
+import { ErrorBanner } from "@/components/ErrorBanner";
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -86,11 +87,7 @@ export default function NuevaOTUrgentePage() {
         Se crea con prioridad Urgente y asignada a vos.
       </p>
 
-      {error && (
-        <div style={{ background: theme.dangerBg, border: `1px solid ${theme.danger}`, color: theme.danger, padding: "0.75rem", borderRadius: "0.5rem", marginBottom: "1rem", fontSize: "0.875rem" }}>
-          {error}
-        </div>
-      )}
+      {error && <ErrorBanner message={error} />}
 
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: "1rem" }}>

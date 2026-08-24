@@ -1,6 +1,7 @@
 "use client";
 
 import { theme } from "@/lib/theme";
+import { ErrorBanner } from "@/components/ErrorBanner";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -35,7 +36,7 @@ export default function LoginPage() {
           <p style={{ color: theme.textSecondary, marginTop: "0.5rem" }}>Iniciar sesión</p>
         </div>
 
-        {error && <div style={{ background: theme.dangerBg, color: theme.danger, padding: "0.75rem", borderRadius: "0.5rem", marginBottom: "1rem", fontSize: "0.875rem" }}>{error}</div>}
+        {error && <ErrorBanner message={error} />}
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: "1rem" }}>

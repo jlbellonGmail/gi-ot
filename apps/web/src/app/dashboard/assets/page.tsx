@@ -5,6 +5,7 @@ import { theme } from "@/lib/theme";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
+import { ErrorBanner } from "@/components/ErrorBanner";
 import { Asset, AssetType, Location } from "@/lib/types";
 
 export default function AssetsPage() {
@@ -62,7 +63,7 @@ export default function AssetsPage() {
         </div>
       </div>
 
-      {error && <div style={{ background: theme.dangerBg, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
+      {error && <ErrorBanner message={error} onRetry={loadAssets} />}
 
       {loading ? <div style={{ textAlign: "center", padding: "2rem" }}>Cargando...</div> : assets.length === 0 ? (
         <div style={{ textAlign: "center", padding: "2rem", color: theme.textSecondary }}>No hay activos. <Link href="/dashboard/assets/new">Crear primero</Link></div>

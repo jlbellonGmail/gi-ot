@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/lib/api";
+import { ErrorBanner } from "@/components/ErrorBanner";
 import { TechnicianCreate } from "@/lib/types";
 
 const COUNTRIES = [
@@ -72,7 +73,7 @@ export default function NewTechnicianPage() {
     <div style={{ padding: "1rem", maxWidth: "600px", margin: "0 auto" }}>
       <h1>Nuevo Técnico</h1>
       <p style={{ color: theme.textSecondary, marginBottom: "1.5rem" }}>Ingrese identificación para verificar si la persona ya existe.</p>
-      {error && <div style={{ background: theme.dangerBg, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
+      {error && <ErrorBanner message={error} />}
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: "1rem" }}>
           <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Tipo persona</label>

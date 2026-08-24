@@ -18,6 +18,7 @@ import {
   CurrentUser,
 } from "@/lib/types";
 import { StatusBadge, PriorityBadge } from "@/components/StatusPriorityBadge";
+import { ErrorBanner } from "@/components/ErrorBanner";
 
 // Detalle de OT compartido entre /dashboard/ot/[id] (Oficina/Admin) y
 // /tecnico/ot/[id] (Técnico) — cada ruta lo envuelve en su propio shell
@@ -165,7 +166,7 @@ export default function OTDetail() {
         </div>
       </div>
 
-      {error && <div style={{ background: theme.dangerBg, border: `1px solid ${theme.danger}`, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
+      {error && <ErrorBanner message={error} onRetry={load} />}
 
       <dl style={{ display: "grid", gridTemplateColumns: "140px 1fr", gap: "0.5rem 1rem", marginBottom: "1.5rem" }}>
         <dt>Cliente</dt><dd>{cust?.display_name || wo.customer_id}</dd>

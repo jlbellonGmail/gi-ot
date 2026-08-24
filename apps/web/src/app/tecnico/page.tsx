@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { theme } from "@/lib/theme";
+import { ErrorBanner } from "@/components/ErrorBanner";
 import { CurrentUser, WorkOrder } from "@/lib/types";
 import { StatusBadge, PriorityBadge } from "@/components/StatusPriorityBadge";
 
@@ -49,11 +50,7 @@ export default function MisOTPage() {
         </div>
       </div>
 
-      {error && (
-        <div style={{ background: theme.dangerBg, border: `1px solid ${theme.border}`, color: theme.danger, padding: "0.75rem", borderRadius: "0.5rem", marginBottom: "1rem", fontSize: "0.875rem" }}>
-          {error}
-        </div>
-      )}
+      {error && <ErrorBanner message={error} onRetry={load} />}
 
       {loading ? (
         <div style={{ textAlign: "center", padding: "2rem", color: theme.textSecondary }}>Cargando...</div>

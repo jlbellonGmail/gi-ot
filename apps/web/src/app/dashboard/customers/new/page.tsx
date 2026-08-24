@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/lib/api";
+import { ErrorBanner } from "@/components/ErrorBanner";
 import { CustomerCreate } from "@/lib/types";
 
 const COUNTRIES = [
@@ -138,11 +139,7 @@ export default function NewCustomerPage() {
         Ingrese la identificación para verificar si la persona ya existe.
       </p>
 
-      {error && (
-        <div style={{ background: theme.dangerBg, border: `1px solid ${theme.danger}`, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>
-          {error}
-        </div>
-      )}
+      {error && <ErrorBanner message={error} />}
 
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: "1rem" }}>

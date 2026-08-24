@@ -5,6 +5,7 @@ import { theme } from "@/lib/theme";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
+import { ErrorBanner } from "@/components/ErrorBanner";
 import { Technician } from "@/lib/types";
 
 export default function TechniciansPage() {
@@ -46,7 +47,7 @@ export default function TechniciansPage() {
         </div>
       </div>
 
-      {error && <div style={{ background: theme.dangerBg, border: `1px solid ${theme.danger}`, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
+      {error && <ErrorBanner message={error} onRetry={loadTechnicians} />}
 
       {loading ? (
         <div style={{ textAlign: "center", padding: "2rem" }}>Cargando...</div>

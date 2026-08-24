@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
+import { ErrorBanner } from "@/components/ErrorBanner";
 import { theme } from "@/lib/theme";
 import { Customer, Location, Asset, Technician, Priority, WorkOrderStatus, WorkOrder } from "@/lib/types";
 import { StatusBadge, PriorityBadge } from "@/components/StatusPriorityBadge";
@@ -276,7 +277,7 @@ export default function OTListPage() {
         </>
       )}
 
-      {error && <div style={{ background: theme.dangerBg, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
+      {error && <ErrorBanner message={error} onRetry={loadWos} />}
 
       {loading ? (
         <div style={{ textAlign: "center", padding: "2rem", color: theme.textSecondary }}>Cargando...</div>
