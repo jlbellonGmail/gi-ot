@@ -211,7 +211,7 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 * [x] Permitir limpiar todos los filtros.
 
-* [ ] Adaptar la superficie de filtros al dispositivo: popover/panel apropiado en desktop y bottom sheet/diálogo/panel equivalente en mobile según la complejidad. (hoy usa un único patrón tipo bottom sheet para ambos — funciona en los dos pero no diferencia el patrón visual por dispositivo como pide el estándar)
+* [x] Adaptar la superficie de filtros al dispositivo: popover/panel apropiado en desktop y bottom sheet/diálogo/panel equivalente en mobile según la complejidad. (clase CSS `.filter-panel` con media query — bottom sheet de ancho completo en mobile, panel flotante compacto anclado arriba a la derecha en desktop ≥768px — aplicada en los 5 listados con filtros)
 
 ---
 

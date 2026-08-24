@@ -61,13 +61,7 @@ export function FilterPanel({
   return (
     <>
       <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 30 }} />
-      <div style={{
-        position: "fixed", zIndex: 31, background: theme.surface, color: theme.text,
-        left: "50%", transform: "translateX(-50%)",
-        bottom: 0, top: "auto", width: "100%", maxWidth: "420px",
-        borderRadius: "1rem 1rem 0 0", padding: "1.25rem", maxHeight: "80vh", overflowY: "auto",
-        boxShadow: "0 -4px 24px rgba(0,0,0,0.2)",
-      }}>
+      <div className="filter-panel" style={{ background: theme.surface, color: theme.text, padding: "1.25rem", maxHeight: "80vh", overflowY: "auto" }}>
         <h3 style={{ marginBottom: "1rem" }}>Filtros</h3>
         <div style={{ display: "grid", gap: "0.875rem" }}>
           {children}
