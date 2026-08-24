@@ -7,7 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { ErrorBanner } from "@/components/ErrorBanner";
 import { SuccessBanner } from "@/components/SuccessBanner";
-import { Asset, Location, AssetType, WorkOrder } from "@/lib/types";
+import { Asset, Location, AssetType, WorkOrder, Technician } from "@/lib/types";
 import { WorkOrderHistoryList } from "@/components/WorkOrderHistoryList";
 
 export default function AssetDetailPage() {
@@ -16,6 +16,7 @@ export default function AssetDetailPage() {
   const [locations, setLocations] = useState<Location[]>([]);
   const [assetTypes, setAssetTypes] = useState<AssetType[]>([]);
   const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
+  const [technicians, setTechnicians] = useState<Technician[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,8 +51,12 @@ export default function AssetDetailPage() {
 
   async function loadWorkOrders() {
     try {
-      const data = await api.get<WorkOrder[]>(`/work-orders?asset_id=${id}`);
+      const [data, techs] = await Promise.all([
+        api.get<WorkOrder[]>(`/work-orders?asset_id=${id}`),
+        api.get<Technician[]>("/technicians?active_only=false"),
+      ]);
       setWorkOrders(data);
+      setTechnicians(techs);
     } catch (e) { console.error(e); }
   }
 
@@ -130,7 +135,7 @@ export default function AssetDetailPage() {
 
       <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem", marginTop: "1rem" }}>
         <h3 style={{ marginBottom: "0.75rem" }}>Historial de intervenciones</h3>
-        <WorkOrderHistoryList workOrders={workOrders} emptyText="Este activo todavía no tiene OT registradas." />
+        <WorkOrderHistoryList workOrders={workOrders} technicians={technicians} emptyText="Este activo todavía no tiene OT registradas." />
       </div>
     </div>
   );

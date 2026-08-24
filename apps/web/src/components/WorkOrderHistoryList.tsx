@@ -2,15 +2,16 @@
 
 import Link from "next/link";
 import { theme } from "@/lib/theme";
-import { WorkOrder } from "@/lib/types";
+import { WorkOrder, Technician } from "@/lib/types";
 import { StatusBadge, PriorityBadge } from "@/components/StatusPriorityBadge";
 
 // Historial de OT de un Cliente o de un Activo (ROADMAP §07 — "Historial
 // por cliente" / "Historial por activo"): reutiliza GET /work-orders con
 // el filtro correspondiente (customer_id / asset_id) y presenta los
 // resultados en orden cronológico, cada uno accesible sin navegación
-// adicional (UI-UX-STANDARDS §16).
-export function WorkOrderHistoryList({ workOrders, emptyText }: { workOrders: WorkOrder[]; emptyText: string }) {
+// adicional (UI-UX-STANDARDS §16). `technicians` es opcional para no
+// forzar a cada pantalla que lo use a cargar el catálogo si no lo tiene.
+export function WorkOrderHistoryList({ workOrders, emptyText, technicians = [] }: { workOrders: WorkOrder[]; emptyText: string; technicians?: Technician[] }) {
   if (workOrders.length === 0) {
     return <p style={{ color: theme.textSecondary, fontSize: "0.9375rem" }}>{emptyText}</p>;
   }
@@ -40,7 +41,8 @@ export function WorkOrderHistoryList({ workOrders, emptyText }: { workOrders: Wo
               </div>
             )}
             <div style={{ fontSize: "0.75rem", color: theme.textSecondary, marginTop: "0.25rem" }}>
-              {new Date(wo.created_at).toLocaleDateString()}
+              Técnico: {wo.technician_id ? technicians.find((t) => t.person_id === wo.technician_id)?.display_name || "—" : "Sin asignar"}
+              {" • "}{new Date(wo.created_at).toLocaleDateString()}
               {wo.finished_at && ` • Finalizada ${new Date(wo.finished_at).toLocaleDateString()}`}
             </div>
           </div>

@@ -243,7 +243,7 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 * [x] Presentar el historial de forma cronológica y comprensible. (`components/WorkOrderHistoryList.tsx`, orden descendente por fecha)
 
-* [ ] Permitir identificar trabajos anteriores, estados, ubicación/activo relacionado, fechas, técnicos y resultados relevantes cuando esos datos existan. (muestra estado, prioridad, descripción, resultado y fechas; falta mostrar el técnico responsable — pendiente)
+* [x] Permitir identificar trabajos anteriores, estados, ubicación/activo relacionado, fechas, técnicos y resultados relevantes cuando esos datos existan. (`WorkOrderHistoryList` ahora también resuelve y muestra el técnico responsable)
 
 * [x] Permitir acceder a la OT histórica correspondiente sin navegación innecesaria. (cada item del historial es un link directo al detalle)
 
@@ -253,7 +253,7 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 * [x] Permitir consultar desde un activo el historial completo de intervenciones y OT. (`dashboard/assets/[id]/page.tsx`, sección "Historial de intervenciones", mismo componente compartido)
 
-* [ ] Permitir comprender qué trabajo fue realizado, cuándo, por qué motivo, quién intervino y cuál fue el resultado cuando esos datos estén disponibles. (falta quién intervino/técnico — mismo pendiente que Historial por cliente)
+* [x] Permitir comprender qué trabajo fue realizado, cuándo, por qué motivo, quién intervino y cuál fue el resultado cuando esos datos estén disponibles. (mismo componente compartido, ahora con técnico resuelto)
 
 * [x] Facilitar visualmente la identificación de antecedentes e intervenciones repetidas. (lista cronológica con badges de estado/prioridad)
 
