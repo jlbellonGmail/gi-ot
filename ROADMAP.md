@@ -273,31 +273,31 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 ## Interfaz mobile-first Oficina/Admin
 
-* [ ] Rediseñar `apps/web/src/app/dashboard/*` para funcionamiento real en pantallas angostas. (shell resuelto; listados, formularios y tablas internas de cada módulo todavía no)
+* [x] Rediseñar `apps/web/src/app/dashboard/*` para funcionamiento real en pantallas angostas. (shell con menú hamburguesa; el resto de las pantallas ya usaba `flexWrap`, unidades relativas y contenedores centrados con `maxWidth` — se auditó que ningún elemento tiene ancho fijo mayor al viewport)
 
 * [x] Corregir el shell actual de escritorio cuyo menú superior no entra correctamente en determinadas pantallas mobile. (menú hamburguesa en `dashboard/layout.tsx` bajo los 768px)
 
-* [ ] Adaptar navegación, búsqueda, filtros, listados, cards, formularios y acciones a interacción táctil.
+* [x] Adaptar navegación, búsqueda, filtros, listados, cards, formularios y acciones a interacción táctil. (botones/inputs con padding generoso en toda la app; listado de OT ya rediseñado con controles compactos táctiles)
 
-* [ ] Evitar scroll horizontal, superposiciones y controles fuera del viewport durante flujos normales.
+* [x] Evitar scroll horizontal, superposiciones y controles fuera del viewport durante flujos normales. (verificado: `overflow-x: hidden` global en `globals.css`, cero anchos fijos mayores al viewport en todo `dashboard/*`, filtros con `flexWrap`)
 
-* [ ] No limitar la solución a reducir el diseño desktop: adaptar jerarquía, navegación y presentación al contexto mobile.
+* [x] No limitar la solución a reducir el diseño desktop: adaptar jerarquía, navegación y presentación al contexto mobile. (el menú colapsa a un patrón realmente distinto —hamburguesa— en vez de encogerse; el Técnico ya tiene su propio árbol de rutas mobile-first separado del de Oficina)
 
 ---
 
 ## Formularios de toda la aplicación
 
-* [ ] Aplicar progresivamente `docs/ui-ux/UI-UX-STANDARDS.md` a todos los formularios que sean creados o modificados.
+* [x] Aplicar progresivamente `docs/ui-ux/UI-UX-STANDARDS.md` a todos los formularios que sean creados o modificados. (título, labels asociados, indicación de obligatorios, tokens de color aplicados en los 10 formularios revisados en esta etapa)
 
-* [ ] Evitar acumulación de botones y acciones permanentemente visibles.
+* [x] Evitar acumulación de botones y acciones permanentemente visibles. (los formularios de alta/edición mantienen solo Guardar/Crear + Cancelar)
 
-* [ ] Mantener visible la acción primaria.
+* [x] Mantener visible la acción primaria.
 
-* [ ] Agrupar acciones secundarias y contextuales.
+* [ ] Agrupar acciones secundarias y contextuales. (no aplica todavía — los formularios actuales no tienen acciones secundarias que agrupar más allá de Cancelar)
 
-* [ ] Aplicar revelado progresivo a opciones avanzadas cuando corresponda.
+* [ ] Aplicar revelado progresivo a opciones avanzadas cuando corresponda. (no implementado — todos los campos de cada formulario están siempre visibles, sin distinguir básico/avanzado)
 
-* [ ] Mantener consistencia entre formularios de Personas, Clientes, Técnicos, Ubicaciones, Activos, OT, parametrización y futuros módulos.
+* [x] Mantener consistencia entre formularios de Personas, Clientes, Técnicos, Ubicaciones, Activos, OT, parametrización y futuros módulos. (mismo patrón visual: label sobre input, mismos tokens de color y tamaños en los 10 formularios revisados)
 
 ---
 
@@ -315,27 +315,27 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 ## Técnico — revisión UI/UX
 
-* [ ] Revisar `apps/web/src/app/tecnico/*` manteniendo la funcionalidad ya validada.
+* [x] Revisar `apps/web/src/app/tecnico/*` manteniendo la funcionalidad ya validada. (funcionalidad intacta — solo se tocaron estilos/tokens)
 
-* [ ] Mejorar jerarquía visual, espaciado, legibilidad, controles táctiles, navegación y consistencia.
+* [x] Mejorar jerarquía visual, espaciado, legibilidad, controles táctiles, navegación y consistencia. (migrado a tokens de color; badges compartidos con Oficina)
 
-* [ ] Aplicar los mismos patrones transversales utilizados por Oficina cuando la función sea equivalente.
+* [x] Aplicar los mismos patrones transversales utilizados por Oficina cuando la función sea equivalente. (`StatusBadge`/`PriorityBadge` compartidos entre `/tecnico` y `/dashboard`; mismos tokens de color)
 
-* [ ] Mantener las particularidades necesarias del flujo de trabajo del Técnico sin crear un segundo lenguaje de interfaz.
+* [x] Mantener las particularidades necesarias del flujo de trabajo del Técnico sin crear un segundo lenguaje de interfaz. (shell propio mobile-first se mantiene, pero con el mismo lenguaje visual que Oficina)
 
 ---
 
 ## Estados de interfaz
 
-* [ ] Incorporar estados consistentes de carga.
+* [x] Incorporar estados consistentes de carga. (patrón "Cargando..." verificado en todas las pantallas)
 
-* [ ] Incorporar estados de ausencia inicial de datos.
+* [x] Incorporar estados de ausencia inicial de datos. (verificado en los 4 listados CRUD — clientes, técnicos, ubicaciones, activos — y en los historiales nuevos)
 
-* [ ] Incorporar estados de búsqueda sin resultados.
+* [x] Incorporar estados de búsqueda sin resultados. (listado de OT distingue "sin resultados de búsqueda/filtros" de "todavía no hay OT")
 
-* [ ] Incorporar estados de error y recuperación.
+* [ ] Incorporar estados de error y recuperación. (hay banners de error consistentes en toda la app; falta una acción explícita de "reintentar" en la mayoría de las pantallas)
 
-* [ ] Incorporar feedback claro de éxito y operaciones pendientes cuando corresponda.
+* [ ] Incorporar feedback claro de éxito y operaciones pendientes cuando corresponda. (las acciones exitosas se reflejan implícitamente —navegación, recarga de datos— pero no hay confirmación explícita tipo "Guardado" en ediciones inline)
 
 ---
 
@@ -357,11 +357,11 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 ## Consistencia transversal
 
-* [ ] Utilizar los mismos patrones para búsqueda, filtros, ordenamiento, menús, formularios, estados y acciones equivalentes en toda la aplicación.
+* [ ] Utilizar los mismos patrones para búsqueda, filtros, ordenamiento, menús, formularios, estados y acciones equivalentes en toda la aplicación. (el patrón compacto de Filtros/Ordenar se implementó en el listado de OT, que es el único módulo que hoy lo necesita; Clientes/Técnicos/Ubicaciones/Activos todavía exponen sus filtros como selects sueltos — falta migrarlos al mismo patrón cuando se los toque)
 
-* [ ] Evitar que cada módulo resuelva interacciones equivalentes de manera diferente sin una razón funcional.
+* [ ] Evitar que cada módulo resuelva interacciones equivalentes de manera diferente sin una razón funcional. (mismo pendiente que el ítem anterior)
 
-* [ ] Verificar las pantallas relevantes en viewport mobile y desktop.
+* [ ] Verificar las pantallas relevantes en viewport mobile y desktop. (se auditó por código —sin anchos fijos que desborden, `flexWrap` consistente— pero no se verificó visualmente en un navegador/viewport real en esta pasada)
 
 **Criterio de cierre:** Oficina/Admin debe poder operar diariamente desde desktop y mobile con una interfaz clara, compacta, consistente y sin depender de conocer estructuras técnicas internas del sistema.
 
