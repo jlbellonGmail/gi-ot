@@ -295,7 +295,7 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 * [ ] Agrupar acciones secundarias y contextuales. (no aplica todavía — los formularios actuales no tienen acciones secundarias que agrupar más allá de Cancelar)
 
-* [ ] Aplicar revelado progresivo a opciones avanzadas cuando corresponda. (no implementado — todos los campos de cada formulario están siempre visibles, sin distinguir básico/avanzado)
+* [x] Aplicar revelado progresivo a opciones avanzadas cuando corresponda. (`components/Disclosure.tsx`, aplicado en los 2 formularios con más campos —Nuevo Cliente y Nuevo Técnico— colapsando dirección/contacto/datos profesionales/observaciones detrás de "Más datos"; el resto de los formularios ya son lo bastante cortos como para no necesitarlo)
 
 * [x] Mantener consistencia entre formularios de Personas, Clientes, Técnicos, Ubicaciones, Activos, OT, parametrización y futuros módulos. (mismo patrón visual: label sobre input, mismos tokens de color y tamaños en los 10 formularios revisados)
 

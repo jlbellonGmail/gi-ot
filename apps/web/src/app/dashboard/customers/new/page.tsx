@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { ErrorBanner } from "@/components/ErrorBanner";
+import { Disclosure } from "@/components/Disclosure";
 import { CustomerCreate } from "@/lib/types";
 
 const COUNTRIES = [
@@ -240,7 +241,8 @@ export default function NewCustomerPage() {
           />
         </div>
 
-        <div style={{ marginBottom: "1rem" }}>
+        <Disclosure label="Más datos (dirección, contacto, observaciones)">
+        <div>
           <label htmlFor="customer-address" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Dirección</label>
           <input
             id="customer-address"
@@ -251,7 +253,7 @@ export default function NewCustomerPage() {
           />
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
           <div>
             <label htmlFor="customer-phone" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Teléfono</label>
             <input
@@ -274,7 +276,7 @@ export default function NewCustomerPage() {
           </div>
         </div>
 
-        <div style={{ marginBottom: "1.5rem" }}>
+        <div>
           <label htmlFor="customer-notes" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Observaciones</label>
           <textarea
             id="customer-notes"
@@ -284,6 +286,7 @@ export default function NewCustomerPage() {
             style={{ width: "100%", padding: "0.75rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", fontSize: "1rem" }}
           />
         </div>
+        </Disclosure>
 
         <div style={{ display: "flex", gap: "1rem" }}>
           <button

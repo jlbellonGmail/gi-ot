@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { ErrorBanner } from "@/components/ErrorBanner";
+import { Disclosure } from "@/components/Disclosure";
 import { TechnicianCreate } from "@/lib/types";
 
 const COUNTRIES = [
@@ -109,23 +110,25 @@ export default function NewTechnicianPage() {
           <label htmlFor="tech-name" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Nombre *</label>
           <input id="tech-name" value={formData.display_name} onChange={e=>handleChange("display_name",e.target.value)} required style={{ width: "100%", padding: "0.75rem" }} />
         </div>
-        <div style={{ marginBottom: "1rem" }}>
+        <Disclosure label="Más datos (dirección, contacto, datos profesionales, observaciones)">
+        <div>
           <label htmlFor="tech-address" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Dirección</label>
           <input id="tech-address" value={formData.address} onChange={e=>handleChange("address",e.target.value)} style={{ width: "100%", padding: "0.75rem" }} />
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
           <div><label htmlFor="tech-phone" style={{ display: "block", marginBottom: "0.25rem" }}>Teléfono</label><input id="tech-phone" value={formData.phone} onChange={e=>handleChange("phone",e.target.value)} style={{ width: "100%", padding: "0.75rem" }} /></div>
           <div><label htmlFor="tech-email" style={{ display: "block", marginBottom: "0.25rem" }}>Email</label><input id="tech-email" value={formData.email} onChange={e=>handleChange("email",e.target.value)} style={{ width: "100%", padding: "0.75rem" }} /></div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem" }}>
           <div><label htmlFor="tech-profession" style={{ display: "block", marginBottom: "0.25rem" }}>Profesión</label><input id="tech-profession" value={formData.profession} onChange={e=>handleChange("profession",e.target.value)} style={{ width: "100%", padding: "0.75rem" }} /></div>
           <div><label htmlFor="tech-license" style={{ display: "block", marginBottom: "0.25rem" }}>Matrícula</label><input id="tech-license" value={formData.license_number} onChange={e=>handleChange("license_number",e.target.value)} style={{ width: "100%", padding: "0.75rem" }} /></div>
           <div><label htmlFor="tech-commission" style={{ display: "block", marginBottom: "0.25rem" }}>Comisión %</label><input id="tech-commission" type="number" step="0.1" value={formData.commission_percentage} onChange={e=>handleChange("commission_percentage",parseFloat(e.target.value)||0)} style={{ width: "100%", padding: "0.75rem" }} /></div>
         </div>
-        <div style={{ marginBottom: "1.5rem" }}>
+        <div>
           <label htmlFor="tech-notes" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Observaciones</label>
           <textarea id="tech-notes" value={formData.notes} onChange={e=>handleChange("notes",e.target.value)} rows={3} style={{ width: "100%", padding: "0.75rem" }} />
         </div>
+        </Disclosure>
         <div style={{ display: "flex", gap: "1rem" }}>
           <button type="submit" disabled={loading} style={{ flex: 1, padding: "1rem", background: theme.successSolid, opacity: loading ? 0.6 : 1, color: theme.primaryText, border: "none", borderRadius: "0.5rem" }}>{loading?"Guardando...":"Crear Técnico"}</button>
           <Link href="/dashboard/technicians" style={{ flex: 1, padding: "1rem", background: theme.bg, textAlign: "center", textDecoration: "none", borderRadius: "0.5rem" }}>Cancelar</Link>
