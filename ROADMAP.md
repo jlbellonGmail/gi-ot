@@ -361,7 +361,7 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 * [x] Evitar que cada módulo resuelva interacciones equivalentes de manera diferente sin una razón funcional. (mismo componente `FilterButton`/`FilterChips`/`FilterPanel` reutilizado en los 4 listados que filtran)
 
-* [ ] Verificar las pantallas relevantes en viewport mobile y desktop. (se auditó por código —sin anchos fijos que desborden, `flexWrap` consistente— pero no se verificó visualmente en un navegador/viewport real en esta pasada)
+* [x] Verificar las pantallas relevantes en viewport mobile y desktop. (auditado por código y confirmado visualmente por el usuario en navegador real: paridad de interfaz entre los 5 listados, toggle de tema)
 
 **Criterio de cierre:** Oficina/Admin debe poder operar diariamente desde desktop y mobile con una interfaz clara, compacta, consistente y sin depender de conocer estructuras técnicas internas del sistema.
 
