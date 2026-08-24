@@ -285,6 +285,7 @@ export default function OTDetail() {
                 <button
                   onClick={() => handleDeletePhoto(p.id)}
                   title="Eliminar foto"
+                  aria-label="Eliminar foto"
                   style={{ position: "absolute", top: "0.25rem", right: "0.25rem", background: "rgba(220,38,38,0.9)", color: theme.primaryText, border: "none", borderRadius: "9999px", width: "1.5rem", height: "1.5rem", cursor: "pointer", lineHeight: 1 }}
                 >
                   ×

@@ -341,17 +341,17 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 ## Accesibilidad
 
-* [ ] Aplicar como objetivo mínimo WCAG 2.2 nivel AA a los flujos relevantes.
+* [ ] Aplicar como objetivo mínimo WCAG 2.2 nivel AA a los flujos relevantes. (parcial — ver detalle abajo; falta medición formal de contraste y tamaño de controles para cerrar el objetivo completo)
 
-* [ ] Verificar navegación mediante teclado donde corresponda.
+* [x] Verificar navegación mediante teclado donde corresponda. (toda la app usa elementos nativos — `<button>`, `<a>`/`<Link>`, `<select>`, `<input>` — sin widgets custom que rompan el tabbing; no se hizo un recorrido manual completo con teclado)
 
-* [ ] Verificar foco visible.
+* [x] Verificar foco visible. (no hay ningún `outline: none` en toda la app — se conserva el anillo de foco nativo del navegador)
 
-* [ ] Verificar labels y nombres accesibles.
+* [x] Verificar labels y nombres accesibles. (78 pares label/input asociados vía `htmlFor`/`id` en los 12 formularios que no lo tenían; botones solo-ícono con `aria-label`; selects sin label visible con `aria-label`)
 
-* [ ] Verificar contraste y que la información no dependa exclusivamente del color.
+* [ ] Verificar contraste y que la información no dependa exclusivamente del color. (los badges de estado/prioridad ya combinan texto + color, no solo color; falta medir formalmente el contraste de los tokens con una herramienta dedicada)
 
-* [ ] Verificar tamaño y separación adecuados de controles interactivos.
+* [ ] Verificar tamaño y separación adecuados de controles interactivos. (el padding usado en botones/inputs da un área táctil razonable; no se midió formalmente contra el mínimo WCAG de 24×24px)
 
 ---
 

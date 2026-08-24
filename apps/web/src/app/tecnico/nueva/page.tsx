@@ -94,8 +94,9 @@ export default function NuevaOTUrgentePage() {
 
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Cliente *</label>
+          <label htmlFor="urgente-customer" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Cliente *</label>
           <select
+            id="urgente-customer"
             value={customerId}
             onChange={(e) => { setCustomerId(e.target.value); setLocationId(""); setAssetId(""); }}
             required
@@ -106,8 +107,9 @@ export default function NuevaOTUrgentePage() {
           </select>
         </div>
         <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Ubicación *</label>
+          <label htmlFor="urgente-location" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Ubicación *</label>
           <select
+            id="urgente-location"
             value={locationId}
             onChange={(e) => { setLocationId(e.target.value); setAssetId(""); }}
             required
@@ -119,8 +121,9 @@ export default function NuevaOTUrgentePage() {
           </select>
         </div>
         <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Activo *</label>
+          <label htmlFor="urgente-asset" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Activo *</label>
           <select
+            id="urgente-asset"
             value={assetId}
             onChange={(e) => setAssetId(e.target.value)}
             required
@@ -132,8 +135,9 @@ export default function NuevaOTUrgentePage() {
           </select>
         </div>
         <div style={{ marginBottom: "1.5rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Descripción *</label>
+          <label htmlFor="urgente-description" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Descripción *</label>
           <textarea
+            id="urgente-description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={4}

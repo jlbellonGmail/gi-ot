@@ -178,6 +178,7 @@ export default function NewCustomerPage() {
           {formData.identifications.map((ident, idx) => (
             <div key={idx} style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.5rem", alignItems: "flex-end" }}>
               <select
+                aria-label="País"
                 value={ident.country_code}
                 onChange={(e) => handleCountryChange(idx, e.target.value)}
                 style={{ padding: "0.5rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", minWidth: "120px" }}
@@ -187,6 +188,7 @@ export default function NewCustomerPage() {
                 ))}
               </select>
               <select
+                aria-label="Tipo de identificación"
                 value={ident.identification_type}
                 onChange={(e) => handleIdentificationChange(idx, "identification_type", e.target.value)}
                 style={{ padding: "0.5rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", minWidth: "140px" }}
@@ -198,6 +200,7 @@ export default function NewCustomerPage() {
               <input
                 type="text"
                 placeholder="Número"
+                aria-label="Número de identificación"
                 value={ident.identification_value}
                 onChange={(e) => handleIdentificationChange(idx, "identification_value", e.target.value)}
                 style={{ flex: 1, minWidth: "150px", padding: "0.5rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem" }}
@@ -229,8 +232,9 @@ export default function NewCustomerPage() {
         </fieldset>
 
         <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Nombre / Razón social *</label>
+          <label htmlFor="customer-name" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Nombre / Razón social *</label>
           <input
+            id="customer-name"
             type="text"
             value={formData.display_name}
             onChange={(e) => handleChange("display_name", e.target.value)}
@@ -240,8 +244,9 @@ export default function NewCustomerPage() {
         </div>
 
         <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Dirección</label>
+          <label htmlFor="customer-address" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Dirección</label>
           <input
+            id="customer-address"
             type="text"
             value={formData.address || ""}
             onChange={(e) => handleChange("address", e.target.value)}
@@ -251,8 +256,9 @@ export default function NewCustomerPage() {
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
           <div>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Teléfono</label>
+            <label htmlFor="customer-phone" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Teléfono</label>
             <input
+              id="customer-phone"
               type="tel"
               value={formData.phone || ""}
               onChange={(e) => handleChange("phone", e.target.value)}
@@ -260,8 +266,9 @@ export default function NewCustomerPage() {
             />
           </div>
           <div>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Email</label>
+            <label htmlFor="customer-email" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Email</label>
             <input
+              id="customer-email"
               type="email"
               value={formData.email || ""}
               onChange={(e) => handleChange("email", e.target.value)}
@@ -271,8 +278,9 @@ export default function NewCustomerPage() {
         </div>
 
         <div style={{ marginBottom: "1.5rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Observaciones</label>
+          <label htmlFor="customer-notes" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Observaciones</label>
           <textarea
+            id="customer-notes"
             value={formData.notes || ""}
             onChange={(e) => handleChange("notes", e.target.value)}
             rows={3}

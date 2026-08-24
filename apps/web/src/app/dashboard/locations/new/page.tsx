@@ -36,27 +36,27 @@ export default function NewLocationPage() {
       {error && <div style={{ background: theme.dangerBg, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Cliente *</label>
-          <select value={form.customer_id} onChange={e=>setForm({...form, customer_id: e.target.value})} required style={{ width: "100%", padding: "0.75rem" }}>
+          <label htmlFor="location-customer" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Cliente *</label>
+          <select id="location-customer" value={form.customer_id} onChange={e=>setForm({...form, customer_id: e.target.value})} required style={{ width: "100%", padding: "0.75rem" }}>
             <option value="">Seleccionar cliente</option>
             {customers.map(c=>(<option key={c.person_id} value={c.person_id}>{c.display_name}</option>))}
           </select>
         </div>
         <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Nombre *</label>
-          <input value={form.name} onChange={e=>setForm({...form, name: e.target.value})} required style={{ width: "100%", padding: "0.75rem" }} />
+          <label htmlFor="location-name" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Nombre *</label>
+          <input id="location-name" value={form.name} onChange={e=>setForm({...form, name: e.target.value})} required style={{ width: "100%", padding: "0.75rem" }} />
         </div>
         <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Dirección</label>
-          <input value={form.address} onChange={e=>setForm({...form, address: e.target.value})} style={{ width: "100%", padding: "0.75rem" }} />
+          <label htmlFor="location-address" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Dirección</label>
+          <input id="location-address" value={form.address} onChange={e=>setForm({...form, address: e.target.value})} style={{ width: "100%", padding: "0.75rem" }} />
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-          <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Ciudad</label><input value={form.city} onChange={e=>setForm({...form, city: e.target.value})} style={{ width: "100%", padding: "0.75rem" }} /></div>
-          <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Provincia</label><input value={form.province} onChange={e=>setForm({...form, province: e.target.value})} style={{ width: "100%", padding: "0.75rem" }} /></div>
+          <div><label htmlFor="location-city" style={{ display: "block", marginBottom: "0.25rem" }}>Ciudad</label><input id="location-city" value={form.city} onChange={e=>setForm({...form, city: e.target.value})} style={{ width: "100%", padding: "0.75rem" }} /></div>
+          <div><label htmlFor="location-province" style={{ display: "block", marginBottom: "0.25rem" }}>Provincia</label><input id="location-province" value={form.province} onChange={e=>setForm({...form, province: e.target.value})} style={{ width: "100%", padding: "0.75rem" }} /></div>
         </div>
         <div style={{ marginBottom: "1.5rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Observaciones</label>
-          <textarea value={form.notes} onChange={e=>setForm({...form, notes: e.target.value})} rows={3} style={{ width: "100%", padding: "0.75rem" }} />
+          <label htmlFor="location-notes" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Observaciones</label>
+          <textarea id="location-notes" value={form.notes} onChange={e=>setForm({...form, notes: e.target.value})} rows={3} style={{ width: "100%", padding: "0.75rem" }} />
         </div>
         <div style={{ display: "flex", gap: "1rem" }}>
           <button type="submit" disabled={loading} style={{ flex: 1, padding: "1rem", background: theme.primary, opacity: loading ? 0.6 : 1, color: theme.primaryText, border: "none", borderRadius: "0.5rem" }}>{loading?"Guardando...":"Crear Ubicación"}</button>

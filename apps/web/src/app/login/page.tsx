@@ -39,13 +39,13 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: "1rem" }}>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Email</label>
-            <input type="email" value={email} onChange={e=>setEmail(e.target.value)} required autoComplete="email"
+            <label htmlFor="login-email" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Email</label>
+            <input id="login-email" type="email" value={email} onChange={e=>setEmail(e.target.value)} required autoComplete="email"
               style={{ width: "100%", padding: "0.75rem", border: `1px solid ${theme.border}`, borderRadius: "0.5rem", fontSize: "1rem" }} />
           </div>
           <div style={{ marginBottom: "1.5rem" }}>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Contraseña</label>
-            <input type="password" value={password} onChange={e=>setPassword(e.target.value)} required autoComplete="current-password"
+            <label htmlFor="login-password" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Contraseña</label>
+            <input id="login-password" type="password" value={password} onChange={e=>setPassword(e.target.value)} required autoComplete="current-password"
               style={{ width: "100%", padding: "0.75rem", border: `1px solid ${theme.border}`, borderRadius: "0.5rem", fontSize: "1rem" }} />
           </div>
           <button type="submit" disabled={loading} style={{ width: "100%", padding: "0.875rem", background: theme.primary, opacity: loading ? 0.6 : 1, color: theme.primaryText, border: "none", borderRadius: "0.5rem", fontSize: "1rem", fontWeight: 600, cursor: loading?"not-allowed":"pointer" }}>

@@ -80,8 +80,9 @@ export default function NewOTPage() {
       )}
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Cliente *</label>
+          <label htmlFor="wo-customer" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Cliente *</label>
           <select
+            id="wo-customer"
             value={form.customer_id}
             onChange={(e) => setForm({ ...form, customer_id: e.target.value, location_id: "", asset_id: "" })}
             required
@@ -92,8 +93,9 @@ export default function NewOTPage() {
           </select>
         </div>
         <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Ubicación *</label>
+          <label htmlFor="wo-location" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Ubicación *</label>
           <select
+            id="wo-location"
             value={form.location_id}
             onChange={(e) => setForm({ ...form, location_id: e.target.value, asset_id: "" })}
             required
@@ -105,8 +107,9 @@ export default function NewOTPage() {
           </select>
         </div>
         <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Activo *</label>
+          <label htmlFor="wo-asset" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Activo *</label>
           <select
+            id="wo-asset"
             value={form.asset_id}
             onChange={(e) => setForm({ ...form, asset_id: e.target.value })}
             required
@@ -118,8 +121,9 @@ export default function NewOTPage() {
           </select>
         </div>
         <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Tipo OT *</label>
+          <label htmlFor="wo-type" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Tipo OT *</label>
           <select
+            id="wo-type"
             value={form.work_order_type_id}
             onChange={(e) => setForm({ ...form, work_order_type_id: e.target.value })}
             required
@@ -130,8 +134,9 @@ export default function NewOTPage() {
           </select>
         </div>
         <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Prioridad *</label>
+          <label htmlFor="wo-priority" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Prioridad *</label>
           <select
+            id="wo-priority"
             value={form.priority_id}
             onChange={(e) => setForm({ ...form, priority_id: e.target.value })}
             required
@@ -142,8 +147,9 @@ export default function NewOTPage() {
           </select>
         </div>
         <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Técnico asignado</label>
+          <label htmlFor="wo-technician" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Técnico asignado</label>
           <select
+            id="wo-technician"
             value={form.technician_id || ""}
             onChange={(e) => setForm({ ...form, technician_id: e.target.value || undefined })}
             style={{ padding: "0.5rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", width: "100%" }}
@@ -153,8 +159,9 @@ export default function NewOTPage() {
           </select>
         </div>
         <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Descripción solicitada *</label>
+          <label htmlFor="wo-description" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Descripción solicitada *</label>
           <textarea
+            id="wo-description"
             value={form.requested_description}
             onChange={(e) => setForm({ ...form, requested_description: e.target.value })}
             rows={3}
@@ -163,8 +170,9 @@ export default function NewOTPage() {
           />
         </div>
         <div style={{ marginBottom: "1.5rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Programado para</label>
+          <label htmlFor="wo-scheduled" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Programado para</label>
           <input
+            id="wo-scheduled"
             type="datetime-local"
             value={form.scheduled_at || ""}
             onChange={(e) => setForm({ ...form, scheduled_at: e.target.value || undefined })}

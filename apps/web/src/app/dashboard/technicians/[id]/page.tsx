@@ -110,22 +110,22 @@ export default function TechnicianDetailPage() {
           {editMode ? (
             <div style={{ display: "grid", gap: "1rem" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Tipo</label><select value={form.person_type} onChange={e=>setForm({...form, person_type: e.target.value as "INDIVIDUAL"|"LEGAL"})} style={{ width: "100%", padding: "0.5rem" }}><option value="INDIVIDUAL">Física</option><option value="LEGAL">Jurídica</option></select></div>
-                <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Estado Persona</label><select value={form.status} onChange={e=>setForm({...form, status: e.target.value as "ACTIVE"|"INACTIVE"})} style={{ width: "100%", padding: "0.5rem" }}><option value="ACTIVE">Activo</option><option value="INACTIVE">Inactivo</option></select></div>
+                <div><label htmlFor="edit-tech-type" style={{ display: "block", marginBottom: "0.25rem" }}>Tipo</label><select id="edit-tech-type" value={form.person_type} onChange={e=>setForm({...form, person_type: e.target.value as "INDIVIDUAL"|"LEGAL"})} style={{ width: "100%", padding: "0.5rem" }}><option value="INDIVIDUAL">Física</option><option value="LEGAL">Jurídica</option></select></div>
+                <div><label htmlFor="edit-tech-status" style={{ display: "block", marginBottom: "0.25rem" }}>Estado Persona</label><select id="edit-tech-status" value={form.status} onChange={e=>setForm({...form, status: e.target.value as "ACTIVE"|"INACTIVE"})} style={{ width: "100%", padding: "0.5rem" }}><option value="ACTIVE">Activo</option><option value="INACTIVE">Inactivo</option></select></div>
               </div>
-              <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Nombre</label><input value={form.display_name} onChange={e=>setForm({...form, display_name: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} required /></div>
-              <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Dirección</label><input value={form.address} onChange={e=>setForm({...form, address: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} /></div>
+              <div><label htmlFor="edit-tech-name" style={{ display: "block", marginBottom: "0.25rem" }}>Nombre</label><input id="edit-tech-name" value={form.display_name} onChange={e=>setForm({...form, display_name: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} required /></div>
+              <div><label htmlFor="edit-tech-address" style={{ display: "block", marginBottom: "0.25rem" }}>Dirección</label><input id="edit-tech-address" value={form.address} onChange={e=>setForm({...form, address: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} /></div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Teléfono</label><input value={form.phone} onChange={e=>setForm({...form, phone: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} /></div>
-                <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Email</label><input value={form.email} onChange={e=>setForm({...form, email: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} /></div>
+                <div><label htmlFor="edit-tech-phone" style={{ display: "block", marginBottom: "0.25rem" }}>Teléfono</label><input id="edit-tech-phone" value={form.phone} onChange={e=>setForm({...form, phone: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} /></div>
+                <div><label htmlFor="edit-tech-email" style={{ display: "block", marginBottom: "0.25rem" }}>Email</label><input id="edit-tech-email" value={form.email} onChange={e=>setForm({...form, email: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} /></div>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem" }}>
-                <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Profesión</label><input value={form.profession} onChange={e=>setForm({...form, profession: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} /></div>
-                <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Matrícula</label><input value={form.license_number} onChange={e=>setForm({...form, license_number: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} /></div>
-                <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Comisión %</label><input type="number" step="0.1" value={form.commission_percentage} onChange={e=>setForm({...form, commission_percentage: parseFloat(e.target.value)||0})} style={{ width: "100%", padding: "0.5rem" }} /></div>
+                <div><label htmlFor="edit-tech-profession" style={{ display: "block", marginBottom: "0.25rem" }}>Profesión</label><input id="edit-tech-profession" value={form.profession} onChange={e=>setForm({...form, profession: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} /></div>
+                <div><label htmlFor="edit-tech-license" style={{ display: "block", marginBottom: "0.25rem" }}>Matrícula</label><input id="edit-tech-license" value={form.license_number} onChange={e=>setForm({...form, license_number: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} /></div>
+                <div><label htmlFor="edit-tech-commission" style={{ display: "block", marginBottom: "0.25rem" }}>Comisión %</label><input id="edit-tech-commission" type="number" step="0.1" value={form.commission_percentage} onChange={e=>setForm({...form, commission_percentage: parseFloat(e.target.value)||0})} style={{ width: "100%", padding: "0.5rem" }} /></div>
               </div>
-              <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Estado Técnico</label><select value={form.technician_status} onChange={e=>setForm({...form, technician_status: e.target.value as "ACTIVE"|"INACTIVE"})} style={{ width: "100%", padding: "0.5rem" }}><option value="ACTIVE">Activo</option><option value="INACTIVE">Inactivo</option></select></div>
-              <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Observaciones</label><textarea value={form.notes} onChange={e=>setForm({...form, notes: e.target.value})} rows={3} style={{ width: "100%", padding: "0.5rem" }} /></div>
+              <div><label htmlFor="edit-tech-technician-status" style={{ display: "block", marginBottom: "0.25rem" }}>Estado Técnico</label><select id="edit-tech-technician-status" value={form.technician_status} onChange={e=>setForm({...form, technician_status: e.target.value as "ACTIVE"|"INACTIVE"})} style={{ width: "100%", padding: "0.5rem" }}><option value="ACTIVE">Activo</option><option value="INACTIVE">Inactivo</option></select></div>
+              <div><label htmlFor="edit-tech-notes" style={{ display: "block", marginBottom: "0.25rem" }}>Observaciones</label><textarea id="edit-tech-notes" value={form.notes} onChange={e=>setForm({...form, notes: e.target.value})} rows={3} style={{ width: "100%", padding: "0.5rem" }} /></div>
               <div style={{ display: "flex", justifyContent: "flex-end" }}><button onClick={save} disabled={saving} style={{ padding: "0.5rem 1.5rem", background: theme.success, color: theme.primaryText, border: "none", borderRadius: "0.375rem" }}>{saving?"Guardando...":"Guardar"}</button></div>
             </div>
           ) : (
@@ -183,9 +183,9 @@ export default function TechnicianDetailPage() {
               <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: "0.75rem" }}>
                 <p style={{ fontSize: "0.875rem", color: theme.textSecondary, marginBottom: "0.5rem" }}>O crear un usuario técnico nuevo y vincularlo:</p>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: "0.5rem" }}>
-                  <input placeholder="Nombre completo" value={newUserName} onChange={(e) => setNewUserName(e.target.value)} style={{ padding: "0.5rem" }} />
-                  <input placeholder="Email" type="email" value={newUserEmail} onChange={(e) => setNewUserEmail(e.target.value)} style={{ padding: "0.5rem" }} />
-                  <input placeholder="Contraseña" type="password" value={newUserPassword} onChange={(e) => setNewUserPassword(e.target.value)} style={{ padding: "0.5rem" }} />
+                  <input placeholder="Nombre completo" aria-label="Nombre completo" value={newUserName} onChange={(e) => setNewUserName(e.target.value)} style={{ padding: "0.5rem" }} />
+                  <input placeholder="Email" aria-label="Email" type="email" value={newUserEmail} onChange={(e) => setNewUserEmail(e.target.value)} style={{ padding: "0.5rem" }} />
+                  <input placeholder="Contraseña" aria-label="Contraseña" type="password" value={newUserPassword} onChange={(e) => setNewUserPassword(e.target.value)} style={{ padding: "0.5rem" }} />
                   <button
                     onClick={createAndLinkUser}
                     disabled={!newUserEmail || !newUserName || !newUserPassword || creatingUser}

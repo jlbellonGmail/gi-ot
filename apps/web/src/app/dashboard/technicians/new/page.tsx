@@ -89,41 +89,41 @@ export default function NewTechnicianPage() {
           <legend style={{ fontWeight: 600, marginBottom: "0.5rem" }}>Identificación</legend>
           {formData.identifications.map((ident, idx) => (
             <div key={idx} style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.5rem", alignItems: "flex-end" }}>
-              <select value={ident.country_code} onChange={e=>handleCountryChange(idx,e.target.value)} style={{ padding: "0.5rem", minWidth: "120px" }}>
+              <select aria-label="País" value={ident.country_code} onChange={e=>handleCountryChange(idx,e.target.value)} style={{ padding: "0.5rem", minWidth: "120px" }}>
                 {COUNTRIES.map(c=><option key={c.code} value={c.code}>{c.name}</option>)}
               </select>
-              <select value={ident.identification_type} onChange={e=>handleIdentChange(idx,"identification_type",e.target.value)} style={{ padding: "0.5rem", minWidth: "140px" }}>
+              <select aria-label="Tipo de identificación" value={ident.identification_type} onChange={e=>handleIdentChange(idx,"identification_type",e.target.value)} style={{ padding: "0.5rem", minWidth: "140px" }}>
                 {idTypes.map(t=><option key={t} value={t}>{t}</option>)}
               </select>
-              <input type="text" placeholder="Número" value={ident.identification_value} onChange={e=>handleIdentChange(idx,"identification_value",e.target.value)} style={{ flex: 1, minWidth: "150px", padding: "0.5rem" }} />
+              <input type="text" placeholder="Número" aria-label="Número de identificación" value={ident.identification_value} onChange={e=>handleIdentChange(idx,"identification_value",e.target.value)} style={{ flex: 1, minWidth: "150px", padding: "0.5rem" }} />
               <label style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
                 <input type="checkbox" checked={ident.is_primary} onChange={e=>handleIdentChange(idx,"is_primary",e.target.checked?"true":"false")} /> Principal
               </label>
-              {formData.identifications.length>1 && <button type="button" onClick={()=>removeIdent(idx)} style={{ padding: "0.5rem", background: theme.dangerBg, color: theme.danger, border: "none", borderRadius: "0.375rem" }}>×</button>}
+              {formData.identifications.length>1 && <button type="button" onClick={()=>removeIdent(idx)} aria-label="Quitar identificación" style={{ padding: "0.5rem", background: theme.dangerBg, color: theme.danger, border: "none", borderRadius: "0.375rem" }}>×</button>}
             </div>
           ))}
           {formData.identifications.length<3 && <button type="button" onClick={addIdent} style={{ padding: "0.5rem 1rem", background: theme.bg, border: `1px dashed ${theme.border}`, borderRadius: "0.375rem" }}>+ Agregar identificación</button>}
         </fieldset>
         <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Nombre *</label>
-          <input value={formData.display_name} onChange={e=>handleChange("display_name",e.target.value)} required style={{ width: "100%", padding: "0.75rem" }} />
+          <label htmlFor="tech-name" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Nombre *</label>
+          <input id="tech-name" value={formData.display_name} onChange={e=>handleChange("display_name",e.target.value)} required style={{ width: "100%", padding: "0.75rem" }} />
         </div>
         <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Dirección</label>
-          <input value={formData.address} onChange={e=>handleChange("address",e.target.value)} style={{ width: "100%", padding: "0.75rem" }} />
+          <label htmlFor="tech-address" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Dirección</label>
+          <input id="tech-address" value={formData.address} onChange={e=>handleChange("address",e.target.value)} style={{ width: "100%", padding: "0.75rem" }} />
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-          <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Teléfono</label><input value={formData.phone} onChange={e=>handleChange("phone",e.target.value)} style={{ width: "100%", padding: "0.75rem" }} /></div>
-          <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Email</label><input value={formData.email} onChange={e=>handleChange("email",e.target.value)} style={{ width: "100%", padding: "0.75rem" }} /></div>
+          <div><label htmlFor="tech-phone" style={{ display: "block", marginBottom: "0.25rem" }}>Teléfono</label><input id="tech-phone" value={formData.phone} onChange={e=>handleChange("phone",e.target.value)} style={{ width: "100%", padding: "0.75rem" }} /></div>
+          <div><label htmlFor="tech-email" style={{ display: "block", marginBottom: "0.25rem" }}>Email</label><input id="tech-email" value={formData.email} onChange={e=>handleChange("email",e.target.value)} style={{ width: "100%", padding: "0.75rem" }} /></div>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-          <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Profesión</label><input value={formData.profession} onChange={e=>handleChange("profession",e.target.value)} style={{ width: "100%", padding: "0.75rem" }} /></div>
-          <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Matrícula</label><input value={formData.license_number} onChange={e=>handleChange("license_number",e.target.value)} style={{ width: "100%", padding: "0.75rem" }} /></div>
-          <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Comisión %</label><input type="number" step="0.1" value={formData.commission_percentage} onChange={e=>handleChange("commission_percentage",parseFloat(e.target.value)||0)} style={{ width: "100%", padding: "0.75rem" }} /></div>
+          <div><label htmlFor="tech-profession" style={{ display: "block", marginBottom: "0.25rem" }}>Profesión</label><input id="tech-profession" value={formData.profession} onChange={e=>handleChange("profession",e.target.value)} style={{ width: "100%", padding: "0.75rem" }} /></div>
+          <div><label htmlFor="tech-license" style={{ display: "block", marginBottom: "0.25rem" }}>Matrícula</label><input id="tech-license" value={formData.license_number} onChange={e=>handleChange("license_number",e.target.value)} style={{ width: "100%", padding: "0.75rem" }} /></div>
+          <div><label htmlFor="tech-commission" style={{ display: "block", marginBottom: "0.25rem" }}>Comisión %</label><input id="tech-commission" type="number" step="0.1" value={formData.commission_percentage} onChange={e=>handleChange("commission_percentage",parseFloat(e.target.value)||0)} style={{ width: "100%", padding: "0.75rem" }} /></div>
         </div>
         <div style={{ marginBottom: "1.5rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Observaciones</label>
-          <textarea value={formData.notes} onChange={e=>handleChange("notes",e.target.value)} rows={3} style={{ width: "100%", padding: "0.75rem" }} />
+          <label htmlFor="tech-notes" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Observaciones</label>
+          <textarea id="tech-notes" value={formData.notes} onChange={e=>handleChange("notes",e.target.value)} rows={3} style={{ width: "100%", padding: "0.75rem" }} />
         </div>
         <div style={{ display: "flex", gap: "1rem" }}>
           <button type="submit" disabled={loading} style={{ flex: 1, padding: "1rem", background: theme.success, opacity: loading ? 0.6 : 1, color: theme.primaryText, border: "none", borderRadius: "0.5rem" }}>{loading?"Guardando...":"Crear Técnico"}</button>

@@ -121,40 +121,40 @@ export default function CustomerDetailPage() {
           {editMode ? (
             <div style={{ display: "grid", gap: "1rem" }}>
               <div>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Tipo persona</label>
-                <select value={formData.person_type} onChange={(e) => setFormData({...formData, person_type: e.target.value as "INDIVIDUAL" | "LEGAL"})} style={{ width: "100%", padding: "0.5rem" }}>
+                <label htmlFor="edit-customer-type" style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Tipo persona</label>
+                <select id="edit-customer-type" value={formData.person_type} onChange={(e) => setFormData({...formData, person_type: e.target.value as "INDIVIDUAL" | "LEGAL"})} style={{ width: "100%", padding: "0.5rem" }}>
                   <option value="INDIVIDUAL">Física</option>
                   <option value="LEGAL">Jurídica</option>
                 </select>
               </div>
               <div>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Nombre / Razón social</label>
-                <input value={formData.display_name} onChange={(e) => setFormData({...formData, display_name: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} required />
+                <label htmlFor="edit-customer-name" style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Nombre / Razón social</label>
+                <input id="edit-customer-name" value={formData.display_name} onChange={(e) => setFormData({...formData, display_name: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} required />
               </div>
               <div>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Dirección</label>
-                <input value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} />
+                <label htmlFor="edit-customer-address" style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Dirección</label>
+                <input id="edit-customer-address" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} />
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Teléfono</label>
-                  <input value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} />
+                  <label htmlFor="edit-customer-phone" style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Teléfono</label>
+                  <input id="edit-customer-phone" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} />
                 </div>
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Email</label>
-                  <input value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} />
+                  <label htmlFor="edit-customer-email" style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Email</label>
+                  <input id="edit-customer-email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} />
                 </div>
               </div>
               <div>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Estado</label>
-                <select value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value as "ACTIVE" | "INACTIVE"})} style={{ width: "100%", padding: "0.5rem" }}>
+                <label htmlFor="edit-customer-status" style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Estado</label>
+                <select id="edit-customer-status" value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value as "ACTIVE" | "INACTIVE"})} style={{ width: "100%", padding: "0.5rem" }}>
                   <option value="ACTIVE">Activo</option>
                   <option value="INACTIVE">Inactivo</option>
                 </select>
               </div>
               <div>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Observaciones</label>
-                <textarea value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} rows={3} style={{ width: "100%", padding: "0.5rem" }} />
+                <label htmlFor="edit-customer-notes" style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Observaciones</label>
+                <textarea id="edit-customer-notes" value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} rows={3} style={{ width: "100%", padding: "0.5rem" }} />
               </div>
               <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
                 <button onClick={handleSave} disabled={saving} style={{ padding: "0.5rem 1.5rem", background: theme.primary, color: theme.primaryText, border: "none", borderRadius: "0.375rem" }}>
