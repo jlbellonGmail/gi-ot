@@ -104,7 +104,7 @@ export default function CustomerDetailPage() {
             {customer.identifications.map((ident) => (
               <span key={ident.id} style={{
                 background: ident.is_primary ? theme.infoBg : theme.bg,
-                color: ident.is_primary ? theme.primary : theme.text,
+                color: theme.text,
                 padding: "0.25rem 0.75rem",
                 borderRadius: "9999px",
                 fontSize: "0.875rem",

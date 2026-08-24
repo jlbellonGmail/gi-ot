@@ -126,7 +126,7 @@ export default function NewTechnicianPage() {
           <textarea id="tech-notes" value={formData.notes} onChange={e=>handleChange("notes",e.target.value)} rows={3} style={{ width: "100%", padding: "0.75rem" }} />
         </div>
         <div style={{ display: "flex", gap: "1rem" }}>
-          <button type="submit" disabled={loading} style={{ flex: 1, padding: "1rem", background: theme.success, opacity: loading ? 0.6 : 1, color: theme.primaryText, border: "none", borderRadius: "0.5rem" }}>{loading?"Guardando...":"Crear Técnico"}</button>
+          <button type="submit" disabled={loading} style={{ flex: 1, padding: "1rem", background: theme.successSolid, opacity: loading ? 0.6 : 1, color: theme.primaryText, border: "none", borderRadius: "0.5rem" }}>{loading?"Guardando...":"Crear Técnico"}</button>
           <Link href="/dashboard/technicians" style={{ flex: 1, padding: "1rem", background: theme.bg, textAlign: "center", textDecoration: "none", borderRadius: "0.5rem" }}>Cancelar</Link>
         </div>
       </form>

@@ -82,7 +82,7 @@ export default function CustomersPage() {
                   {c.identifications.map((ident) => (
                     <span key={ident.id} style={{
                       background: theme.infoBg,
-                      color: theme.primary,
+                      color: theme.text,
                       padding: "0.25rem 0.5rem",
                       borderRadius: "0.25rem",
                       fontSize: "0.75rem",

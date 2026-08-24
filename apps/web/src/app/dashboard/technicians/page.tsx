@@ -39,7 +39,7 @@ export default function TechniciansPage() {
             Solo activos
           </label>
           <Link href="/dashboard/technicians/new" style={{ textDecoration: "none" }}>
-            <button style={{ background: theme.success, color: theme.primaryText, border: "none", padding: "0.75rem 1.5rem", borderRadius: "0.5rem", fontSize: "1rem", cursor: "pointer" }}>
+            <button style={{ background: theme.successSolid, color: theme.primaryText, border: "none", padding: "0.75rem 1.5rem", borderRadius: "0.5rem", fontSize: "1rem", cursor: "pointer" }}>
               + Nuevo Técnico
             </button>
           </Link>

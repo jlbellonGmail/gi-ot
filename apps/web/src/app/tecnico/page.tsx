@@ -42,7 +42,7 @@ export default function MisOTPage() {
           </Link>
           <Link
             href="/tecnico/nueva"
-            style={{ padding: "0.5rem 0.875rem", background: theme.danger, color: theme.primaryText, borderRadius: "0.5rem", textDecoration: "none", fontSize: "0.875rem", fontWeight: 600 }}
+            style={{ padding: "0.5rem 0.875rem", background: theme.dangerSolid, color: theme.primaryText, borderRadius: "0.5rem", textDecoration: "none", fontSize: "0.875rem", fontWeight: 600 }}
           >
             + OT urgente
           </Link>

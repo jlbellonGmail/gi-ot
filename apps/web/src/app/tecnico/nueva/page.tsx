@@ -150,7 +150,7 @@ export default function NuevaOTUrgentePage() {
           <button
             type="submit"
             disabled={loading || !defaultTypeId || !defaultPriorityId}
-            style={{ flex: 1, padding: "1rem", background: theme.danger, opacity: loading ? 0.6 : 1, color: theme.primaryText, border: "none", borderRadius: "0.5rem", fontSize: "1rem", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer" }}
+            style={{ flex: 1, padding: "1rem", background: theme.dangerSolid, opacity: loading ? 0.6 : 1, color: theme.primaryText, border: "none", borderRadius: "0.5rem", fontSize: "1rem", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer" }}
           >
             {loading ? "Creando..." : "Crear OT urgente"}
           </button>

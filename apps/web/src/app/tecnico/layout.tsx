@@ -22,7 +22,7 @@ export default function TecnicoLayout({ children }: { children: React.ReactNode 
         <span style={{ fontWeight: 700, fontSize: "1.125rem" }}>gi-ot</span>
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
           {/* Estado estático: la sincronización real (cola/offline) llega en Etapa 08 */}
-          <span style={{ fontSize: "0.75rem", color: theme.success }}>● Sincronizado</span>
+          <span style={{ fontSize: "0.75rem", color: theme.headerSuccess }}>● Sincronizado</span>
           <button
             onClick={() => { localStorage.removeItem("access_token"); window.location.href = "/login"; }}
             style={{ padding: "0.375rem 0.75rem", background: "transparent", border: "1px solid " + theme.headerActive, color: theme.headerText, borderRadius: "0.375rem", cursor: "pointer", fontSize: "0.8rem" }}

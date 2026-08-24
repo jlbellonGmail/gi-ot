@@ -59,7 +59,7 @@ export default function DashboardPanelPage() {
           </p>
         </div>
         <Link href="/dashboard/ot/new" style={{ textDecoration: "none" }}>
-          <button style={{ background: theme.success, color: theme.primaryText, border: "none", padding: "0.75rem 1.5rem", borderRadius: "0.5rem", fontSize: "1rem", cursor: "pointer", fontWeight: 600 }}>
+          <button style={{ background: theme.successSolid, color: theme.primaryText, border: "none", padding: "0.75rem 1.5rem", borderRadius: "0.5rem", fontSize: "1rem", cursor: "pointer", fontWeight: 600 }}>
             + Nueva OT
           </button>
         </Link>

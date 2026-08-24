@@ -86,7 +86,7 @@ export default function EscanearQRPage() {
           <div style={{ marginTop: "0.5rem" }}>
             <button
               onClick={() => { setError(null); setScanning(true); }}
-              style={{ padding: "0.5rem 0.875rem", background: theme.danger, color: theme.primaryText, border: "none", borderRadius: "0.375rem", cursor: "pointer", fontSize: "0.8rem" }}
+              style={{ padding: "0.5rem 0.875rem", background: theme.dangerSolid, color: theme.primaryText, border: "none", borderRadius: "0.375rem", cursor: "pointer", fontSize: "0.8rem" }}
             >
               Reintentar
             </button>

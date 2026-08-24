@@ -349,7 +349,7 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 * [x] Verificar labels y nombres accesibles. (78 pares label/input asociados vía `htmlFor`/`id` en los 12 formularios que no lo tenían; botones solo-ícono con `aria-label`; selects sin label visible con `aria-label`)
 
-* [ ] Verificar contraste y que la información no dependa exclusivamente del color. (los badges de estado/prioridad ya combinan texto + color, no solo color; falta medir formalmente el contraste de los tokens con una herramienta dedicada)
+* [x] Verificar contraste y que la información no dependa exclusivamente del color. (medido matemáticamente con la fórmula de contraste WCAG sobre los 15 pares de tokens usados en la app, en ambos temas — se encontraron y corrigieron 4 fallas reales, la más grave de 1.74:1 en botones de éxito en modo oscuro; ahora los 15 pares pasan ≥4.5:1. Los badges de estado/prioridad ya combinaban texto + color, no solo color)
 
 * [ ] Verificar tamaño y separación adecuados de controles interactivos. (el padding usado en botones/inputs da un área táctil razonable; no se midió formalmente contra el mínimo WCAG de 24×24px)
 

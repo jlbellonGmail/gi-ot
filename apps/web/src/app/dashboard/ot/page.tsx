@@ -148,7 +148,7 @@ export default function OTListPage() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "0.75rem" }}>
         <h1 style={{ color: theme.text }}>Órdenes de Trabajo</h1>
         <Link href="/dashboard/ot/new" style={{ textDecoration: "none" }}>
-          <button style={{ background: theme.success, color: theme.primaryText, border: "none", padding: "0.75rem 1.5rem", borderRadius: "0.5rem", fontSize: "1rem", cursor: "pointer", fontWeight: 600 }}>
+          <button style={{ background: theme.successSolid, color: theme.primaryText, border: "none", padding: "0.75rem 1.5rem", borderRadius: "0.5rem", fontSize: "1rem", cursor: "pointer", fontWeight: 600 }}>
             + Nueva OT
           </button>
         </Link>

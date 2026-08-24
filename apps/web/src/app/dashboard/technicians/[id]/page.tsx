@@ -102,7 +102,7 @@ export default function TechnicianDetailPage() {
         <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
           <h3 style={{ marginBottom: "0.75rem" }}>Identificaciones</h3>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-            {tech.identifications.map(i=>(<span key={i.id} style={{ background: i.is_primary?theme.infoBg:theme.bg, color: i.is_primary?theme.primary:theme.text, padding: "0.25rem 0.75rem", borderRadius: "9999px", fontSize: "0.875rem" }}>{i.identification_type}: {i.identification_value} {i.is_primary&&"(principal)"}</span>))}
+            {tech.identifications.map(i=>(<span key={i.id} style={{ background: i.is_primary?theme.infoBg:theme.bg, color: theme.text, padding: "0.25rem 0.75rem", borderRadius: "9999px", fontSize: "0.875rem" }}>{i.identification_type}: {i.identification_value} {i.is_primary&&"(principal)"}</span>))}
           </div>
         </div>
         <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
@@ -126,7 +126,7 @@ export default function TechnicianDetailPage() {
               </div>
               <div><label htmlFor="edit-tech-technician-status" style={{ display: "block", marginBottom: "0.25rem" }}>Estado Técnico</label><select id="edit-tech-technician-status" value={form.technician_status} onChange={e=>setForm({...form, technician_status: e.target.value as "ACTIVE"|"INACTIVE"})} style={{ width: "100%", padding: "0.5rem" }}><option value="ACTIVE">Activo</option><option value="INACTIVE">Inactivo</option></select></div>
               <div><label htmlFor="edit-tech-notes" style={{ display: "block", marginBottom: "0.25rem" }}>Observaciones</label><textarea id="edit-tech-notes" value={form.notes} onChange={e=>setForm({...form, notes: e.target.value})} rows={3} style={{ width: "100%", padding: "0.5rem" }} /></div>
-              <div style={{ display: "flex", justifyContent: "flex-end" }}><button onClick={save} disabled={saving} style={{ padding: "0.5rem 1.5rem", background: theme.success, color: theme.primaryText, border: "none", borderRadius: "0.375rem" }}>{saving?"Guardando...":"Guardar"}</button></div>
+              <div style={{ display: "flex", justifyContent: "flex-end" }}><button onClick={save} disabled={saving} style={{ padding: "0.5rem 1.5rem", background: theme.successSolid, color: theme.primaryText, border: "none", borderRadius: "0.375rem" }}>{saving?"Guardando...":"Guardar"}</button></div>
             </div>
           ) : (
             <dl style={{ display: "grid", gridTemplateColumns: "150px 1fr", gap: "0.5rem 1rem" }}>
@@ -189,7 +189,7 @@ export default function TechnicianDetailPage() {
                   <button
                     onClick={createAndLinkUser}
                     disabled={!newUserEmail || !newUserName || !newUserPassword || creatingUser}
-                    style={{ padding: "0.5rem 1rem", background: theme.success, color: theme.primaryText, border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
+                    style={{ padding: "0.5rem 1rem", background: theme.successSolid, color: theme.primaryText, border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
                   >
                     {creatingUser ? "Creando..." : "Crear y vincular"}
                   </button>

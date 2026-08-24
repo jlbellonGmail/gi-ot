@@ -11,7 +11,7 @@
   --color-text-secondary: #6b7280;
   --color-primary: #2563eb;
   --color-primary-text: #ffffff;
-  --color-danger: #dc2626;
+  --color-danger: #b91c1c;
   --color-danger-bg: #fef2f2;
   --color-warning: #92400e;
   --color-warning-bg: #fef3cf;
@@ -20,11 +20,22 @@
   --color-info-bg: #dbeafe;
   --color-focus: #2563eb;
 
+  /* Variantes "sólidas": fondo de botón/acción con texto blanco encima.
+     Fijas en ambos temas a propósito — a diferencia de --color-danger/
+     --color-success (que sirven como texto de badge sobre su *-bg y sí
+     necesitan aclararse en oscuro), estas deben quedar lo bastante
+     saturadas para que el texto blanco pase 4.5:1 siempre. Verificado
+     con la fórmula de contraste WCAG (ROADMAP §07, "Accesibilidad"):
+     un tono más claro aquí llegaba a fallar 1.74:1 en modo oscuro. */
+  --color-danger-solid: #dc2626;
+  --color-success-solid: #15803d;
+
   /* Barra de encabezado: color de marca, constante en ambos temas
      (no es una superficie temática, es identidad visual). */
   --color-header-bg: #0f172a;
   --color-header-text: #ffffff;
   --color-header-active: #2563eb;
+  --color-header-success: #4ade80;
 
   --background: var(--color-bg);
   --foreground: var(--color-text);
@@ -37,7 +48,11 @@
     --color-border: #334155;
     --color-text: #f1f5f9;
     --color-text-secondary: #94a3b8;
-    --color-primary: #3b82f6;
+    /* primary se mantiene igual al tema claro a propósito: se usa
+       mayormente como fondo sólido de botones con texto blanco encima,
+       y solo este tono (no un pastel típico de "modo oscuro") pasa el
+       mínimo de contraste 4.5:1 con blanco (ROADMAP §07, "Accesibilidad"). */
+    --color-primary: #2563eb;
     --color-primary-text: #ffffff;
     --color-danger: #f87171;
     --color-danger-bg: #450a0a;

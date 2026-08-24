@@ -231,14 +231,14 @@ export default function OTDetail() {
               <button
                 disabled={actionLoading}
                 onClick={() => runAction(() => api.post(`/work-orders/${id}/finish`, { status_code: "COMPLETED", performed_description: performedDescription || undefined }))}
-                style={{ padding: "0.75rem 1rem", background: theme.success, color: theme.primaryText, border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
+                style={{ padding: "0.75rem 1rem", background: theme.successSolid, color: theme.primaryText, border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
               >
                 Cerrar como Terminada
               </button>
               <button
                 disabled={actionLoading}
                 onClick={() => runAction(() => api.post(`/work-orders/${id}/finish`, { status_code: "UNRESOLVED", performed_description: performedDescription || undefined }))}
-                style={{ padding: "0.75rem 1rem", background: theme.danger, color: theme.primaryText, border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
+                style={{ padding: "0.75rem 1rem", background: theme.dangerSolid, color: theme.primaryText, border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
               >
                 Cerrar como No resuelta
               </button>
