@@ -1,5 +1,7 @@
 "use client";
 
+import { theme } from "@/lib/theme";
+
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { api } from "@/lib/api";
@@ -141,7 +143,7 @@ export default function OTDetail() {
   }
 
   if (loading) return <div style={{ padding: "2rem", textAlign: "center" }}>Cargando...</div>;
-  if (error && !wo) return <div style={{ padding: "1rem", color: "#dc2626" }}>{error}</div>;
+  if (error && !wo) return <div style={{ padding: "1rem", color: theme.danger }}>{error}</div>;
   if (!wo) return <div style={{ padding: "1rem" }}>No encontrado</div>;
 
   const loc = locations.find(l => l.id === wo.location_id);
@@ -163,7 +165,7 @@ export default function OTDetail() {
         </div>
       </div>
 
-      {error && <div style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626", padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
+      {error && <div style={{ background: theme.dangerBg, border: `1px solid ${theme.danger}`, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
 
       <dl style={{ display: "grid", gridTemplateColumns: "140px 1fr", gap: "0.5rem 1rem", marginBottom: "1.5rem" }}>
         <dt>Cliente</dt><dd>{cust?.display_name || wo.customer_id}</dd>
@@ -181,7 +183,7 @@ export default function OTDetail() {
 
       <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "2rem" }}>
         {isOffice && !wo.is_terminal && (
-          <div style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem" }}>
+          <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
             <h3 style={{ marginTop: 0 }}>Asignar técnico</h3>
             <div style={{ display: "flex", gap: "0.5rem" }}>
               <select value={assignTechId} onChange={e => setAssignTechId(e.target.value)} style={{ flex: 1, padding: "0.5rem" }}>
@@ -191,7 +193,7 @@ export default function OTDetail() {
               <button
                 disabled={!assignTechId || actionLoading}
                 onClick={() => runAction(() => api.post(`/work-orders/${id}/assign`, { technician_id: assignTechId }))}
-                style={{ padding: "0.5rem 1rem", background: "#2563eb", color: "white", border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
+                style={{ padding: "0.5rem 1rem", background: theme.primary, color: theme.primaryText, border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
               >
                 Asignar
               </button>
@@ -203,40 +205,40 @@ export default function OTDetail() {
           <button
             disabled={actionLoading}
             onClick={() => runAction(() => api.post(`/work-orders/${id}/start`, {}))}
-            style={{ padding: "1rem", background: "#2563eb", color: "white", border: "none", borderRadius: "0.5rem", fontSize: "1rem", cursor: "pointer" }}
+            style={{ padding: "1rem", background: theme.primary, color: theme.primaryText, border: "none", borderRadius: "0.5rem", fontSize: "1rem", cursor: "pointer" }}
           >
             Iniciar OT
           </button>
         )}
 
         {wo.status_code === "IN_PROGRESS" && (
-          <div style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem" }}>
+          <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
             <h3 style={{ marginTop: 0 }}>Registrar trabajo realizado</h3>
             <textarea
               value={performedDescription}
               onChange={e => setPerformedDescription(e.target.value)}
               rows={3}
-              style={{ width: "100%", padding: "0.75rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", marginBottom: "0.75rem" }}
+              style={{ width: "100%", padding: "0.75rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", marginBottom: "0.75rem" }}
             />
             <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
               <button
                 disabled={!performedDescription.trim() || actionLoading}
                 onClick={() => runAction(() => api.post(`/work-orders/${id}/register-work`, { performed_description: performedDescription }))}
-                style={{ padding: "0.75rem 1rem", background: "#f3f4f6", color: "#374151", border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
+                style={{ padding: "0.75rem 1rem", background: theme.bg, color: theme.text, border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
               >
                 Guardar avance
               </button>
               <button
                 disabled={actionLoading}
                 onClick={() => runAction(() => api.post(`/work-orders/${id}/finish`, { status_code: "COMPLETED", performed_description: performedDescription || undefined }))}
-                style={{ padding: "0.75rem 1rem", background: "#16a34a", color: "white", border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
+                style={{ padding: "0.75rem 1rem", background: theme.success, color: theme.primaryText, border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
               >
                 Cerrar como Terminada
               </button>
               <button
                 disabled={actionLoading}
                 onClick={() => runAction(() => api.post(`/work-orders/${id}/finish`, { status_code: "UNRESOLVED", performed_description: performedDescription || undefined }))}
-                style={{ padding: "0.75rem 1rem", background: "#dc2626", color: "white", border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
+                style={{ padding: "0.75rem 1rem", background: theme.danger, color: theme.primaryText, border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
               >
                 Cerrar como No resuelta
               </button>
@@ -245,19 +247,19 @@ export default function OTDetail() {
         )}
 
         {isOffice && wo.is_terminal && (
-          <div style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem" }}>
+          <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
             <h3 style={{ marginTop: 0 }}>Reapertura controlada</h3>
             <textarea
               value={reopenNotes}
               onChange={e => setReopenNotes(e.target.value)}
               rows={2}
               placeholder="Motivo de la reapertura (obligatorio)"
-              style={{ width: "100%", padding: "0.75rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", marginBottom: "0.75rem" }}
+              style={{ width: "100%", padding: "0.75rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", marginBottom: "0.75rem" }}
             />
             <button
               disabled={reopenNotes.trim().length < 3 || actionLoading}
               onClick={() => runAction(() => api.post(`/work-orders/${id}/reopen`, { notes: reopenNotes }))}
-              style={{ padding: "0.75rem 1rem", background: "#f59e0b", color: "white", border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
+              style={{ padding: "0.75rem 1rem", background: theme.warning, color: theme.primaryText, border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
             >
               Reabrir OT
             </button>
@@ -274,16 +276,16 @@ export default function OTDetail() {
                 <img
                   src={photoUrls[p.id]}
                   alt={p.caption || "Foto de OT"}
-                  style={{ width: "100%", height: "100px", objectFit: "cover", borderRadius: "0.5rem", border: "1px solid #e5e7eb" }}
+                  style={{ width: "100%", height: "100px", objectFit: "cover", borderRadius: "0.5rem", border: `1px solid ${theme.border}` }}
                 />
               ) : (
-                <div style={{ width: "100%", height: "100px", background: "#f3f4f6", borderRadius: "0.5rem" }} />
+                <div style={{ width: "100%", height: "100px", background: theme.bg, borderRadius: "0.5rem" }} />
               )}
               {!wo.is_terminal && (
                 <button
                   onClick={() => handleDeletePhoto(p.id)}
                   title="Eliminar foto"
-                  style={{ position: "absolute", top: "0.25rem", right: "0.25rem", background: "rgba(220,38,38,0.9)", color: "white", border: "none", borderRadius: "9999px", width: "1.5rem", height: "1.5rem", cursor: "pointer", lineHeight: 1 }}
+                  style={{ position: "absolute", top: "0.25rem", right: "0.25rem", background: "rgba(220,38,38,0.9)", color: theme.primaryText, border: "none", borderRadius: "9999px", width: "1.5rem", height: "1.5rem", cursor: "pointer", lineHeight: 1 }}
                 >
                   ×
                 </button>
@@ -292,7 +294,7 @@ export default function OTDetail() {
           ))}
         </div>
         {!wo.is_terminal && (
-          <label style={{ display: "inline-block", padding: "0.625rem 1rem", background: uploadingPhoto ? "#93c5fd" : "#2563eb", color: "white", borderRadius: "0.5rem", cursor: uploadingPhoto ? "not-allowed" : "pointer", fontSize: "0.875rem" }}>
+          <label style={{ display: "inline-block", padding: "0.625rem 1rem", background: theme.primary, opacity: uploadingPhoto ? 0.6 : 1, color: theme.primaryText, borderRadius: "0.5rem", cursor: uploadingPhoto ? "not-allowed" : "pointer", fontSize: "0.875rem" }}>
             {uploadingPhoto ? "Subiendo..." : "📷 Tomar / subir foto"}
             <input
               type="file"
@@ -308,13 +310,13 @@ export default function OTDetail() {
 
       <h2>Historial</h2>
       {history.length === 0 ? (
-        <p style={{ color: "#6b7280" }}>Sin eventos.</p>
+        <p style={{ color: theme.textSecondary }}>Sin eventos.</p>
       ) : (
         <ul style={{ listStyle: "none", padding: 0 }}>
           {history.map(h => (
-            <li key={h.id} style={{ borderLeft: "2px solid #e5e7eb", paddingLeft: "1rem", marginBottom: "0.75rem" }}>
+            <li key={h.id} style={{ borderLeft: `2px solid ${theme.border}`, paddingLeft: "1rem", marginBottom: "0.75rem" }}>
               <div style={{ fontWeight: 600 }}>{h.event_type}</div>
-              <div style={{ color: "#6b7280", fontSize: "0.875rem" }}>
+              <div style={{ color: theme.textSecondary, fontSize: "0.875rem" }}>
                 {h.previous_value && `${h.previous_value} → `}{h.new_value}
                 {" • "}{new Date(h.performed_at).toLocaleString()}
               </div>

@@ -16,6 +16,7 @@ export const theme = {
   warningBg: "var(--color-warning-bg)",
   success: "var(--color-success)",
   successBg: "var(--color-success-bg)",
+  infoBg: "var(--color-info-bg)",
   focus: "var(--color-focus)",
   headerBg: "var(--color-header-bg)",
   headerText: "var(--color-header-text)",

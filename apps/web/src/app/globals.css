@@ -17,6 +17,7 @@
   --color-warning-bg: #fef3cf;
   --color-success: #166534;
   --color-success-bg: #dcfce7;
+  --color-info-bg: #dbeafe;
   --color-focus: #2563eb;
 
   /* Barra de encabezado: color de marca, constante en ambos temas
@@ -44,6 +45,7 @@
     --color-warning-bg: #451a03;
     --color-success: #4ade80;
     --color-success-bg: #052e16;
+    --color-info-bg: #1e3a8a;
     --color-focus: #60a5fa;
   }
 }

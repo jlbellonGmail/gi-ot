@@ -1,7 +1,10 @@
 "use client";
 
+import { theme } from "@/lib/theme";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { api } from "@/lib/api";
 import { TechnicianCreate } from "@/lib/types";
 
@@ -68,8 +71,8 @@ export default function NewTechnicianPage() {
   return (
     <div style={{ padding: "1rem", maxWidth: "600px", margin: "0 auto" }}>
       <h1>Nuevo Técnico</h1>
-      <p style={{ color: "#6b7280", marginBottom: "1.5rem" }}>Ingrese identificación para verificar si la persona ya existe.</p>
-      {error && <div style={{ background: "#fef2f2", color: "#dc2626", padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
+      <p style={{ color: theme.textSecondary, marginBottom: "1.5rem" }}>Ingrese identificación para verificar si la persona ya existe.</p>
+      {error && <div style={{ background: theme.dangerBg, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: "1rem" }}>
           <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Tipo persona</label>
@@ -82,7 +85,7 @@ export default function NewTechnicianPage() {
             </label>
           </div>
         </div>
-        <fieldset style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem", marginBottom: "1rem" }}>
+        <fieldset style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem", marginBottom: "1rem" }}>
           <legend style={{ fontWeight: 600, marginBottom: "0.5rem" }}>Identificación</legend>
           {formData.identifications.map((ident, idx) => (
             <div key={idx} style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.5rem", alignItems: "flex-end" }}>
@@ -96,10 +99,10 @@ export default function NewTechnicianPage() {
               <label style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
                 <input type="checkbox" checked={ident.is_primary} onChange={e=>handleIdentChange(idx,"is_primary",e.target.checked?"true":"false")} /> Principal
               </label>
-              {formData.identifications.length>1 && <button type="button" onClick={()=>removeIdent(idx)} style={{ padding: "0.5rem", background: "#fee2e2", color: "#dc2626", border: "none", borderRadius: "0.375rem" }}>×</button>}
+              {formData.identifications.length>1 && <button type="button" onClick={()=>removeIdent(idx)} style={{ padding: "0.5rem", background: theme.dangerBg, color: theme.danger, border: "none", borderRadius: "0.375rem" }}>×</button>}
             </div>
           ))}
-          {formData.identifications.length<3 && <button type="button" onClick={addIdent} style={{ padding: "0.5rem 1rem", background: "#f3f4f6", border: "1px dashed #d1d5db", borderRadius: "0.375rem" }}>+ Agregar identificación</button>}
+          {formData.identifications.length<3 && <button type="button" onClick={addIdent} style={{ padding: "0.5rem 1rem", background: theme.bg, border: `1px dashed ${theme.border}`, borderRadius: "0.375rem" }}>+ Agregar identificación</button>}
         </fieldset>
         <div style={{ marginBottom: "1rem" }}>
           <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Nombre *</label>
@@ -123,8 +126,8 @@ export default function NewTechnicianPage() {
           <textarea value={formData.notes} onChange={e=>handleChange("notes",e.target.value)} rows={3} style={{ width: "100%", padding: "0.75rem" }} />
         </div>
         <div style={{ display: "flex", gap: "1rem" }}>
-          <button type="submit" disabled={loading} style={{ flex: 1, padding: "1rem", background: loading?"#86efac":"#16a34a", color: "white", border: "none", borderRadius: "0.5rem" }}>{loading?"Guardando...":"Crear Técnico"}</button>
-          <a href="/dashboard/technicians" style={{ flex: 1, padding: "1rem", background: "#f3f4f6", textAlign: "center", textDecoration: "none", borderRadius: "0.5rem" }}>Cancelar</a>
+          <button type="submit" disabled={loading} style={{ flex: 1, padding: "1rem", background: theme.success, opacity: loading ? 0.6 : 1, color: theme.primaryText, border: "none", borderRadius: "0.5rem" }}>{loading?"Guardando...":"Crear Técnico"}</button>
+          <Link href="/dashboard/technicians" style={{ flex: 1, padding: "1rem", background: theme.bg, textAlign: "center", textDecoration: "none", borderRadius: "0.5rem" }}>Cancelar</Link>
         </div>
       </form>
     </div>

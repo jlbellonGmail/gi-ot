@@ -1,5 +1,7 @@
 "use client";
 
+import { theme } from "@/lib/theme";
+
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
@@ -83,7 +85,7 @@ export default function TechnicianDetailPage() {
   }
 
   if (loading) return <div style={{ padding: "1rem", textAlign: "center" }}>Cargando...</div>;
-  if (error && !tech) return <div style={{ padding: "1rem", color: "red" }}>{error}</div>;
+  if (error && !tech) return <div style={{ padding: "1rem", color: theme.danger }}>{error}</div>;
   if (!tech) return <div style={{ padding: "1rem" }}>No encontrado</div>;
 
   return (
@@ -92,18 +94,18 @@ export default function TechnicianDetailPage() {
         <h1>{tech.display_name}</h1>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           <button onClick={()=>setEditMode(!editMode)} style={{ padding: "0.5rem 1rem" }}>{editMode?"Cancelar":"Editar"}</button>
-          <button onClick={()=>router.back()} style={{ padding: "0.5rem 1rem", background: "#f3f4f6" }}>Volver</button>
+          <button onClick={()=>router.back()} style={{ padding: "0.5rem 1rem", background: theme.bg }}>Volver</button>
         </div>
       </div>
-      {error && <div style={{ background: "#fef2f2", color: "#dc2626", padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
+      {error && <div style={{ background: theme.dangerBg, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
       <div style={{ display: "grid", gap: "1rem" }}>
-        <div style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem" }}>
+        <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
           <h3 style={{ marginBottom: "0.75rem" }}>Identificaciones</h3>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-            {tech.identifications.map(i=>(<span key={i.id} style={{ background: i.is_primary?"#dbeafe":"#f3f4f6", color: i.is_primary?"#1d4ed8":"#374151", padding: "0.25rem 0.75rem", borderRadius: "9999px", fontSize: "0.875rem" }}>{i.identification_type}: {i.identification_value} {i.is_primary&&"(principal)"}</span>))}
+            {tech.identifications.map(i=>(<span key={i.id} style={{ background: i.is_primary?theme.infoBg:theme.bg, color: i.is_primary?theme.primary:theme.text, padding: "0.25rem 0.75rem", borderRadius: "9999px", fontSize: "0.875rem" }}>{i.identification_type}: {i.identification_value} {i.is_primary&&"(principal)"}</span>))}
           </div>
         </div>
-        <div style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem" }}>
+        <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
           <h3 style={{ marginBottom: "0.75rem" }}>Datos</h3>
           {editMode ? (
             <div style={{ display: "grid", gap: "1rem" }}>
@@ -124,7 +126,7 @@ export default function TechnicianDetailPage() {
               </div>
               <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Estado Técnico</label><select value={form.technician_status} onChange={e=>setForm({...form, technician_status: e.target.value as "ACTIVE"|"INACTIVE"})} style={{ width: "100%", padding: "0.5rem" }}><option value="ACTIVE">Activo</option><option value="INACTIVE">Inactivo</option></select></div>
               <div><label style={{ display: "block", marginBottom: "0.25rem" }}>Observaciones</label><textarea value={form.notes} onChange={e=>setForm({...form, notes: e.target.value})} rows={3} style={{ width: "100%", padding: "0.5rem" }} /></div>
-              <div style={{ display: "flex", justifyContent: "flex-end" }}><button onClick={save} disabled={saving} style={{ padding: "0.5rem 1.5rem", background: "#16a34a", color: "white", border: "none", borderRadius: "0.375rem" }}>{saving?"Guardando...":"Guardar"}</button></div>
+              <div style={{ display: "flex", justifyContent: "flex-end" }}><button onClick={save} disabled={saving} style={{ padding: "0.5rem 1.5rem", background: theme.success, color: theme.primaryText, border: "none", borderRadius: "0.375rem" }}>{saving?"Guardando...":"Guardar"}</button></div>
             </div>
           ) : (
             <dl style={{ display: "grid", gridTemplateColumns: "150px 1fr", gap: "0.5rem 1rem" }}>
@@ -135,14 +137,14 @@ export default function TechnicianDetailPage() {
               <dt>Profesión</dt><dd>{tech.profession||"—"}</dd>
               <dt>Matrícula</dt><dd>{tech.license_number||"—"}</dd>
               <dt>Comisión</dt><dd>{tech.commission_percentage}%</dd>
-              <dt>Estado Persona</dt><dd><span style={{ background: tech.status==="ACTIVE"?"#dcfce7":"#fef2f2", color: tech.status==="ACTIVE"?"#166534":"#dc2626", padding: "0.125rem 0.5rem", borderRadius: "9999px", fontSize: "0.875rem" }}>{tech.status}</span></dd>
-              <dt>Estado Técnico</dt><dd><span style={{ background: tech.technician_status==="ACTIVE"?"#dcfce7":"#fef2f2", color: tech.technician_status==="ACTIVE"?"#166534":"#dc2626", padding: "0.125rem 0.5rem", borderRadius: "9999px", fontSize: "0.875rem" }}>{tech.technician_status}</span></dd>
+              <dt>Estado Persona</dt><dd><span style={{ background: tech.status==="ACTIVE"?theme.successBg:theme.dangerBg, color: tech.status==="ACTIVE"?theme.success:theme.danger, padding: "0.125rem 0.5rem", borderRadius: "9999px", fontSize: "0.875rem" }}>{tech.status}</span></dd>
+              <dt>Estado Técnico</dt><dd><span style={{ background: tech.technician_status==="ACTIVE"?theme.successBg:theme.dangerBg, color: tech.technician_status==="ACTIVE"?theme.success:theme.danger, padding: "0.125rem 0.5rem", borderRadius: "9999px", fontSize: "0.875rem" }}>{tech.technician_status}</span></dd>
               <dt>Observaciones</dt><dd>{tech.notes||"—"}</dd>
             </dl>
           )}
         </div>
 
-        <div style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem" }}>
+        <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
           <h3 style={{ marginBottom: "0.75rem" }}>Cuenta de usuario (acceso técnico)</h3>
           {tech.user_id ? (
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -152,13 +154,13 @@ export default function TechnicianDetailPage() {
               <button
                 onClick={() => linkUser(null)}
                 disabled={linking}
-                style={{ padding: "0.5rem 1rem", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "0.375rem", cursor: "pointer" }}
+                style={{ padding: "0.5rem 1rem", background: theme.dangerBg, color: theme.danger, border: `1px solid ${theme.danger}`, borderRadius: "0.375rem", cursor: "pointer" }}
               >
                 Desvincular
               </button>
             </div>
           ) : !canManageUsers ? (
-            <p style={{ color: "#6b7280", fontSize: "0.875rem" }}>
+            <p style={{ color: theme.textSecondary, fontSize: "0.875rem" }}>
               Necesitás rol Admin para gestionar usuarios técnicos.
             </p>
           ) : (
@@ -172,14 +174,14 @@ export default function TechnicianDetailPage() {
                   <button
                     onClick={() => linkUser(selectedUserId)}
                     disabled={!selectedUserId || linking}
-                    style={{ padding: "0.5rem 1rem", background: "#2563eb", color: "white", border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
+                    style={{ padding: "0.5rem 1rem", background: theme.primary, color: theme.primaryText, border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
                   >
                     Vincular
                   </button>
                 </div>
               )}
-              <div style={{ borderTop: "1px solid #f3f4f6", paddingTop: "0.75rem" }}>
-                <p style={{ fontSize: "0.875rem", color: "#6b7280", marginBottom: "0.5rem" }}>O crear un usuario técnico nuevo y vincularlo:</p>
+              <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: "0.75rem" }}>
+                <p style={{ fontSize: "0.875rem", color: theme.textSecondary, marginBottom: "0.5rem" }}>O crear un usuario técnico nuevo y vincularlo:</p>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: "0.5rem" }}>
                   <input placeholder="Nombre completo" value={newUserName} onChange={(e) => setNewUserName(e.target.value)} style={{ padding: "0.5rem" }} />
                   <input placeholder="Email" type="email" value={newUserEmail} onChange={(e) => setNewUserEmail(e.target.value)} style={{ padding: "0.5rem" }} />
@@ -187,7 +189,7 @@ export default function TechnicianDetailPage() {
                   <button
                     onClick={createAndLinkUser}
                     disabled={!newUserEmail || !newUserName || !newUserPassword || creatingUser}
-                    style={{ padding: "0.5rem 1rem", background: "#16a34a", color: "white", border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
+                    style={{ padding: "0.5rem 1rem", background: theme.success, color: theme.primaryText, border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
                   >
                     {creatingUser ? "Creando..." : "Crear y vincular"}
                   </button>

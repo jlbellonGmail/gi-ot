@@ -1,5 +1,7 @@
 "use client";
 
+import { theme } from "@/lib/theme";
+
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
@@ -80,12 +82,12 @@ export default function NuevaOTUrgentePage() {
   return (
     <div>
       <h1 style={{ fontSize: "1.25rem", marginBottom: "0.25rem" }}>OT urgente</h1>
-      <p style={{ fontSize: "0.875rem", color: "#6b7280", marginBottom: "1rem" }}>
+      <p style={{ fontSize: "0.875rem", color: theme.textSecondary, marginBottom: "1rem" }}>
         Se crea con prioridad Urgente y asignada a vos.
       </p>
 
       {error && (
-        <div style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626", padding: "0.75rem", borderRadius: "0.5rem", marginBottom: "1rem", fontSize: "0.875rem" }}>
+        <div style={{ background: theme.dangerBg, border: `1px solid ${theme.danger}`, color: theme.danger, padding: "0.75rem", borderRadius: "0.5rem", marginBottom: "1rem", fontSize: "0.875rem" }}>
           {error}
         </div>
       )}
@@ -97,7 +99,7 @@ export default function NuevaOTUrgentePage() {
             value={customerId}
             onChange={(e) => { setCustomerId(e.target.value); setLocationId(""); setAssetId(""); }}
             required
-            style={{ padding: "0.75rem", border: "1px solid #d1d5db", borderRadius: "0.5rem", width: "100%", fontSize: "1rem" }}
+            style={{ padding: "0.75rem", border: `1px solid ${theme.border}`, borderRadius: "0.5rem", width: "100%", fontSize: "1rem" }}
           >
             <option value="">Seleccionar cliente</option>
             {customers.map((c) => (<option key={c.person_id} value={c.person_id}>{c.display_name}</option>))}
@@ -110,7 +112,7 @@ export default function NuevaOTUrgentePage() {
             onChange={(e) => { setLocationId(e.target.value); setAssetId(""); }}
             required
             disabled={!customerId}
-            style={{ padding: "0.75rem", border: "1px solid #d1d5db", borderRadius: "0.5rem", width: "100%", fontSize: "1rem" }}
+            style={{ padding: "0.75rem", border: `1px solid ${theme.border}`, borderRadius: "0.5rem", width: "100%", fontSize: "1rem" }}
           >
             <option value="">Seleccionar ubicación</option>
             {locationsForCustomer.map((l) => (<option key={l.id} value={l.id}>{l.name}</option>))}
@@ -123,7 +125,7 @@ export default function NuevaOTUrgentePage() {
             onChange={(e) => setAssetId(e.target.value)}
             required
             disabled={!locationId}
-            style={{ padding: "0.75rem", border: "1px solid #d1d5db", borderRadius: "0.5rem", width: "100%", fontSize: "1rem" }}
+            style={{ padding: "0.75rem", border: `1px solid ${theme.border}`, borderRadius: "0.5rem", width: "100%", fontSize: "1rem" }}
           >
             <option value="">Seleccionar activo</option>
             {assetsForLocation.map((a) => (<option key={a.id} value={a.id}>{a.name}</option>))}
@@ -137,20 +139,20 @@ export default function NuevaOTUrgentePage() {
             rows={4}
             required
             placeholder="¿Qué está pasando?"
-            style={{ width: "100%", padding: "0.75rem", border: "1px solid #d1d5db", borderRadius: "0.5rem", fontSize: "1rem" }}
+            style={{ width: "100%", padding: "0.75rem", border: `1px solid ${theme.border}`, borderRadius: "0.5rem", fontSize: "1rem" }}
           />
         </div>
         <div style={{ display: "flex", gap: "0.75rem" }}>
           <button
             type="submit"
             disabled={loading || !defaultTypeId || !defaultPriorityId}
-            style={{ flex: 1, padding: "1rem", background: loading ? "#fca5a5" : "#dc2626", color: "white", border: "none", borderRadius: "0.5rem", fontSize: "1rem", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer" }}
+            style={{ flex: 1, padding: "1rem", background: theme.danger, opacity: loading ? 0.6 : 1, color: theme.primaryText, border: "none", borderRadius: "0.5rem", fontSize: "1rem", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer" }}
           >
             {loading ? "Creando..." : "Crear OT urgente"}
           </button>
           <a
             href="/tecnico"
-            style={{ flex: 1, padding: "1rem", background: "#f3f4f6", color: "#374151", border: "none", borderRadius: "0.5rem", fontSize: "1rem", textAlign: "center", textDecoration: "none" }}
+            style={{ flex: 1, padding: "1rem", background: theme.bg, color: theme.text, border: "none", borderRadius: "0.5rem", fontSize: "1rem", textAlign: "center", textDecoration: "none" }}
           >
             Cancelar
           </a>

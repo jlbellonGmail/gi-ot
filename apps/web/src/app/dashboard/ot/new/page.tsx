@@ -1,7 +1,10 @@
 "use client";
 
+import { theme } from "@/lib/theme";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { api } from "@/lib/api";
 import { Customer, Location, Asset, Technician, WorkOrderType, Priority, WorkOrderCreate } from "@/lib/types";
 
@@ -28,7 +31,6 @@ export default function NewOTPage() {
     technician_id: undefined,
   });
 
-  useEffect(() => { loadRefs(); }, []);
   async function loadRefs() {
     try {
       const [custs, locs, asts, techs, woTypes, pris] = await Promise.all([
@@ -47,6 +49,8 @@ export default function NewOTPage() {
       setPriorities(pris);
     } catch (e) { console.error(e); }
   }
+
+  useEffect(() => { loadRefs(); }, []);
 
   const locationsForCustomer = locations.filter((l) => l.customer_id === form.customer_id);
   const assetsForLocation = assets.filter((a) => a.location_id === form.location_id);
@@ -69,7 +73,7 @@ export default function NewOTPage() {
     <div style={{ padding: "1rem", maxWidth: "600px", margin: "0 auto" }}>
       <h1>Nueva Orden de Trabajo</h1>
       {error && (
-        <div style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626", padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}
+        <div style={{ background: theme.dangerBg, border: `1px solid ${theme.danger}`, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}
         >
           {error}
         </div>
@@ -81,7 +85,7 @@ export default function NewOTPage() {
             value={form.customer_id}
             onChange={(e) => setForm({ ...form, customer_id: e.target.value, location_id: "", asset_id: "" })}
             required
-            style={{ padding: "0.5rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", width: "100%" }}
+            style={{ padding: "0.5rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", width: "100%" }}
           >
             <option value="">Seleccionar cliente</option>
             {customers.map((c) => (<option key={c.person_id} value={c.person_id}>{c.display_name}</option>))}
@@ -94,7 +98,7 @@ export default function NewOTPage() {
             onChange={(e) => setForm({ ...form, location_id: e.target.value, asset_id: "" })}
             required
             disabled={!form.customer_id}
-            style={{ padding: "0.5rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", width: "100%" }}
+            style={{ padding: "0.5rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", width: "100%" }}
           >
             <option value="">Seleccionar ubicación</option>
             {locationsForCustomer.map((l) => (<option key={l.id} value={l.id}>{l.name}</option>))}
@@ -107,7 +111,7 @@ export default function NewOTPage() {
             onChange={(e) => setForm({ ...form, asset_id: e.target.value })}
             required
             disabled={!form.location_id}
-            style={{ padding: "0.5rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", width: "100%" }}
+            style={{ padding: "0.5rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", width: "100%" }}
           >
             <option value="">Seleccionar activo</option>
             {assetsForLocation.map((a) => (<option key={a.id} value={a.id}>{a.name}</option>))}
@@ -119,7 +123,7 @@ export default function NewOTPage() {
             value={form.work_order_type_id}
             onChange={(e) => setForm({ ...form, work_order_type_id: e.target.value })}
             required
-            style={{ padding: "0.5rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", width: "100%" }}
+            style={{ padding: "0.5rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", width: "100%" }}
           >
             <option value="">Seleccionar tipo</option>
             {types.map((t) => (<option key={t.id} value={t.id}>{t.label}</option>))}
@@ -131,7 +135,7 @@ export default function NewOTPage() {
             value={form.priority_id}
             onChange={(e) => setForm({ ...form, priority_id: e.target.value })}
             required
-            style={{ padding: "0.5rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", width: "100%" }}
+            style={{ padding: "0.5rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", width: "100%" }}
           >
             <option value="">Seleccionar prioridad</option>
             {priorities.map((p) => (<option key={p.id} value={p.id}>{p.label}</option>))}
@@ -142,7 +146,7 @@ export default function NewOTPage() {
           <select
             value={form.technician_id || ""}
             onChange={(e) => setForm({ ...form, technician_id: e.target.value || undefined })}
-            style={{ padding: "0.5rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", width: "100%" }}
+            style={{ padding: "0.5rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", width: "100%" }}
           >
             <option value="">Sin asignar (asignar luego)</option>
             {technicians.map((t) => (<option key={t.person_id} value={t.person_id}>{t.display_name}</option>))}
@@ -155,7 +159,7 @@ export default function NewOTPage() {
             onChange={(e) => setForm({ ...form, requested_description: e.target.value })}
             rows={3}
             required
-            style={{ width: "100%", padding: "0.75rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", fontSize: "1rem" }}
+            style={{ width: "100%", padding: "0.75rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", fontSize: "1rem" }}
           />
         </div>
         <div style={{ marginBottom: "1.5rem" }}>
@@ -164,7 +168,7 @@ export default function NewOTPage() {
             type="datetime-local"
             value={form.scheduled_at || ""}
             onChange={(e) => setForm({ ...form, scheduled_at: e.target.value || undefined })}
-            style={{ width: "100%", padding: "0.75rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", fontSize: "1rem" }}
+            style={{ width: "100%", padding: "0.75rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", fontSize: "1rem" }}
           />
         </div>
         <div style={{ display: "flex", gap: "1rem" }}>
@@ -174,8 +178,8 @@ export default function NewOTPage() {
             style={{
               flex: 1,
               padding: "1rem",
-              background: loading ? "#93c5fd" : "#2563eb",
-              color: "white",
+              background: theme.primary, opacity: loading ? 0.6 : 1,
+              color: theme.primaryText,
               border: "none",
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -184,13 +188,13 @@ export default function NewOTPage() {
           >
             {loading ? "Guardando..." : "Crear OT"}
           </button>
-          <a
+          <Link
             href="/dashboard/ot"
             style={{
               flex: 1,
               padding: "1rem",
-              background: "#f3f4f6",
-              color: "#374151",
+              background: theme.bg,
+              color: theme.text,
               border: "none",
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -199,7 +203,7 @@ export default function NewOTPage() {
             }}
           >
             Cancelar
-          </a>
+          </Link>
         </div>
       </form>
     </div>

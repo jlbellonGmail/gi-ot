@@ -1,5 +1,7 @@
 "use client";
 
+import { theme } from "@/lib/theme";
+
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import jsQR from "jsqr";
@@ -74,17 +76,17 @@ export default function EscanearQRPage() {
   return (
     <div>
       <h1 style={{ fontSize: "1.25rem", marginBottom: "0.25rem" }}>Escanear QR</h1>
-      <p style={{ fontSize: "0.875rem", color: "#6b7280", marginBottom: "1rem" }}>
+      <p style={{ fontSize: "0.875rem", color: theme.textSecondary, marginBottom: "1rem" }}>
         Apuntá la cámara al código QR del activo.
       </p>
 
       {error && (
-        <div style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626", padding: "0.75rem", borderRadius: "0.5rem", marginBottom: "1rem", fontSize: "0.875rem" }}>
+        <div style={{ background: theme.dangerBg, border: `1px solid ${theme.danger}`, color: theme.danger, padding: "0.75rem", borderRadius: "0.5rem", marginBottom: "1rem", fontSize: "0.875rem" }}>
           {error}
           <div style={{ marginTop: "0.5rem" }}>
             <button
               onClick={() => { setError(null); setScanning(true); }}
-              style={{ padding: "0.5rem 0.875rem", background: "#dc2626", color: "white", border: "none", borderRadius: "0.375rem", cursor: "pointer", fontSize: "0.8rem" }}
+              style={{ padding: "0.5rem 0.875rem", background: theme.danger, color: theme.primaryText, border: "none", borderRadius: "0.375rem", cursor: "pointer", fontSize: "0.8rem" }}
             >
               Reintentar
             </button>
@@ -98,7 +100,7 @@ export default function EscanearQRPage() {
       </div>
 
       <div style={{ marginTop: "1rem" }}>
-        <a href="/tecnico" style={{ display: "block", textAlign: "center", padding: "0.875rem", background: "#f3f4f6", color: "#374151", borderRadius: "0.5rem", textDecoration: "none" }}>
+        <a href="/tecnico" style={{ display: "block", textAlign: "center", padding: "0.875rem", background: theme.bg, color: theme.text, borderRadius: "0.5rem", textDecoration: "none" }}>
           Cancelar
         </a>
       </div>

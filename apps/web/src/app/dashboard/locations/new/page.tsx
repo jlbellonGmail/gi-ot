@@ -1,7 +1,10 @@
 "use client";
 
+import { theme } from "@/lib/theme";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { api } from "@/lib/api";
 import { LocationCreate, Customer } from "@/lib/types";
 
@@ -13,12 +16,12 @@ export default function NewLocationPage() {
 
   const [form, setForm] = useState<LocationCreate>({ customer_id: "", name: "", address: "", city: "", province: "", notes: "" });
 
-  useEffect(() => { loadCustomers(); }, []);
-
   async function loadCustomers() {
     try { const data = await api.get<Customer[]>("/customers"); setCustomers(data); }
     catch (e) { console.error(e); }
   }
+
+  useEffect(() => { loadCustomers(); }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault(); setError(null); setLoading(true);
@@ -30,7 +33,7 @@ export default function NewLocationPage() {
   return (
     <div style={{ padding: "1rem", maxWidth: "600px", margin: "0 auto" }}>
       <h1>Nueva Ubicación</h1>
-      {error && <div style={{ background: "#fef2f2", color: "#dc2626", padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
+      {error && <div style={{ background: theme.dangerBg, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: "1rem" }}>
           <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Cliente *</label>
@@ -56,8 +59,8 @@ export default function NewLocationPage() {
           <textarea value={form.notes} onChange={e=>setForm({...form, notes: e.target.value})} rows={3} style={{ width: "100%", padding: "0.75rem" }} />
         </div>
         <div style={{ display: "flex", gap: "1rem" }}>
-          <button type="submit" disabled={loading} style={{ flex: 1, padding: "1rem", background: loading?"#93c5fd":"#2563eb", color: "white", border: "none", borderRadius: "0.5rem" }}>{loading?"Guardando...":"Crear Ubicación"}</button>
-          <a href="/dashboard/locations" style={{ flex: 1, padding: "1rem", background: "#f3f4f6", textAlign: "center", textDecoration: "none", borderRadius: "0.5rem" }}>Cancelar</a>
+          <button type="submit" disabled={loading} style={{ flex: 1, padding: "1rem", background: theme.primary, opacity: loading ? 0.6 : 1, color: theme.primaryText, border: "none", borderRadius: "0.5rem" }}>{loading?"Guardando...":"Crear Ubicación"}</button>
+          <Link href="/dashboard/locations" style={{ flex: 1, padding: "1rem", background: theme.bg, textAlign: "center", textDecoration: "none", borderRadius: "0.5rem" }}>Cancelar</Link>
         </div>
       </form>
     </div>

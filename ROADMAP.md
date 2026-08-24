@@ -305,9 +305,9 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 * [x] Implementar sistema centralizado de design tokens para colores y estados visuales. (`apps/web/src/app/globals.css` + `apps/web/src/lib/theme.ts`)
 
-* [ ] Eliminar progresivamente estilos de color hardcodeados por pantalla. (aplicado hasta ahora solo en los shells `dashboard/layout.tsx` y `tecnico/layout.tsx`; quedan ~20 pantallas con hex hardcodeado, a migrar progresivamente al tocarlas)
+* [x] Eliminar progresivamente estilos de color hardcodeados por pantalla. (las 18 pantallas restantes migradas a tokens; solo quedan 2 colores fijos intencionales: el `themeColor` de marca del manifest PWA y el fondo del visor de cámara del escáner QR — ninguno es una superficie temática)
 
-* [ ] Soportar tema claro y oscuro de forma consistente. (los tokens y `prefers-color-scheme` ya funcionan; falta que el resto de las pantallas los adopten para que la app se vea consistente en oscuro)
+* [x] Soportar tema claro y oscuro de forma consistente. (toda la app usa los mismos tokens; `color-scheme: light dark` + `prefers-color-scheme` ya cubren ambos modos en todas las pantallas)
 
 * [x] Evitar problemas de contraste o legibilidad provocados por modos oscuros automáticos del navegador. (`color-scheme: light dark` declarado globalmente — corrige el bug detectado con Android Chrome forced dark mode)
 

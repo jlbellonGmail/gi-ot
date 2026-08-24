@@ -1,5 +1,7 @@
 "use client";
 
+import { theme } from "@/lib/theme";
+
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
@@ -76,7 +78,7 @@ export default function CustomerDetailPage() {
   }
 
   if (loading) return <div style={{ padding: "1rem", textAlign: "center" }}>Cargando...</div>;
-  if (error && !customer) return <div style={{ padding: "1rem", color: "red" }}>{error}</div>;
+  if (error && !customer) return <div style={{ padding: "1rem", color: theme.danger }}>{error}</div>;
   if (!customer) return <div style={{ padding: "1rem" }}>Cliente no encontrado</div>;
 
   return (
@@ -87,26 +89,26 @@ export default function CustomerDetailPage() {
           <button onClick={() => setEditMode(!editMode)} style={{ padding: "0.5rem 1rem" }}>
             {editMode ? "Cancelar" : "Editar"}
           </button>
-          <button onClick={() => router.back()} style={{ padding: "0.5rem 1rem", background: "#f3f4f6" }}>
+          <button onClick={() => router.back()} style={{ padding: "0.5rem 1rem", background: theme.bg }}>
             Volver
           </button>
         </div>
       </div>
 
-      {error && <div style={{ background: "#fef2f2", color: "#dc2626", padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
+      {error && <div style={{ background: theme.dangerBg, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
 
       <div style={{ display: "grid", gap: "1rem" }}>
-        <div style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem" }}>
+        <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
           <h3 style={{ marginBottom: "0.75rem" }}>Identificaciones</h3>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
             {customer.identifications.map((ident) => (
               <span key={ident.id} style={{
-                background: ident.is_primary ? "#dbeafe" : "#f3f4f6",
-                color: ident.is_primary ? "#1d4ed8" : "#374151",
+                background: ident.is_primary ? theme.infoBg : theme.bg,
+                color: ident.is_primary ? theme.primary : theme.text,
                 padding: "0.25rem 0.75rem",
                 borderRadius: "9999px",
                 fontSize: "0.875rem",
-                border: ident.is_primary ? "1px solid #3b82f6" : "none",
+                border: ident.is_primary ? `1px solid ${theme.primary}` : "none",
               }}>
                 {ident.identification_type}: {ident.identification_value} {ident.is_primary && "(principal)"}
               </span>
@@ -114,7 +116,7 @@ export default function CustomerDetailPage() {
           </div>
         </div>
 
-        <div style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem" }}>
+        <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
           <h3 style={{ marginBottom: "0.75rem" }}>Datos de contacto</h3>
           {editMode ? (
             <div style={{ display: "grid", gap: "1rem" }}>
@@ -155,7 +157,7 @@ export default function CustomerDetailPage() {
                 <textarea value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} rows={3} style={{ width: "100%", padding: "0.5rem" }} />
               </div>
               <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
-                <button onClick={handleSave} disabled={saving} style={{ padding: "0.5rem 1.5rem", background: "#2563eb", color: "white", border: "none", borderRadius: "0.375rem" }}>
+                <button onClick={handleSave} disabled={saving} style={{ padding: "0.5rem 1.5rem", background: theme.primary, color: theme.primaryText, border: "none", borderRadius: "0.375rem" }}>
                   {saving ? "Guardando..." : "Guardar"}
                 </button>
               </div>
@@ -166,13 +168,13 @@ export default function CustomerDetailPage() {
               <dt>Dirección</dt><dd>{customer.address || "—"}</dd>
               <dt>Teléfono</dt><dd>{customer.phone || "—"}</dd>
               <dt>Email</dt><dd>{customer.email || "—"}</dd>
-              <dt>Estado</dt><dd><span style={{ background: customer.status === "ACTIVE" ? "#dcfce7" : "#fef2f2", color: customer.status === "ACTIVE" ? "#166534" : "#dc2626", padding: "0.125rem 0.5rem", borderRadius: "9999px", fontSize: "0.875rem" }}>{customer.status}</span></dd>
+              <dt>Estado</dt><dd><span style={{ background: customer.status === "ACTIVE" ? theme.successBg : theme.dangerBg, color: customer.status === "ACTIVE" ? theme.success : theme.danger, padding: "0.125rem 0.5rem", borderRadius: "9999px", fontSize: "0.875rem" }}>{customer.status}</span></dd>
               <dt>Observaciones</dt><dd>{customer.notes || "—"}</dd>
             </dl>
           )}
         </div>
 
-        <div style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem" }}>
+        <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
           <h3 style={{ marginBottom: "0.75rem" }}>Historial de Órdenes de Trabajo</h3>
           <WorkOrderHistoryList workOrders={workOrders} emptyText="Este cliente todavía no tiene OT." />
         </div>

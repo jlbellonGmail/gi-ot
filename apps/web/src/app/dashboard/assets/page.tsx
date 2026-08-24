@@ -1,5 +1,7 @@
 "use client";
 
+import { theme } from "@/lib/theme";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
@@ -13,8 +15,6 @@ export default function AssetsPage() {
   const [error, setError] = useState<string | null>(null);
   const [filterLoc, setFilterLoc] = useState<string>("");
   const [filterType, setFilterType] = useState<string>("");
-
-  useEffect(() => { loadRefs(); loadAssets(); }, [filterLoc, filterType]);
 
   async function loadRefs() {
     try {
@@ -41,6 +41,8 @@ export default function AssetsPage() {
     finally { setLoading(false); }
   }
 
+  useEffect(() => { loadRefs(); loadAssets(); }, [filterLoc, filterType]);
+
   return (
     <div style={{ padding: "1rem", maxWidth: "1000px", margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "1rem" }}>
@@ -55,35 +57,35 @@ export default function AssetsPage() {
             {assetTypes.map(t=>(<option key={t.id} value={t.id}>{t.label}</option>))}
           </select>
           <Link href="/dashboard/assets/new">
-            <button style={{ background: "#7c3aed", color: "white", border: "none", padding: "0.75rem 1.5rem", borderRadius: "0.5rem" }}>+ Nuevo Activo</button>
+            <button style={{ background: theme.primary, color: theme.primaryText, border: "none", padding: "0.75rem 1.5rem", borderRadius: "0.5rem" }}>+ Nuevo Activo</button>
           </Link>
         </div>
       </div>
 
-      {error && <div style={{ background: "#fef2f2", color: "#dc2626", padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
+      {error && <div style={{ background: theme.dangerBg, color: theme.danger, padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
 
       {loading ? <div style={{ textAlign: "center", padding: "2rem" }}>Cargando...</div> : assets.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "2rem", color: "#6b7280" }}>No hay activos. <Link href="/dashboard/assets/new">Crear primero</Link></div>
+        <div style={{ textAlign: "center", padding: "2rem", color: theme.textSecondary }}>No hay activos. <Link href="/dashboard/assets/new">Crear primero</Link></div>
       ) : (
         <ul style={{ listStyle: "none", padding: 0 }}>
-          {assets.map(a=>(<li key={a.id} style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem", marginBottom: "0.75rem", background: "white" }}>
+          {assets.map(a=>(<li key={a.id} style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem", marginBottom: "0.75rem", background: theme.surface }}>
             <Link href={`/dashboard/assets/${a.id}`} style={{ textDecoration: "none", color: "inherit" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div>
                   <div style={{ fontWeight: 600, fontSize: "1.1rem" }}>{a.name}</div>
-                  <div style={{ color: "#6b7280", fontSize: "0.875rem", marginTop: "0.25rem" }}>
+                  <div style={{ color: theme.textSecondary, fontSize: "0.875rem", marginTop: "0.25rem" }}>
                     {a.asset_type && `Tipo: ${a.asset_type.label}`}
                     {a.brand && ` • Marca: ${a.brand}`}
                     {a.model && ` • Modelo: ${a.model}`}
                   </div>
                 </div>
                 <span style={{
-                  background: a.status==="ACTIVE"?"#dcfce7":a.status==="INACTIVE"?"#fef2f2":"#f3f4f6",
-                  color: a.status==="ACTIVE"?"#166534":a.status==="INACTIVE"?"#dc2626":"#6b7280",
+                  background: a.status==="ACTIVE"?theme.successBg:a.status==="INACTIVE"?theme.dangerBg:theme.bg,
+                  color: a.status==="ACTIVE"?theme.success:a.status==="INACTIVE"?theme.danger:theme.textSecondary,
                   padding: "0.25rem 0.75rem", borderRadius: "9999px", fontSize: "0.75rem"
                 }}>{a.status}</span>
               </div>
-              <div style={{ marginTop: "0.5rem", fontSize: "0.875rem", color: "#6b7280" }}>
+              <div style={{ marginTop: "0.5rem", fontSize: "0.875rem", color: theme.textSecondary }}>
                 Ubicación: {locations.find(l=>l.id===a.location_id)?.name || a.location_id}
                 {a.serial_number && ` • Serie: ${a.serial_number}`}
                 {a.qr_code && ` • QR: ${a.qr_code}`}
