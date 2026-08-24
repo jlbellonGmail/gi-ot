@@ -41,17 +41,19 @@
   --foreground: var(--color-text);
 }
 
+/* Modo oscuro: por preferencia del sistema (si el usuario no eligió
+   nada explícitamente en la app) o por elección explícita vía el
+   toggle claro/oscuro del header (data-theme="dark" en <html>, guardado
+   en localStorage por ThemeToggle.tsx). El selector ":not([data-theme=light])"
+   asegura que una elección explícita de "claro" gane incluso con el
+   sistema en oscuro. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --color-bg: #0f172a;
     --color-surface: #1e293b;
     --color-border: #334155;
     --color-text: #f1f5f9;
     --color-text-secondary: #94a3b8;
-    /* primary se mantiene igual al tema claro a propósito: se usa
-       mayormente como fondo sólido de botones con texto blanco encima,
-       y solo este tono (no un pastel típico de "modo oscuro") pasa el
-       mínimo de contraste 4.5:1 con blanco (ROADMAP §07, "Accesibilidad"). */
     --color-primary: #2563eb;
     --color-primary-text: #ffffff;
     --color-danger: #f87171;
@@ -63,6 +65,24 @@
     --color-info-bg: #1e3a8a;
     --color-focus: #60a5fa;
   }
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-border: #334155;
+  --color-text: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-primary: #2563eb;
+  --color-primary-text: #ffffff;
+  --color-danger: #f87171;
+  --color-danger-bg: #450a0a;
+  --color-warning: #fbbf24;
+  --color-warning-bg: #451a03;
+  --color-success: #4ade80;
+  --color-success-bg: #052e16;
+  --color-info-bg: #1e3a8a;
+  --color-focus: #60a5fa;
 }
 
 html {

@@ -2,12 +2,20 @@
 
 import { theme } from "@/lib/theme";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { ErrorBanner } from "@/components/ErrorBanner";
 import { FilterButton, FilterPanel, FilterChips } from "@/components/FilterPanel";
+import { SortButton } from "@/components/SortButton";
 import { Asset, AssetType, Location } from "@/lib/types";
+
+type SortValue = "name_asc" | "name_desc" | "recent";
+const SORT_OPTIONS: { value: SortValue; label: string }[] = [
+  { value: "name_asc", label: "Nombre A-Z" },
+  { value: "name_desc", label: "Nombre Z-A" },
+  { value: "recent", label: "Más recientes" },
+];
 
 export default function AssetsPage() {
   const [assets, setAssets] = useState<Asset[]>([]);
@@ -20,6 +28,8 @@ export default function AssetsPage() {
   const [draftFilterLoc, setDraftFilterLoc] = useState<string>("");
   const [draftFilterType, setDraftFilterType] = useState<string>("");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<SortValue>("name_asc");
 
   async function loadRefs() {
     try {
@@ -53,16 +63,44 @@ export default function AssetsPage() {
   function clearFilters() { setFilterLoc(""); setFilterType(""); setDraftFilterLoc(""); setDraftFilterType(""); setFiltersOpen(false); }
   const activeFilterCount = (filterLoc ? 1 : 0) + (filterType ? 1 : 0);
 
+  const visibleAssets = useMemo(() => {
+    let list = assets;
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      list = list.filter((a) =>
+        a.name.toLowerCase().includes(q) ||
+        (a.brand || "").toLowerCase().includes(q) ||
+        (a.model || "").toLowerCase().includes(q) ||
+        (a.serial_number || "").toLowerCase().includes(q) ||
+        (a.qr_code || "").toLowerCase().includes(q)
+      );
+    }
+    const sorted = [...list];
+    if (sort === "name_asc") sorted.sort((a, b) => a.name.localeCompare(b.name));
+    else if (sort === "name_desc") sorted.sort((a, b) => b.name.localeCompare(a.name));
+    else if (sort === "recent") sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    return sorted;
+  }, [assets, search, sort]);
+
   return (
     <div style={{ padding: "1rem", maxWidth: "1000px", margin: "0 auto" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "1rem" }}>
         <h1>Activos</h1>
-        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-          <FilterButton activeCount={activeFilterCount} onClick={openFilters} />
-          <Link href="/dashboard/assets/new">
-            <button style={{ background: theme.primary, color: theme.primaryText, border: "none", padding: "0.75rem 1.5rem", borderRadius: "0.5rem" }}>+ Nuevo Activo</button>
-          </Link>
-        </div>
+        <Link href="/dashboard/assets/new">
+          <button style={{ background: theme.primary, color: theme.primaryText, border: "none", padding: "0.75rem 1.5rem", borderRadius: "0.5rem" }}>+ Nuevo Activo</button>
+        </Link>
+      </div>
+
+      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.75rem", flexWrap: "wrap" }}>
+        <input
+          type="search"
+          placeholder="Buscar por nombre, marca, modelo, serie o QR..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ flex: "1 1 260px", padding: "0.625rem 0.875rem", border: `1px solid ${theme.border}`, borderRadius: "0.5rem", fontSize: "0.9375rem", background: theme.surface, color: theme.text }}
+        />
+        <FilterButton activeCount={activeFilterCount} onClick={openFilters} />
+        <SortButton value={sort} options={SORT_OPTIONS} onChange={setSort} />
       </div>
 
       {activeFilterCount > 0 && (
@@ -97,9 +135,11 @@ export default function AssetsPage() {
 
       {loading ? <div style={{ textAlign: "center", padding: "2rem" }}>Cargando...</div> : assets.length === 0 ? (
         <div style={{ textAlign: "center", padding: "2rem", color: theme.textSecondary }}>No hay activos. <Link href="/dashboard/assets/new">Crear primero</Link></div>
+      ) : visibleAssets.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "2rem", color: theme.textSecondary }}>No hay activos que coincidan con la búsqueda o los filtros.</div>
       ) : (
         <ul style={{ listStyle: "none", padding: 0 }}>
-          {assets.map(a=>(<li key={a.id} style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem", marginBottom: "0.75rem", background: theme.surface }}>
+          {visibleAssets.map(a=>(<li key={a.id} style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem", marginBottom: "0.75rem", background: theme.surface }}>
             <Link href={`/dashboard/assets/${a.id}`} style={{ textDecoration: "none", color: "inherit" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div>

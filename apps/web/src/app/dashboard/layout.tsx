@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { theme } from "@/lib/theme";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const navItems = [
   { href: "/dashboard", label: "Panel", icon: "🏠", exact: true },
@@ -39,6 +40,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div style={{ maxWidth: "1200px", margin: "0 auto", position: "relative", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Link href="/dashboard" style={{ fontWeight: 700, fontSize: "1.25rem", color: theme.headerText, textDecoration: "none" }}>gi-ot</Link>
 
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <ThemeToggle />
           <button
             onClick={() => setMenuOpen((v) => !v)}
             aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
@@ -48,6 +51,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           >
             {menuOpen ? "✕" : "☰"}
           </button>
+          </div>
 
           <nav className={`dashboard-nav${menuOpen ? " open" : ""}`}>
             {navItems.map(item => {

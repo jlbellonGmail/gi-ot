@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { theme } from "@/lib/theme";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function TecnicoLayout({ children }: { children: React.ReactNode }) {
   const [authed, setAuthed] = useState(false);
@@ -23,6 +24,7 @@ export default function TecnicoLayout({ children }: { children: React.ReactNode 
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
           {/* Estado estático: la sincronización real (cola/offline) llega en Etapa 08 */}
           <span style={{ fontSize: "0.75rem", color: theme.headerSuccess }}>● Sincronizado</span>
+          <ThemeToggle />
           <button
             onClick={() => { localStorage.removeItem("access_token"); window.location.href = "/login"; }}
             style={{ padding: "0.375rem 0.75rem", background: "transparent", border: "1px solid " + theme.headerActive, color: theme.headerText, borderRadius: "0.375rem", cursor: "pointer", fontSize: "0.8rem" }}

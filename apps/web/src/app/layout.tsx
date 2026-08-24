@@ -37,9 +37,27 @@ export const viewport: Viewport = {
   themeColor: "#0f172a",
 };
 
+// Aplica el tema guardado (si el usuario eligió uno manualmente con
+// ThemeToggle.tsx) antes del primer pintado, para evitar el parpadeo
+// de ver el tema del sistema por una fracción de segundo y luego saltar
+// al elegido. Corre inline y de forma síncrona a propósito.
+const themeInitScript = `
+(function () {
+  try {
+    var t = localStorage.getItem("gi-ot-theme");
+    if (t === "light" || t === "dark") {
+      document.documentElement.setAttribute("data-theme", t);
+    }
+  } catch (e) {}
+})();
+`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body>
         <ServiceWorkerRegister />
         {children}
