@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { ErrorBanner } from "@/components/ErrorBanner";
+import { SuccessBanner } from "@/components/SuccessBanner";
 import { Customer, CustomerUpdate, WorkOrder } from "@/lib/types";
 import { WorkOrderHistoryList } from "@/components/WorkOrderHistoryList";
 
@@ -20,6 +21,7 @@ export default function CustomerDetailPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<CustomerUpdate>({
     person_type: "INDIVIDUAL",
@@ -71,6 +73,8 @@ export default function CustomerDetailPage() {
       await api.patch(`/customers/${personId}`, formData);
       await loadCustomer();
       setEditMode(false);
+      setSuccessMessage("Cliente actualizado.");
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Error al guardar");
     } finally {
@@ -97,6 +101,7 @@ export default function CustomerDetailPage() {
       </div>
 
       {error && <ErrorBanner message={error} onRetry={loadCustomer} />}
+      {successMessage && <SuccessBanner message={successMessage} />}
 
       <div style={{ display: "grid", gap: "1rem" }}>
         <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { ErrorBanner } from "@/components/ErrorBanner";
+import { SuccessBanner } from "@/components/SuccessBanner";
 import { Technician, TechnicianUpdate, UserAccount } from "@/lib/types";
 
 export default function TechnicianDetailPage() {
@@ -15,6 +16,7 @@ export default function TechnicianDetailPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [form, setForm] = useState<TechnicianUpdate>({
     person_type: "INDIVIDUAL", display_name: "", address: "", phone: "", email: "", notes: "",
@@ -56,7 +58,14 @@ export default function TechnicianDetailPage() {
   }
 
   async function save() {
-    try { setSaving(true); setError(null); await api.patch(`/technicians/${personId}`, form); await load(); setEditMode(false); }
+    try {
+      setSaving(true); setError(null);
+      await api.patch(`/technicians/${personId}`, form);
+      await load();
+      setEditMode(false);
+      setSuccessMessage("Técnico actualizado.");
+      setTimeout(() => setSuccessMessage(null), 3000);
+    }
     catch (e) { setError(e instanceof Error ? e.message : "Error al guardar"); }
     finally { setSaving(false); }
   }
@@ -99,6 +108,7 @@ export default function TechnicianDetailPage() {
         </div>
       </div>
       {error && <ErrorBanner message={error} onRetry={load} />}
+      {successMessage && <SuccessBanner message={successMessage} />}
       <div style={{ display: "grid", gap: "1rem" }}>
         <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
           <h3 style={{ marginBottom: "0.75rem" }}>Identificaciones</h3>

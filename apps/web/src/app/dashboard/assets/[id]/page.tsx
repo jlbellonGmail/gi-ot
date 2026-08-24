@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { ErrorBanner } from "@/components/ErrorBanner";
+import { SuccessBanner } from "@/components/SuccessBanner";
 import { Asset, Location, AssetType, WorkOrder } from "@/lib/types";
 import { WorkOrderHistoryList } from "@/components/WorkOrderHistoryList";
 
@@ -19,6 +20,7 @@ export default function AssetDetailPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [form, setForm] = useState({ name: "", description: "", brand: "", model: "", serial_number: "", internal_code: "", qr_code: "", notes: "", asset_type_id: "", status: "ACTIVE" });
 
@@ -54,7 +56,14 @@ export default function AssetDetailPage() {
   }
 
   async function save() {
-    try { setSaving(true); setError(null); await api.patch(`/assets/${id}`, form); await load(); setEditMode(false); }
+    try {
+      setSaving(true); setError(null);
+      await api.patch(`/assets/${id}`, form);
+      await load();
+      setEditMode(false);
+      setSuccessMessage("Activo actualizado.");
+      setTimeout(() => setSuccessMessage(null), 3000);
+    }
     catch (e) { setError(e instanceof Error ? e.message : "Error al guardar"); }
     finally { setSaving(false); }
   }
@@ -75,6 +84,7 @@ export default function AssetDetailPage() {
         </div>
       </div>
       {error && <ErrorBanner message={error} onRetry={load} />}
+      {successMessage && <SuccessBanner message={successMessage} />}
       <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
         <dl style={{ display: "grid", gridTemplateColumns: "140px 1fr", gap: "0.5rem 1rem" }}>
           <dt>Ubicación</dt><dd>{loc?.name || asset.location_id}</dd>

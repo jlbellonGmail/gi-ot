@@ -335,7 +335,7 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 * [x] Incorporar estados de error y recuperación. (`components/ErrorBanner.tsx` unificado en toda la app — 16 pantallas migradas; incluye botón "Reintentar" en los errores de carga de datos, que vuelve a llamar la función de carga correspondiente; los errores de envío de formulario no lo llevan porque el propio botón de submit ya cumple ese rol)
 
-* [ ] Incorporar feedback claro de éxito y operaciones pendientes cuando corresponda. (las acciones exitosas se reflejan implícitamente —navegación, recarga de datos— pero no hay confirmación explícita tipo "Guardado" en ediciones inline)
+* [x] Incorporar feedback claro de éxito y operaciones pendientes cuando corresponda. (`components/SuccessBanner.tsx`, confirmación explícita "Actualizado" tras las 4 ediciones inline —Cliente, Técnico, Ubicación, Activo— que desaparece a los 3s; las OT ya se reflejaban con navegación/badges de estado)
 
 ---
 
