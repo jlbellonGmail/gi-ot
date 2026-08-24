@@ -34,7 +34,7 @@ export function FilterChips({
       {chips.map((chip) => (
         <span key={chip.key} style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", background: theme.bg, border: `1px solid ${theme.border}`, borderRadius: "9999px", padding: "0.25rem 0.5rem 0.25rem 0.75rem", fontSize: "0.8125rem", color: theme.text }}>
           {chip.label}
-          <button onClick={() => onRemove(chip.key)} aria-label={`Quitar filtro ${chip.label}`} style={{ background: "transparent", border: "none", cursor: "pointer", color: theme.textSecondary, fontSize: "0.9375rem", lineHeight: 1, padding: "0.125rem" }}>×</button>
+          <button onClick={() => onRemove(chip.key)} aria-label={`Quitar filtro ${chip.label}`} style={{ background: "transparent", border: "none", cursor: "pointer", color: theme.textSecondary, fontSize: "0.9375rem", lineHeight: 1, minWidth: "24px", minHeight: "24px", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>×</button>
         </span>
       ))}
       <button onClick={onClearAll} style={{ background: "transparent", border: "none", color: theme.primary, cursor: "pointer", fontSize: "0.8125rem", textDecoration: "underline" }}>

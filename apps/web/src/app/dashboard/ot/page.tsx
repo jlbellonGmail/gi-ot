@@ -8,6 +8,7 @@ import { ErrorBanner } from "@/components/ErrorBanner";
 import { theme } from "@/lib/theme";
 import { Customer, Location, Asset, Technician, Priority, WorkOrderStatus, WorkOrder } from "@/lib/types";
 import { StatusBadge, PriorityBadge } from "@/components/StatusPriorityBadge";
+import { FilterChips } from "@/components/FilterPanel";
 
 const SORT_OPTIONS: { value: string; label: string }[] = [
   { value: "", label: "Más recientes" },
@@ -198,20 +199,11 @@ export default function OTListPage() {
         </div>
       </div>
 
-      {/* Chips de filtros activos — UI-UX-STANDARDS §13 */}
-      {activeFilterChips.length > 0 && (
-        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "1rem" }}>
-          {activeFilterChips.map((chip) => (
-            <span key={chip.key} style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", background: theme.bg, border: `1px solid ${theme.border}`, borderRadius: "9999px", padding: "0.25rem 0.5rem 0.25rem 0.75rem", fontSize: "0.8125rem", color: theme.text }}>
-              {chip.label}
-              <button onClick={() => removeFilter(chip.key)} aria-label={`Quitar filtro ${chip.label}`} style={{ background: "transparent", border: "none", cursor: "pointer", color: theme.textSecondary, fontSize: "0.9375rem", lineHeight: 1, padding: "0.125rem" }}>×</button>
-            </span>
-          ))}
-          <button onClick={clearAllFilters} style={{ background: "transparent", border: "none", color: theme.primary, cursor: "pointer", fontSize: "0.8125rem", textDecoration: "underline" }}>
-            Limpiar todos
-          </button>
-        </div>
-      )}
+      <FilterChips
+        chips={activeFilterChips}
+        onRemove={(key) => removeFilter(key as keyof Filters)}
+        onClearAll={clearAllFilters}
+      />
 
       {/* Panel de filtros — bottom sheet en mobile, popover anclado en desktop (UI-UX-STANDARDS §14) */}
       {filtersOpen && (

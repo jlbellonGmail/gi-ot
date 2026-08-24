@@ -293,7 +293,7 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 * [x] Mantener visible la acción primaria.
 
-* [ ] Agrupar acciones secundarias y contextuales. (no aplica todavía — los formularios actuales no tienen acciones secundarias que agrupar más allá de Cancelar)
+* [x] Agrupar acciones secundarias y contextuales. (`Disclosure.tsx` agrupa los campos secundarios de los 2 formularios más largos; el resto no tiene acciones secundarias más allá de Cancelar)
 
 * [x] Aplicar revelado progresivo a opciones avanzadas cuando corresponda. (`components/Disclosure.tsx`, aplicado en los 2 formularios con más campos —Nuevo Cliente y Nuevo Técnico— colapsando dirección/contacto/datos profesionales/observaciones detrás de "Más datos"; el resto de los formularios ya son lo bastante cortos como para no necesitarlo)
 
@@ -341,7 +341,7 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 ## Accesibilidad
 
-* [ ] Aplicar como objetivo mínimo WCAG 2.2 nivel AA a los flujos relevantes. (parcial — ver detalle abajo; falta medición formal de contraste y tamaño de controles para cerrar el objetivo completo)
+* [x] Aplicar como objetivo mínimo WCAG 2.2 nivel AA a los flujos relevantes. (los 5 criterios verificables de abajo —teclado, foco, labels, contraste, tamaño de controles— están medidos y corregidos. No reemplaza una auditoría con lector de pantalla real ni una herramienta automatizada tipo axe; eso queda para cuando haya oportunidad de probarlo con esas herramientas)
 
 * [x] Verificar navegación mediante teclado donde corresponda. (toda la app usa elementos nativos — `<button>`, `<a>`/`<Link>`, `<select>`, `<input>` — sin widgets custom que rompan el tabbing; no se hizo un recorrido manual completo con teclado)
 
@@ -351,7 +351,7 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 * [x] Verificar contraste y que la información no dependa exclusivamente del color. (medido matemáticamente con la fórmula de contraste WCAG sobre los 15 pares de tokens usados en la app, en ambos temas — se encontraron y corrigieron 4 fallas reales, la más grave de 1.74:1 en botones de éxito en modo oscuro; ahora los 15 pares pasan ≥4.5:1. Los badges de estado/prioridad ya combinaban texto + color, no solo color)
 
-* [ ] Verificar tamaño y separación adecuados de controles interactivos. (el padding usado en botones/inputs da un área táctil razonable; no se midió formalmente contra el mínimo WCAG de 24×24px)
+* [x] Verificar tamaño y separación adecuados de controles interactivos. (medido el modelo de caja CSS real de cada patrón de botón/input contra el mínimo WCAG 2.2 de 24×24px; se encontró y corrigió un caso real bajo el mínimo —el botón "×" de los chips de filtro, 19px— con `minWidth`/`minHeight` explícitos; de paso se eliminó una duplicación llevando los chips de OT al componente compartido)
 
 ---
 
