@@ -10,6 +10,7 @@ from app.models.template_work_order_status import TemplateWorkOrderStatus
 from app.models.template_work_order_type import TemplateWorkOrderType
 from app.models.tenant import Tenant, TenantConfig
 from app.models.user import User
+from app.models.sync_operation import SyncOperation
 from app.models.work_order import HistoryEventType, WorkOrder, WorkOrderHistory, WorkOrderPhoto
 from app.models.work_order_status import WorkOrderStatus
 from app.models.work_order_type import WorkOrderType
@@ -27,6 +28,7 @@ __all__ = [
     "PersonType",
     "Priority",
     "Role",
+    "SyncOperation",
     "Technician",
     "TechnicianStatus",
     "TemplateAssetType",
