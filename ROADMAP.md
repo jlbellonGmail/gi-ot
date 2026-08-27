@@ -371,18 +371,18 @@ El objetivo es convertir las interfaces funcionales del MVP en una experiencia d
 
 Preferentemente ejecutar esta etapa mediante SDD si el circuito AI-NATIVE ya fue activado.
 
-* [ ] Datos disponibles localmente.
-* [ ] IndexedDB.
-* [ ] Cache Storage.
-* [ ] Service Worker.
-* [ ] Cola de operaciones pendientes.
-* [ ] Trabajo sin conexión.
-* [ ] Sincronización automática.
-* [ ] Reintentos.
-* [ ] Estado visible de sincronización.
-* [ ] Manejo básico de conflictos.
-* [ ] Fotografías pendientes de sincronización.
-* [ ] Pruebas de recuperación después de pérdida de conectividad.
+* [X] Datos disponibles localmente.
+* [X] IndexedDB.
+* [X] Cache Storage.
+* [X] Service Worker.
+* [X] Cola de operaciones pendientes.
+* [X] Trabajo sin conexión.
+* [X] Sincronización automática.
+* [X] Reintentos.
+* [X] Estado visible de sincronización.
+* [X] Manejo básico de conflictos.
+* [X] Fotografías pendientes de sincronización.
+* [X] Pruebas de recuperación después de pérdida de conectividad.
 
 ---
 
