@@ -388,7 +388,7 @@ Preferentemente ejecutar esta etapa mediante SDD si el circuito AI-NATIVE ya fue
 
 # 09 — Comprobantes y comunicaciones
 
-* [ ] Generar comprobante de OT.
+* [X] Generar comprobante de OT.
 * [ ] Branding básico por tenant.
 * [ ] Envío por email.
 * [ ] Evaluar WhatsApp según decisión técnica y comercial.
