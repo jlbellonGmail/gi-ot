@@ -1,7 +1,7 @@
 """Schemas Pydantic para SyncOperation (ROADMAP §08)."""
 
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class SyncOperationOut(BaseModel):

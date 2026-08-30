@@ -1,11 +1,21 @@
 import uuid
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, Enum as SQLEnum, ForeignKey, ForeignKeyConstraint, Index, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 from app.enums import HistoryEventType
+
+if TYPE_CHECKING:
+    from app.models.person import Customer, Technician
+    from app.models.work_order_status import WorkOrderStatus
+    from app.models.work_order_type import WorkOrderType
+    from app.models.priority import Priority
+    from app.models.location import Location
+    from app.models.asset import Asset
+    from app.models.sync_operation import SyncOperation
 
 __all__ = ["HistoryEventType", "WorkOrder", "WorkOrderHistory", "WorkOrderPhoto"]
 
@@ -84,10 +94,25 @@ class WorkOrder(Base):
     status: Mapped["WorkOrderStatus"] = relationship()
     work_order_type: Mapped["WorkOrderType"] = relationship()
     priority: Mapped["Priority"] = relationship()
+    customer: Mapped["Customer"] = relationship(
+        foreign_keys=[customer_id, tenant_id],
+        primaryjoin="and_(WorkOrder.customer_id==Customer.person_id, WorkOrder.tenant_id==Customer.tenant_id)",
+        viewonly=True,
+    )
+    technician: Mapped["Technician"] = relationship(
+        foreign_keys=[technician_id, tenant_id],
+        primaryjoin="and_(WorkOrder.technician_id==Technician.person_id, WorkOrder.tenant_id==Technician.tenant_id)",
+        viewonly=True,
+    )
+    location: Mapped["Location"] = relationship()
+    asset: Mapped["Asset"] = relationship()
     history: Mapped[list["WorkOrderHistory"]] = relationship(
         back_populates="work_order", cascade="all, delete-orphan"
     )
     photos: Mapped[list["WorkOrderPhoto"]] = relationship(
+        back_populates="work_order", cascade="all, delete-orphan"
+    )
+    sync_operations: Mapped[list["SyncOperation"]] = relationship(
         back_populates="work_order", cascade="all, delete-orphan"
     )
 

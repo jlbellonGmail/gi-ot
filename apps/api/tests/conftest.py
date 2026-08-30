@@ -5,7 +5,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
@@ -13,6 +13,18 @@ from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
 from app.models.role import ALL_ROLE_CODES, Role
+from app.models.tenant import Tenant, TenantConfig
+from app.models.user import User
+from app.models.person import Person, Customer, Technician
+from app.models.location import Location, Asset
+from app.models.asset_type import AssetType
+from app.models.work_order import WorkOrder, WorkOrderHistory, WorkOrderPhoto
+from app.models.work_order_type import WorkOrderType
+from app.models.work_order_status import WorkOrderStatus
+from app.models.priority import Priority
+from app.models.work_order_receipt import WorkOrderReceipt
+from app.models.sync_operation import SyncOperation
+
 from tests.helpers import seed_default_config_template
 
 # Base de datos SQLite en memoria, aislada por test — nunca toca data/gi-ot.db.

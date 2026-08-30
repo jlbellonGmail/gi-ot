@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1 import auth, catalogs, people, sync, tenant_config, tenants, users, work_orders
+from app.api.v1 import auth, catalogs, people, receipts, sync, tenant_config, tenants, users, work_orders
 
 api_router = APIRouter()
 api_router.include_router(auth.router)
@@ -16,4 +16,5 @@ api_router.include_router(people.technicians_router)
 api_router.include_router(people.locations_router)
 api_router.include_router(people.assets_router)
 api_router.include_router(work_orders.router)
+api_router.include_router(receipts.router)
 api_router.include_router(sync.router)

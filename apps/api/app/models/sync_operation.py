@@ -20,7 +20,7 @@ class SyncOperation(Base):
 
     __table_args__ = (
         Index("ix_sync_ops_tenant_status", "tenant_id", "status", "created_at"),
-        Index("ix_sync_ops_tenant_wo", "tenant_id", "work_order_id"),
+        Index("ix_sync_ops_tenant_wo", "tenant_id", "entity_id"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
@@ -32,7 +32,7 @@ class SyncOperation(Base):
     operation_type: Mapped[str] = mapped_column(String(100), nullable=False)
     # ID de la entidad afectada (work_order_id u otro)
     entity_id: Mapped[uuid.UUID | None] = mapped_column(
-        nullable=True
+        ForeignKey("work_orders.id", ondelete="SET NULL"), nullable=True
     )
     # Payload serializado con los datos de la operación
     payload: Mapped[str] = mapped_column(Text, nullable=False)
@@ -51,5 +51,7 @@ class SyncOperation(Base):
 
     # Relación con la OT (opcional, depende del operation_type)
     work_order: Mapped["WorkOrder | None"] = relationship(
-        back_populates="sync_operations", cascade="all, delete-orphan"
+        back_populates="sync_operations",
+        foreign_keys="SyncOperation.entity_id",
+        primaryjoin="SyncOperation.entity_id==WorkOrder.id"
     )

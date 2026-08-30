@@ -4,7 +4,8 @@ Genera comprobantes de OT en HTML/PDF, gestiona branding por tenant,
 y envía emails (WhatsApp se evalúa aparte).
 """
 
-import json
+import logging
+import os
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -19,6 +20,8 @@ from app.models.tenant import Tenant, TenantConfig
 from app.models.work_order import WorkOrder
 from app.models.work_order_receipt import WorkOrderReceipt
 from app.schemas.work_order_receipt import TenantBranding, WorkOrderReceiptGenerate, WorkOrderReceiptSend
+
+logger = logging.getLogger(__name__)
 
 
 class ReceiptService:
@@ -35,14 +38,25 @@ class ReceiptService:
             autoescape=select_autoescape(["html", "xml"]),
         )
 
+    def get_branding(self, tenant_id: uuid.UUID) -> TenantBranding:
+        """Obtiene el branding del tenant desde TenantConfig (método público)."""
+        return self._get_branding(tenant_id)
+
     def _get_branding(self, tenant_id: uuid.UUID) -> TenantBranding:
         """Obtiene el branding del tenant desde TenantConfig."""
         config = self.db.query(TenantConfig).filter_by(tenant_id=tenant_id).first()
-        if config and config.branding:
-            try:
-                return TenantBranding(**json.loads(config.branding))
-            except (json.JSONDecodeError, TypeError):
-                pass
+        if config:
+            return TenantBranding(
+                company_name=config.tenant.name if config.tenant else "Empresa",
+                logo_url=config.logo_url,
+                primary_color=config.primary_color or "#0f172a",
+                secondary_color=config.secondary_color or "#1e293b",
+                address=config.address,
+                phone=config.phone,
+                email=config.email,
+                website=config.website,
+                tax_id=config.tax_id,
+            )
 
         tenant = self.db.query(Tenant).filter_by(id=tenant_id).first()
         return TenantBranding(
@@ -51,12 +65,31 @@ class ReceiptService:
             secondary_color="#1e293b",
         )
 
+    def update_branding(self, tenant_id: uuid.UUID, branding: TenantBranding) -> None:
+        """Actualiza el branding del tenant en TenantConfig."""
+        config = self.db.query(TenantConfig).filter_by(tenant_id=tenant_id).first()
+        if not config:
+            config = TenantConfig(tenant_id=tenant_id)
+            self.db.add(config)
+
+        config.logo_url = branding.logo_url
+        config.primary_color = branding.primary_color
+        config.secondary_color = branding.secondary_color
+        config.address = branding.address
+        config.phone = branding.phone
+        config.email = branding.email
+        config.website = branding.website
+        config.tax_id = branding.tax_id
+        config.updated_at = datetime.now(timezone.utc)
+
+        self.db.commit()
+
     def _render_receipt_html(self, wo: WorkOrder, branding: TenantBranding) -> str:
         """Renderiza el HTML del comprobante usando Jinja2."""
         env = self._get_template_env()
         try:
             template = env.get_template("receipt.html")
-        except:
+        except Exception:
             template = env.from_string(RECEIPT_TEMPLATE_HTML)
 
         context = {
@@ -94,7 +127,7 @@ class ReceiptService:
 
         if existing:
             existing.content_html = html_content
-            existing.pdf_storage_key = existing.pdf_storage_key or pdf_key
+            existing.pdf_storage_key = pdf_key
             existing.generated_by = generated_by
             existing.generated_at = datetime.now(timezone.utc)
             receipt = existing
@@ -167,7 +200,8 @@ class ReceiptService:
             pdf.output(str(filepath))
 
             return f"receipts/{tenant_id}/{filename}"
-        except Exception:
+        except Exception as e:
+            logger.error(f"Error generating PDF for work_order {wo.id}: {e}")
             return None
 
     def send_receipt_email(
@@ -183,10 +217,103 @@ class ReceiptService:
         if not receipt:
             raise ValueError("Comprobante no encontrado")
 
+        # Obtener configuración de email
+        settings = get_settings()
+        smtp_host = getattr(settings, "smtp_host", None)
+        smtp_port = getattr(settings, "smtp_port", 587)
+        smtp_user = getattr(settings, "smtp_user", None)
+        smtp_password = getattr(settings, "smtp_password", None)
+        smtp_from = getattr(settings, "smtp_from", None)
+        smtp_use_tls = getattr(settings, "smtp_use_tls", True)
+
+        subject = payload.subject or f"Comprobante OT #{receipt.work_order_id}"
+        body = payload.body or f"Adjunto encontrará el comprobante de la OT."
+
+        # Si no hay configuración SMTP, registrar como pendiente y retornar éxito condicional
+        if not smtp_host or not smtp_user or not smtp_from:
+            logger.warning(
+                f"Email no enviado para receipt {receipt.id}: configuración SMTP incompleta. "
+                f"Marcando como pendiente de envío."
+            )
+            # No marcar como enviado si no hay configuración real
+            return False
+
+        # Enviar email real via SMTP
+        try:
+            import smtplib
+            from email.mime.text import MIMEText
+            from email.mime.multipart import MIMEMultipart
+            from email.mime.application import MIMEApplication
+
+            msg = MIMEMultipart()
+            msg["From"] = smtp_from
+            msg["To"] = payload.recipient_email
+            msg["Subject"] = subject
+
+            msg.attach(MIMEText(body, "plain"))
+
+            # Adjuntar PDF si existe
+            if receipt.pdf_storage_key:
+                pdf_path = Path(settings.uploads_dir) / receipt.pdf_storage_key
+                if pdf_path.exists():
+                    with open(pdf_path, "rb") as f:
+                        pdf_attachment = MIMEApplication(f.read(), _subtype="pdf")
+                        pdf_attachment.add_header(
+                            "Content-Disposition",
+                            "attachment",
+                            filename=f"comprobante_ot_{receipt.work_order_id}.pdf",
+                        )
+                        msg.attach(pdf_attachment)
+
+            with smtplib.SMTP(smtp_host, smtp_port) as server:
+                if smtp_use_tls:
+                    server.starttls()
+                if smtp_user and smtp_password:
+                    server.login(smtp_user, smtp_password)
+                server.send_message(msg)
+
+            logger.info(f"Email enviado exitosamente para receipt {receipt.id} a {payload.recipient_email}")
+
+        except Exception as e:
+            logger.error(f"Error enviando email para receipt {receipt.id}: {e}")
+            raise ValueError(f"Error al enviar email: {str(e)}")
+
+        # Solo marcar como enviado después de confirmación válida
         receipt.sent_to_email = True
         receipt.last_sent_at = datetime.now(timezone.utc)
         self.db.commit()
         return True
+
+    def send_receipt_whatsapp(
+        self,
+        tenant_id: uuid.UUID,
+        work_order_id: uuid.UUID,
+        phone: str,
+    ) -> bool:
+        """Envía el comprobante por WhatsApp.
+
+        NOTA: Según ROADMAP §09, WhatsApp debe evaluarse según decisión técnica y comercial.
+        No bloquea el MVP. Esta implementación es un placeholder que registra la intención
+        y devuelve False indicando que no se envió realmente.
+
+        Cuando se tome la decisión técnica (proveedor: Twilio, Meta Cloud API, etc.),
+        esta función debe implementarse completamente.
+        """
+        receipt = self.db.query(WorkOrderReceipt).filter_by(
+            work_order_id=work_order_id, tenant_id=tenant_id
+        ).first()
+        if not receipt:
+            raise ValueError("Comprobante no encontrado")
+
+        logger.info(
+            f"WhatsApp send requested for receipt {receipt.id} to {phone}. "
+            f"Funcionalidad pendiente de decisión técnica/comercial (ROADMAP §09)."
+        )
+
+        # No marcar como enviado - solo registrar la solicitud
+        # Cuando se implemente realmente, aquí iría la llamada al proveedor (Twilio, Meta, etc.)
+        # y se marcaría receipt.sent_to_whatsapp = True tras confirmación
+        return False
 
 
 RECEIPT_TEMPLATE_HTML = """
@@ -223,8 +350,8 @@ RECEIPT_TEMPLATE_HTML = """
         <div class="section-title">CLIENTE</div>
         {% if wo.customer and wo.customer.person %}
         <div class="detail-row"><span class="detail-label">Nombre:</span><span class="detail-value">{{ wo.customer.person.display_name }}</span></div>
-        <div class="detail-row"><span class="detail-label">Telefono:</span><span class="detail-value">{{ wo.customer.phone or 'N/A' }}</span></div>
-        <div class="detail-row"><span class="detail-label">Email:</span><span class="detail-value">{{ wo.customer.email or 'N/A' }}</span></div>
+        <div class="detail-row"><span class="detail-label">Telefono:</span><span class="detail-value">{{ wo.customer.person.phone or 'N/A' }}</span></div>
+        <div class="detail-row"><span class="detail-label">Email:</span><span class="detail-value">{{ wo.customer.person.email or 'N/A' }}</span></div>
         {% endif %}
     </div>
 

@@ -37,6 +37,11 @@ class WorkOrderReceiptSend(BaseModel):
     body: Optional[str] = None
 
 
+class WhatsAppSend(BaseModel):
+    """Request para enviar un comprobante por WhatsApp."""
+    phone: str
+
+
 class TenantBranding(BaseModel):
     """Configuración de branding del tenant para comprobantes."""
     company_name: str
@@ -48,3 +53,16 @@ class TenantBranding(BaseModel):
     email: Optional[str] = None
     website: Optional[str] = None
     tax_id: Optional[str] = None  # CUIT/NIF
+
+
+class TenantBrandingUpdate(BaseModel):
+    """Request para actualizar branding del tenant (campos opcionales)."""
+    company_name: Optional[str] = None
+    logo_url: Optional[str] = None
+    primary_color: Optional[str] = None
+    secondary_color: Optional[str] = None
+    address: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    website: Optional[str] = None
+    tax_id: Optional[str] = None

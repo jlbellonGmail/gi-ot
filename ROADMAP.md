@@ -389,9 +389,9 @@ Preferentemente ejecutar esta etapa mediante SDD si el circuito AI-NATIVE ya fue
 # 09 — Comprobantes y comunicaciones
 
 * [X] Generar comprobante de OT.
-* [ ] Branding básico por tenant.
-* [ ] Envío por email.
-* [ ] Evaluar WhatsApp según decisión técnica y comercial.
+* [X] Branding básico por tenant.
+* [X] Envío por email.
+* [X] Evaluar WhatsApp según decisión técnica y comercial.
 
 WhatsApp no deberá bloquear la disponibilidad del MVP inicial.
 

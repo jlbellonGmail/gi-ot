@@ -19,11 +19,11 @@ from app.models.work_order import WorkOrder
 from app.models.work_order_status import WorkOrderStatus
 from app.models.priority import Priority
 from app.models.work_order_type import WorkOrderType
-from app.models.customer import Customer
-from app.models.location import Location
-from app.models.asset import Asset
-from app.models.technician import Technician
-from app.models.person import Person
+from app.models.person import Customer, Technician, Person
+
+
+
+
 
 
 def process_sync_operations(
