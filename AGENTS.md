@@ -10,31 +10,48 @@ No duplicar aquí información disponible en documentos canónicos.
 
 ## Estado del proyecto
 
-**Modo actual: BOOTSTRAP**
+**Modo actual: AI-NATIVE** (activado 2026-08-30)
 
-Objetivo:
-
-Construir rápidamente un MVP vertical correcto y evolucionarlo de forma controlada antes de activar el circuito formal SDD / AI-NATIVE.
+Histórico:
+- Puntos 00–09 construidos bajo modo **BOOTSTRAP** (ver sección "Histórico BOOTSTRAP" abajo).
+- A partir de esta activación, todo nuevo trabajo (Feature/Milestone) debe utilizar el circuito formal AI-NATIVE definido en `.agentic/`.
 
 El repositorio Git ya está activo.
 
-La rama de integración durante BOOTSTRAP es:
+La rama de integración es:
 
 `develop`
 
-Durante BOOTSTRAP no ejecutar automáticamente:
+Durante AI-NATIVE se ejecutan obligatoriamente:
 
-* feature branches;
-* worktrees;
-* Pull Requests;
-* Analyst / Reviewer / Builder / QA;
-* auditorías formales;
-* HITL por feature;
-* `runs/<feature>/spec.md`.
+* feature branches (una por feature/milestone);
+* Pull Requests hacia `develop`;
+* Circuito completo de agentes: Analyst → Reviewer → Builder → QA → Code Reviewer;
+* Auditorías formales y evidencias en `runs/<feature>/`;
+* HITL (Human-In-The-Loop) antes de merge;
+* `runs/<feature>/spec.md` como contrato inmutable;
+* CI/CD automático en PR (GitHub Actions).
 
-La activación del circuito AI-NATIVE requiere decisión explícita del usuario.
+Git se utiliza con la estrategia formal definida en `.agentic/workflows/git.md`.
 
-Git puede utilizarse durante BOOTSTRAP para conservar una línea base limpia y trazable sin activar todavía el circuito agéntico completo.
+---
+
+## Histórico BOOTSTRAP (Puntos 00–09)
+
+Los puntos 00–09 fueron construidos en modo BOOTSTRAP para validar rápidamente un MVP vertical:
+
+- **00** — Definición del producto (PRD, modelo funcional, arquitectura)
+- **01** — Fundación SaaS (multitenancy, auth, RBAC, roles base)
+- **02** — Parametrización (config templates, catálogos base)
+- **03** — Maestros (Person, Customer, Technician, Ubicaciones, Activos)
+- **04** — Núcleo OT (crear, asignar, ejecutar, cerrar, historial, reapertura)
+- **05** — MVP vertical (circuito completo punta a punta validado)
+- **06** — Mobile/PWA (mobile-first, cámara, QR, fotos, OT urgente)
+- **07** — Oficina/UX operativa (dashboard, listados, búsqueda, filtros, formularios, tema, accesibilidad)
+- **08** — Offline y sincronización (IndexedDB, Service Worker, cola, sync, conflictos, fotos)
+- **09** — Comprobantes y comunicaciones (generación HTML/PDF, branding tenant, email SMTP, WhatsApp evaluado)
+
+Este histórico **no se reescribe, rebasea ni reconstruye**. Sirve como contexto y línea base.
 
 ---
 
@@ -61,7 +78,7 @@ Leer según la tarea:
    Estándar transversal obligatorio para toda interfaz, formulario, listado, navegación e interacción visual.
 
 7. `.agentic/`
-   Reglas del circuito formal cuando AI-NATIVE esté activo.
+   **Reglas del circuito formal AI-NATIVE (fuente canónica obligatoria).**
 
 No duplicar contenido de estos documentos dentro de `AGENTS.md`.
 
@@ -220,10 +237,10 @@ No elegir tecnologías nuevas si el stack ya está definido en:
 
 No cambiar el stack sin decisión explícita.
 
-Durante el MVP:
+Arquitectura actual:
 
-* frontend/PWA en `apps/web/`;
-* API en `apps/api/`;
+* frontend/PWA en `apps/web/` (Next.js + React + TypeScript);
+* API en `apps/api/` (FastAPI + SQLAlchemy + Alembic);
 * monolito modular;
 * evitar microservicios y complejidad prematura.
 
@@ -300,57 +317,57 @@ Las SPEC futuras deben referenciar los documentos transversales en lugar de copi
 
 ---
 
-## Evolución a SDD / AI-NATIVE
+## Circuito AI-NATIVE (fuente canónica: `.agentic/`)
 
-Evolución prevista:
+### Roles y flujo obligatorio
 
-`PRD → ROADMAP → BOOTSTRAP → MVP vertical → SDD → AI-NATIVE`
+```
+Analyst → Reviewer → Builder → QA → Code Reviewer → HITL → Merge a develop
+```
 
-Cuando el usuario active AI-NATIVE:
+Cada feature/milestone debe producir evidencias en `runs/<feature>/`:
+- `spec.md` (contrato inmutable)
+- `analysis.md`
+- `review.md`
+- `build.md`
+- `qa.md`
+- `codereview.md`
+- `hitl.md`
 
-1. reconciliar código, PRD, ROADMAP y documentación;
-2. convertir pendientes en features o milestones;
-3. utilizar `runs/<feature>/spec.md`;
-4. activar las reglas de `.agentic/`;
-5. aplicar Analyst, Reviewer, Builder, QA y Code Reviewer según el template;
-6. aplicar auditoría y evidencias;
-7. ejecutar HITL;
-8. activar estrategia formal de ramas, worktrees y PR;
-9. activar CI/CD según corresponda.
+### Gates obligatorios
 
-Toda SPEC que afecte frontend deberá leer y respetar:
+1. **Post-Analyst**: Reviewer aprueba `analysis.md` + `spec.md`
+2. **Post-Reviewer**: Solo `APROBADO` permite continuar a Builder
+3. **Post-Builder**: Tests + lint + typecheck + build + migraciones = PASS
+4. **Post-QA**: Suite completa verde, criterios de aceptación PASS
+5. **Post-Code Reviewer**: Calidad, seguridad, arquitectura APROBADO
+6. **HITL**: Humano autoriza MERGE con evidencia completa
 
-`docs/ui-ux/UI-UX-STANDARDS.md`
+### Git (AI-NATIVE)
 
-La SPEC documentará solamente comportamiento específico de la feature y excepciones justificadas.
+Estrategia formal en `.agentic/workflows/git.md`:
 
-No duplicará el estándar UI/UX transversal.
+- `main` — Solo releases (protegida)
+- `develop` — Integración (protegida, solo PR)
+- `feature/<nombre>` — Una por feature, desde `develop`
+- `hotfix/<nombre>` — Solo correcciones críticas en `main`
+- **Prohibido**: commit directo a `develop`/`main`, force push, merge sin PR, merge sin CI verde, merge sin HITL
+- **Obligatorio**: squash merge, delete feature branch, mensajes en español
 
-No reestructurar la aplicación únicamente para realizar esta transición.
+### CI/CD (GitHub Actions)
 
----
+Workflow obligatorio en `.github/workflows/ci.yml`:
+- Ejecuta en PR hacia `develop`/`main`
+- Lint (ruff/eslint), Typecheck (mypy/tsc), Tests (pytest/jest), Build
+- Required checks para merge: `ci/lint`, `ci/tests-backend`, `ci/tests-frontend`, `ci/build`
 
-## Git
+### HITL
 
-Git está activo durante BOOTSTRAP.
-
-Rama de integración:
-
-`develop`
-
-Reglas actuales:
-
-* mantener `develop` como línea de trabajo e integración;
-* no trabajar directamente sobre `main`;
-* no crear feature branches, worktrees o PR automáticamente mientras AI-NATIVE no esté activo;
-* no hacer commit ni push sin instrucción explícita del usuario;
-* cuando el usuario solicite commit, incluir únicamente los cambios correspondientes al alcance aprobado;
-* mensajes de commit en español;
-* no utilizar `--force` salvo decisión humana explícita;
-* no crear tags;
-* no fusionar hacia `main` automáticamente.
-
-Cuando el circuito AI-NATIVE sea activado, la estrategia Git formal del template reemplazará estas reglas operativas simplificadas.
+Proceso en `.agentic/hitl.md`:
+- Pre-merge a develop (obligatorio)
+- Pre-release a main (obligatorio)
+- Decisiones irreversibles (arquitectura, migraciones destructivas)
+- Registro inmutable en `runs/<feature>/hitl.md`
 
 ---
 

@@ -12,24 +12,23 @@ Cubre:
 - Rutas realmente registradas
 """
 
-import uuid
-import pytest
 import logging
+import uuid
 from pathlib import Path
 
-from fastapi.testclient import TestClient
+import pytest
 
+from app.models.asset_type import AssetType
+from app.models.location import Asset, Location
+from app.models.person import Customer, Person, PersonType, Technician
+from app.models.priority import Priority
+from app.models.role import Role
 from app.models.tenant import Tenant, TenantConfig
+from app.models.user import User
 from app.models.work_order import WorkOrder
+from app.models.work_order_receipt import WorkOrderReceipt
 from app.models.work_order_status import WorkOrderStatus
 from app.models.work_order_type import WorkOrderType
-from app.models.priority import Priority
-from app.models.person import Person, Customer, Technician, PersonType
-from app.models.location import Location, Asset
-from app.models.asset_type import AssetType
-from app.models.user import User
-from app.models.role import Role
-from app.models.work_order_receipt import WorkOrderReceipt
 from app.services.receipt import ReceiptService
 
 
@@ -210,7 +209,7 @@ class TestReceiptGeneration:
     def test_generate_receipt_tenant_isolation(self, client, db_session):
         """Test aislamiento multitenant: tenant2 no puede generar comprobante de OT de tenant1."""
         data = self.setup_test_data(db_session)
-        tenant1 = data["tenant1"]
+        _tenant1 = data["tenant1"]
         tenant2 = data["tenant2"]
         wo_terminal = data["wo_terminal"]
 
@@ -241,7 +240,7 @@ class TestReceiptGeneration:
         # Primera generación
         payload1 = WorkOrderReceiptGenerate(work_order_id=wo_terminal.id, force_regenerate=False)
         receipt1 = service.generate_receipt(tenant1.id, payload1, generated_by=admin_user.id)
-        html1 = receipt1.content_html
+        _html1 = receipt1.content_html
         pdf1 = receipt1.pdf_storage_key
 
         # Pequeña pausa para permitir timestamp diferente (aunque el test puede ser rápido)
@@ -250,7 +249,7 @@ class TestReceiptGeneration:
         # Segunda generación con force_regenerate
         payload2 = WorkOrderReceiptGenerate(work_order_id=wo_terminal.id, force_regenerate=True)
         receipt2 = service.generate_receipt(tenant1.id, payload2, generated_by=admin_user.id)
-        html2 = receipt2.content_html
+        _html2 = receipt2.content_html
         pdf2 = receipt2.pdf_storage_key
 
         # Debe ser el mismo registro (mismo ID)
