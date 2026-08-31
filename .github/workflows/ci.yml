@@ -39,7 +39,7 @@ jobs:
       - name: Run ruff (quality ratchet)
         run: |
           ruff check . --output-format=json > ruff_current.json
-          python - <<'EOF'
+          python -c "
 import json, sys
 with open('ruff_baseline.json') as f:
     baseline = {json.dumps(e, sort_keys=True) for e in json.load(f)}
@@ -49,7 +49,7 @@ new_errors = [e for e in current if json.dumps(e, sort_keys=True) not in baselin
 if new_errors:
     print(f'::error::Found {len(new_errors)} NEW ruff errors not in baseline:')
     for e in new_errors[:20]:
-        print(f'  {e["filename"]}:{e["location"]["row"]}:{e["location"]["column"]} {e["code"]} {e["message"]}')
+        print(f'  {e[\"filename\"]}:{e[\"location\"][\"row\"]}:{e[\"location\"][\"column\"]} {e[\"code\"]} {e[\"message\"]}')
     if len(new_errors) > 20:
         print(f'  ... and {len(new_errors) - 20} more')
     sys.exit(1)
@@ -58,7 +58,7 @@ else:
     with open('ruff_current.json') as f:
         current = json.load(f)
     print(f'  Total current errors: {len(current)} (baseline: {len(baseline)})')
-EOF
+"
 
   typecheck-backend:
     name: Typecheck Backend (mypy)
@@ -144,7 +144,7 @@ EOF
       - name: Run eslint (quality ratchet)
         run: |
           npx eslint . --format=json > eslint_current.json 2>/dev/null || true
-          node - <<'EOF'
+          node -e "
           const fs = require('fs');
           const baseline = new Set(JSON.parse(fs.readFileSync('eslint_baseline.json')).map(e => JSON.stringify(e)));
           const current = JSON.parse(fs.readFileSync('eslint_current.json')).flatMap(r => r.messages).map(e => JSON.stringify(e));
@@ -158,7 +158,7 @@ EOF
             console.log('✓ No new eslint errors (quality ratchet passed)');
             console.log('  Total current errors: ' + current.length + ' (baseline: ' + baseline.size + ')');
           }
-EOF
+"
 
   typecheck-frontend:
     name: Typecheck Frontend (tsc)
@@ -185,7 +185,7 @@ EOF
       - name: Run tsc (quality ratchet)
         run: |
           npx tsc --noEmit 2>&1 | tee tsc_current.txt || true
-          node - <<'EOF'
+          node -e "
           const fs = require('fs');
           const baseline = new Set(fs.readFileSync('tsc_baseline.txt', 'utf8').split('\n').filter(l => l.trim()));
           const current = fs.readFileSync('tsc_current.txt', 'utf8').split('\n').filter(l => l.includes('error TS'));
@@ -199,7 +199,7 @@ EOF
             console.log('✓ No new tsc errors (quality ratchet passed)');
             console.log('  Total current errors: ' + current.length + ' (baseline: ' + baseline.size + ')');
           }
-EOF
+"
 
   build-frontend:
     name: Build Frontend (next build)
