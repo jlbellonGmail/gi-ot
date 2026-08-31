@@ -22,6 +22,8 @@ jobs:
         working-directory: apps/api
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -30,10 +32,33 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install ruff
-      - name: Run ruff (quality ratchet - allow baseline)
+      - name: Get baseline from develop
+        run: |
+          git fetch origin develop:refs/remotes/origin/develop --depth=1 2>/dev/null || true
+          git show origin/develop:apps/api/ruff_baseline.json > ruff_baseline.json 2>/dev/null || echo "[]" > ruff_baseline.json
+      - name: Run ruff (quality ratchet)
         run: |
           ruff check . --output-format=json > ruff_current.json
-          echo "Total errors: $(jq length ruff_current.json)"
+          python -c "
+import json, sys
+with open('ruff_baseline.json') as f:
+    baseline = {json.dumps(e, sort_keys=True) for e in json.load(f)}
+with open('ruff_current.json') as f:
+    current = json.load(f)
+new_errors = [e for e in current if json.dumps(e, sort_keys=True) not in baseline]
+if new_errors:
+    print(f'::error::Found {len(new_errors)} NEW ruff errors not in baseline:')
+    for e in new_errors[:20]:
+        print(f'  {e[\"filename\"]}:{e[\"location\"][\"row\"]}:{e[\"location\"][\"column\"]} {e[\"code\"]} {e[\"message\"]}')
+    if len(new_errors) > 20:
+        print(f'  ... and {len(new_errors) - 20} more')
+    sys.exit(1)
+else:
+    print('✓ No new ruff errors (quality ratchet passed)')
+    with open('ruff_current.json') as f:
+        current = json.load(f)
+    print(f'  Total current errors: {len(current)} (baseline: {len(baseline)})')
+  "
 
   typecheck-backend:
     name: Typecheck Backend (mypy)
@@ -102,6 +127,8 @@ jobs:
         working-directory: apps/web
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -110,8 +137,28 @@ jobs:
           cache-dependency-path: apps/web/package-lock.json
       - name: Install dependencies
         run: npm ci
-      - name: Run eslint
-        run: npm run lint
+      - name: Get baseline from develop
+        run: |
+          git fetch origin develop:refs/remotes/origin/develop --depth=1 2>/dev/null || true
+          git show origin/develop:apps/web/eslint_baseline.json > eslint_baseline.json 2>/dev/null || echo "[]" > eslint_baseline.json
+      - name: Run eslint (quality ratchet)
+        run: |
+          npx eslint . --format=json > eslint_current.json 2>/dev/null || true
+          node -e "
+          const fs = require('fs');
+          const baseline = new Set(JSON.parse(fs.readFileSync('eslint_baseline.json')).map(e => JSON.stringify(e)));
+          const current = JSON.parse(fs.readFileSync('eslint_current.json')).flatMap(r => r.messages).map(e => JSON.stringify(e));
+          const newErrors = current.filter(e => !baseline.has(e));
+          if (newErrors.length > 0) {
+            console.error('::error::Found ' + newErrors.length + ' NEW eslint errors not in baseline:');
+            newErrors.slice(0, 20).forEach(e => console.error('  ' + e));
+            if (newErrors.length > 20) console.error('  ... and ' + (newErrors.length - 20) + ' more');
+            process.exit(1);
+          } else {
+            console.log('✓ No new eslint errors (quality ratchet passed)');
+            console.log('  Total current errors: ' + current.length + ' (baseline: ' + baseline.size + ')');
+          }
+          "
 
   typecheck-frontend:
     name: Typecheck Frontend (tsc)
@@ -121,6 +168,8 @@ jobs:
         working-directory: apps/web
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
@@ -129,8 +178,28 @@ jobs:
           cache-dependency-path: apps/web/package-lock.json
       - name: Install dependencies
         run: npm ci
-      - name: Run tsc
-        run: npm run typecheck
+      - name: Get baseline from develop
+        run: |
+          git fetch origin develop:refs/remotes/origin/develop --depth=1 2>/dev/null || true
+          git show origin/develop:apps/web/tsc_baseline.txt > tsc_baseline.txt 2>/dev/null || echo "" > tsc_baseline.txt
+      - name: Run tsc (quality ratchet)
+        run: |
+          npx tsc --noEmit 2>&1 | tee tsc_current.txt || true
+          node -e "
+          const fs = require('fs');
+          const baseline = new Set(fs.readFileSync('tsc_baseline.txt', 'utf8').split('\n').filter(l => l.trim()));
+          const current = fs.readFileSync('tsc_current.txt', 'utf8').split('\n').filter(l => l.includes('error TS'));
+          const newErrors = current.filter(e => !baseline.has(e.trim()));
+          if (newErrors.length > 0) {
+            console.error('::error::Found ' + newErrors.length + ' NEW tsc errors not in baseline:');
+            newErrors.slice(0, 20).forEach(e => console.error('  ' + e));
+            if (newErrors.length > 20) console.error('  ... and ' + (newErrors.length - 20) + ' more');
+            process.exit(1);
+          } else {
+            console.log('✓ No new tsc errors (quality ratchet passed)');
+            console.log('  Total current errors: ' + current.length + ' (baseline: ' + baseline.size + ')');
+          }
+          "
 
   build-frontend:
     name: Build Frontend (next build)

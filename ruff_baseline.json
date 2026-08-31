@@ -13982,7 +13982,7 @@
       "applicability": "safe",
       "edits": [
         {
-          "content": "\"Adjunto encontrar├í el comprobante de la OT.\"",
+          "content": "\"Adjunto encontrará el comprobante de la OT.\"",
           "end_location": {
             "column": 78,
             "row": 230
