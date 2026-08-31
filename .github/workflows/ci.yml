@@ -32,10 +32,13 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install ruff
+      - name: Verify baseline exists
+        run: |
+          ls -la ../../ruff_baseline.json
+          head -c 200 ../../ruff_baseline.json
       - name: Run ruff (quality ratchet)
         run: |
-          # Use baseline from repo root (checked out with the PR)
-          cp ../../ruff_baseline.json ruff_baseline.json 2>/dev/null || echo "[]" > ruff_baseline.json
+          cp ../../ruff_baseline.json ruff_baseline.json
           ruff check . --output-format=json > ruff_current.json
           python .github/scripts/quality_ratchet_ruff.py
 
@@ -59,7 +62,7 @@ jobs:
           pip install mypy
       - name: Run mypy (quality ratchet)
         run: |
-          cp ../../mypy_baseline.txt mypy_baseline.txt 2>/dev/null || echo "" > mypy_baseline.txt
+          cp ../../mypy_baseline.txt mypy_baseline.txt
           mypy . 2>&1 | tee mypy_current.txt || true
           python .github/scripts/quality_ratchet_mypy.py
 
@@ -119,9 +122,13 @@ jobs:
           cache-dependency-path: apps/web/package-lock.json
       - name: Install dependencies
         run: npm ci
+      - name: Verify baseline exists
+        run: |
+          ls -la ../../eslint_baseline.json
+          head -c 200 ../../eslint_baseline.json
       - name: Run eslint (quality ratchet)
         run: |
-          cp ../../eslint_baseline.json eslint_baseline.json 2>/dev/null || echo "[]" > eslint_baseline.json
+          cp ../../eslint_baseline.json eslint_baseline.json
           npx eslint . --format=json > eslint_current.json 2>/dev/null || true
           node .github/scripts/quality_ratchet_eslint.js
 
@@ -143,9 +150,13 @@ jobs:
           cache-dependency-path: apps/web/package-lock.json
       - name: Install dependencies
         run: npm ci
+      - name: Verify baseline exists
+        run: |
+          ls -la ../../tsc_baseline.txt
+          head -c 200 ../../tsc_baseline.txt
       - name: Run tsc (quality ratchet)
         run: |
-          cp ../../tsc_baseline.txt tsc_baseline.txt 2>/dev/null || echo "" > tsc_baseline.txt
+          cp ../../tsc_baseline.txt tsc_baseline.txt
           npx tsc --noEmit 2>&1 | tee tsc_current.txt || true
           node .github/scripts/quality_ratchet_tsc.js
 
