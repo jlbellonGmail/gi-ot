@@ -12,7 +12,9 @@ function main() {
         console.log("⚠ No baseline found, creating empty baseline");
         baseline = new Set();
     } else {
+        console.log(`Loading baseline from ${baselinePath} (size: ${fs.statSync(baselinePath).size} bytes)`);
         baseline = new Set(JSON.parse(fs.readFileSync(baselinePath, 'utf8')).map(e => JSON.stringify(e)));
+        console.log(`Baseline entries: ${baseline.size}`);
     }
 
     if (!fs.existsSync(currentPath)) {
@@ -24,6 +26,8 @@ function main() {
         .flatMap(r => r.messages)
         .map(e => JSON.stringify(e));
 
+    console.log(`Current errors: ${current.length}`);
+
     const newErrors = current.filter(e => !baseline.has(e));
 
     if (newErrors.length > 0) {
@@ -31,6 +35,12 @@ function main() {
         newErrors.slice(0, 20).forEach(e => console.error('  ' + e));
         if (newErrors.length > 20) {
             console.error(`  ... and ${newErrors.length - 20} more`);
+        }
+        if (baseline.size > 0) {
+            console.error(`DEBUG: First baseline entry: ${next(baseline.values())}`);
+        }
+        if (current.length > 0) {
+            console.error(`DEBUG: First current entry: ${current[0]}`);
         }
         process.exit(1);
     } else {

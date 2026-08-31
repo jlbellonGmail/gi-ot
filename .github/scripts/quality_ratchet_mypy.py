@@ -13,8 +13,10 @@ def main():
         print("⚠ No baseline found, creating empty baseline")
         baseline = set()
     else:
+        print(f"Loading baseline from {baseline_path} (size: {baseline_path.stat().st_size} bytes)")
         with open(baseline_path) as f:
             baseline = set(line.strip() for line in f if line.strip())
+        print(f"Baseline entries: {len(baseline)}")
 
     if not current_path.exists():
         print("✓ No mypy output file found")
@@ -22,6 +24,8 @@ def main():
 
     with open(current_path) as f:
         current_lines = [line.strip() for line in f if line.strip() and ': error:' in line]
+
+    print(f"Current errors: {len(current_lines)}")
 
     new_errors = [line for line in current_lines if line not in baseline]
 
@@ -31,10 +35,14 @@ def main():
             print(f"  {e}")
         if len(new_errors) > 20:
             print(f"  ... and {len(new_errors) - 20} more")
+        if baseline:
+            print(f"DEBUG: First baseline entry: {next(iter(baseline))}")
+        if current_lines:
+            print(f"DEBUG: First current entry: {current_lines[0]}")
         sys.exit(1)
     else:
         print("✓ No new mypy errors (quality ratchet passed)")
-        baseline_size = len(baseline) if baseline_path.exists() else 0
+        baseline_size = len(baseline) if Path("mypy_baseline.txt").exists() else 0
         print(f"  Total current errors: {len(current_lines)} (baseline: {baseline_size})")
 
 
