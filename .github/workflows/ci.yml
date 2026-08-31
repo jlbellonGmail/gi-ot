@@ -35,7 +35,7 @@ jobs:
       - name: Get baseline from develop
         run: |
           git fetch origin develop:refs/remotes/origin/develop --depth=1 2>/dev/null || true
-          git show origin/develop:apps/api/ruff_baseline.json > ruff_baseline.json 2>/dev/null || echo "[]" > ruff_baseline.json
+          git show origin/develop:ruff_baseline.json > ruff_baseline.json 2>/dev/null || echo "[]" > ruff_baseline.json
       - name: Run ruff (quality ratchet)
         run: |
           ruff check . --output-format=json > ruff_current.json
