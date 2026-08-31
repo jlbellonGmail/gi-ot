@@ -32,12 +32,10 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install ruff
-      - name: Get baseline from develop
-        run: |
-          git fetch origin develop:refs/remotes/origin/develop --depth=1 2>/dev/null || true
-          git show origin/develop:ruff_baseline.json > ruff_baseline.json 2>/dev/null || echo "[]" > ruff_baseline.json
       - name: Run ruff (quality ratchet)
         run: |
+          # Use baseline from repo root (checked out with the PR)
+          cp ../../ruff_baseline.json ruff_baseline.json 2>/dev/null || echo "[]" > ruff_baseline.json
           ruff check . --output-format=json > ruff_current.json
           python .github/scripts/quality_ratchet_ruff.py
 
@@ -59,12 +57,9 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install mypy
-      - name: Get baseline from develop
-        run: |
-          git fetch origin develop:refs/remotes/origin/develop --depth=1 2>/dev/null || true
-          git show origin/develop:mypy_baseline.txt > mypy_baseline.txt 2>/dev/null || echo "" > mypy_baseline.txt
       - name: Run mypy (quality ratchet)
         run: |
+          cp ../../mypy_baseline.txt mypy_baseline.txt 2>/dev/null || echo "" > mypy_baseline.txt
           mypy . 2>&1 | tee mypy_current.txt || true
           python .github/scripts/quality_ratchet_mypy.py
 
@@ -124,12 +119,9 @@ jobs:
           cache-dependency-path: apps/web/package-lock.json
       - name: Install dependencies
         run: npm ci
-      - name: Get baseline from develop
-        run: |
-          git fetch origin develop:refs/remotes/origin/develop --depth=1 2>/dev/null || true
-          git show origin/develop:eslint_baseline.json > eslint_baseline.json 2>/dev/null || echo "[]" > eslint_baseline.json
       - name: Run eslint (quality ratchet)
         run: |
+          cp ../../eslint_baseline.json eslint_baseline.json 2>/dev/null || echo "[]" > eslint_baseline.json
           npx eslint . --format=json > eslint_current.json 2>/dev/null || true
           node .github/scripts/quality_ratchet_eslint.js
 
@@ -151,12 +143,9 @@ jobs:
           cache-dependency-path: apps/web/package-lock.json
       - name: Install dependencies
         run: npm ci
-      - name: Get baseline from develop
-        run: |
-          git fetch origin develop:refs/remotes/origin/develop --depth=1 2>/dev/null || true
-          git show origin/develop:tsc_baseline.txt > tsc_baseline.txt 2>/dev/null || echo "" > tsc_baseline.txt
       - name: Run tsc (quality ratchet)
         run: |
+          cp ../../tsc_baseline.txt tsc_baseline.txt 2>/dev/null || echo "" > tsc_baseline.txt
           npx tsc --noEmit 2>&1 | tee tsc_current.txt || true
           node .github/scripts/quality_ratchet_tsc.js
 
