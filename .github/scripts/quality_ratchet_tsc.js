@@ -3,6 +3,10 @@
 
 const fs = require('fs');
 
+function normalizePath(path) {
+    return path.replace(/\\/g, '/');
+}
+
 function main() {
     const baselinePath = "tsc_baseline.txt";
     const currentPath = "tsc_current.txt";
@@ -13,7 +17,7 @@ function main() {
         baseline = new Set();
     } else {
         console.log(`Loading baseline from ${baselinePath} (size: ${fs.statSync(baselinePath).size} bytes)`);
-        baseline = new Set(fs.readFileSync(baselinePath, 'utf8').split('\n').filter(l => l.trim()));
+        baseline = new Set(fs.readFileSync(baselinePath, 'utf8').split('\n').filter(l => l.trim()).map(normalizePath));
         console.log(`Baseline entries: ${baseline.size}`);
     }
 
@@ -24,7 +28,8 @@ function main() {
 
     const current = fs.readFileSync(currentPath, 'utf8')
         .split('\n')
-        .filter(l => l.includes('error TS'));
+        .filter(l => l.includes('error TS'))
+        .map(normalizePath);
 
     console.log(`Current errors: ${current.length}`);
 
@@ -36,17 +41,11 @@ function main() {
         if (newErrors.length > 20) {
             console.error(`  ... and ${newErrors.length - 20} more`);
         }
-        if (baseline.size > 0) {
-            console.error(`DEBUG: First baseline entry: ${next(baseline.values())}`);
-        }
-        if (current.length > 0) {
-            console.error(`DEBUG: First current entry: ${current[0]}`);
-        }
         process.exit(1);
     } else {
         console.log("✓ No new tsc errors (quality ratchet passed)");
-        const baselineSize = fs.existsSync(baselinePath) ? fs.readFileSync(baselinePath, 'utf8').split('\n').filter(l => l.trim()).length : 0;
-        console.log(`  Total current errors: ${current.length} (baseline: ${baselineSize})`);
+        const baselineSize = fs.existsSync(baselinePath) ? fs.readFileSync(baselinePath, 'utf8').split('\n').filter(l => l.trim()).map(normalizePath).length : 0;
+        console.log(`  Total current errors: ${current.length} (baseline: ${baseline.size})`);
     }
 }
 

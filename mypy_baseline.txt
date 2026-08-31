@@ -22,9 +22,6 @@ app\services\receipt.py:180: error: Argument "ln" to "cell" of "FPDF" has incomp
 app\services\receipt.py:187: error: Argument "ln" to "cell" of "FPDF" has incompatible type "Literal[True]"; expected "Literal['DEPRECATED']"  [arg-type]
 app\services\receipt.py:189: error: Argument "ln" to "cell" of "FPDF" has incompatible type "Literal[True]"; expected "Literal['DEPRECATED']"  [arg-type]
 app\core\security.py:5: error: Library stubs not installed for "jose"  [import-untyped]
-app\core\security.py:5: note: Hint: "python3 -m pip install types-python-jose"
-app\core\security.py:5: note: (or run "mypy --install-types" to install all missing stub packages)
-app\core\security.py:5: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
 app\services\sync.py:33: error: Name "SyncOperationOut" is not defined  [name-defined]
 app\services\sync.py:56: error: Name "SyncOperationOut" is not defined  [name-defined]
 app\services\sync.py:57: error: Name "uuid" is not defined  [name-defined]
@@ -62,4 +59,3 @@ app\api\v1\people.py:232: error: Argument "person_type" to "resolve_or_create_te
 app\api\v1\people.py:296: error: Argument "person_type" to "update_person" of "PersonService" has incompatible type "app.schemas.people.PersonType | None"; expected "app.models.person.PersonType | None"  [arg-type]
 app\api\v1\people.py:302: error: Argument "status" to "update_person" of "PersonService" has incompatible type "app.schemas.people.PersonStatus | None"; expected "app.models.person.PersonStatus | None"  [arg-type]
 app\api\v1\people.py:312: error: Argument "technician_status" to "update_technician" of "PersonService" has incompatible type "app.schemas.people.TechnicianStatus | None"; expected "app.models.person.TechnicianStatus | None"  [arg-type]
-Found 61 errors in 14 files (checked 85 source files)
