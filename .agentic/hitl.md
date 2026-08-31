@@ -112,22 +112,30 @@ Se crea/actualiza `runs/<feature>/hitl.md`:
 
 ### Plan actual
 - Repositorio: `jlbellonGmail/gi-ot`
-- Plan: <Free/Pro/Team/Enterprise>
+- Plan: **Free** (repositorio privado)
 
 ### Protecciones disponibles
-| Feature | Disponible | Configurada |
-|---------|------------|-------------|
-| Branch protection rules | Sí | Parcial |
-| Rulesets | Sí | No |
-| Required reviews | Sí | No |
-| Required status checks | Sí | No |
-| Signed commits | Sí | No |
-| Auto-merge | Sí | No |
+| Feature | Disponible (Free private) | Configurada |
+|---------|---------------------------|-------------|
+| Branch protection rules | **No** (solo repos públicos) | No |
+| Rulesets | **No** (requiere Pro/Team/Enterprise) | No |
+| Required reviews | **No** (requiere Pro/Team/Enterprise) | No |
+| Required status checks | **No** (requiere Pro/Team/Enterprise) | No |
+| Signed commits | **No** (requiere Pro/Team/Enterprise) | No |
+| Auto-merge | **No** (requiere Pro/Team/Enterprise) | No |
+
+### Protección actual (AI-NATIVE)
+Dado que GitHub Free para repos privados no permite branch protection rules ni rulesets, la protección se logra mediante:
+
+1. **Política AI-NATIVE documentada** (`.agentic/workflows/git.md`): prohibido commit directo a develop/main
+2. **PR obligatorio por procedimiento**: todo cambio via PR desde feature branch
+3. **GitHub Actions**: CI obligatorio (tests, build, quality ratchet)
+4. **HITL humano antes del merge**: verificación manual antes de merge squash
 
 ### Acciones requeridas post-activación
-1. Configurar branch protection en `develop`
-2. Configurar required status checks
-3. Documentar limitaciones si plan Free no permite rulesets
+1. Migrar a GitHub Pro/Team/Enterprise para habilitar protecciones nativas
+2. Configurar branch protection en `develop` (requiere plan superior)
+3. Configurar required status checks (requiere plan superior)
 
 ## Escalación
 Si HITL no disponible en 24h:
