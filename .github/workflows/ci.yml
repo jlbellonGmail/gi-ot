@@ -106,7 +106,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Run eslint
@@ -124,7 +123,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Run tsc
@@ -142,7 +140,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Build
