@@ -36,32 +36,7 @@ jobs:
         run: |
           cp ../../ruff_baseline.json ruff_baseline.json
           ruff check . --output-format=json > ruff_current.json
-          python -c "
-import json, sys
-try:
-    with open('ruff_baseline.json') as f:
-        baseline = {json.dumps(e, sort_keys=True) for e in json.load(f)}
-    print(f'Baseline entries: {len(baseline)}')
-    with open('ruff_current.json') as f:
-        current = json.load(f)
-    print(f'Current errors: {len(current)}')
-    new_errors = [e for e in current if json.dumps(e, sort_keys=True) not in baseline]
-    if new_errors:
-        print(f'::error::Found {len(new_errors)} NEW ruff errors not in baseline:')
-        for e in new_errors[:20]:
-            print(f'  {e[\"filename\"]}:{e[\"location\"][\"row\"]}:{e[\"location\"][\"column\"]} {e[\"code\"]} {e[\"message\"]}')
-        if len(new_errors) > 20:
-            print(f'  ... and {len(new_errors) - 20} more')
-        sys.exit(1)
-    else:
-        print('✓ No new ruff errors (quality ratchet passed)')
-        print(f'  Total current errors: {len(current)} (baseline: {len(baseline)})')
-except Exception as e:
-    print(f'::error::Script failed: {e}')
-    import traceback
-    traceback.print_exc()
-    sys.exit(1)
-"
+          python .github/scripts/quality_ratchet_ruff.py
 
   typecheck-backend:
     name: Typecheck Backend (mypy)
@@ -85,32 +60,7 @@ except Exception as e:
         run: |
           cp ../../mypy_baseline.txt mypy_baseline.txt
           mypy . 2>&1 | tee mypy_current.txt || true
-          python -c "
-import sys
-try:
-    with open('mypy_baseline.txt') as f:
-        baseline = set(line.strip() for line in f if line.strip())
-    print(f'Baseline entries: {len(baseline)}')
-    with open('mypy_current.txt') as f:
-        current_lines = [line.strip() for line in f if line.strip() and ': error:' in line]
-    print(f'Current errors: {len(current_lines)}')
-    new_errors = [line for line in current_lines if line not in baseline]
-    if new_errors:
-        print(f'::error::Found {len(new_errors)} NEW mypy errors not in baseline:')
-        for e in new_errors[:20]:
-            print(f'  {e}')
-        if len(new_errors) > 20:
-            print(f'  ... and {len(new_errors) - 20} more')
-        sys.exit(1)
-    else:
-        print('✓ No new mypy errors (quality ratchet passed)')
-        print(f'  Total current errors: {len(current_lines)} (baseline: {len(baseline)})')
-except Exception as e:
-    print(f'::error::Script failed: {e}')
-    import traceback
-    traceback.print_exc()
-    sys.exit(1)
-"
+          python .github/scripts/quality_ratchet_mypy.py
 
   tests-backend:
     name: Tests Backend (pytest)
@@ -172,29 +122,7 @@ except Exception as e:
         run: |
           cp ../../eslint_baseline.json eslint_baseline.json
           npx eslint . --format=json > eslint_current.json 2>/dev/null || true
-          node -e "
-          const fs = require('fs');
-          try {
-            const baseline = new Set(JSON.parse(fs.readFileSync('eslint_baseline.json')).map(e => JSON.stringify(e)));
-            console.log('Baseline entries: ' + baseline.size);
-            const current = JSON.parse(fs.readFileSync('eslint_current.json')).flatMap(r => r.messages).map(e => JSON.stringify(e));
-            console.log('Current errors: ' + current.length);
-            const newErrors = current.filter(e => !baseline.has(e));
-            if (newErrors.length > 0) {
-              console.error('::error::Found ' + newErrors.length + ' NEW eslint errors not in baseline:');
-              newErrors.slice(0, 20).forEach(e => console.error('  ' + e));
-              if (newErrors.length > 20) console.error('  ... and ' + (newErrors.length - 20) + ' more');
-              process.exit(1);
-            } else {
-              console.log('✓ No new eslint errors (quality ratchet passed)');
-              console.log('  Total current errors: ' + current.length + ' (baseline: ' + baseline.size + ')');
-            }
-          } catch (e) {
-            console.error('::error::Script failed: ' + e);
-            console.error(e.stack);
-            process.exit(1);
-          }
-          "
+          node .github/scripts/quality_ratchet_eslint.js
 
   typecheck-frontend:
     name: Typecheck Frontend (tsc)
@@ -218,29 +146,7 @@ except Exception as e:
         run: |
           cp ../../tsc_baseline.txt tsc_baseline.txt
           npx tsc --noEmit 2>&1 | tee tsc_current.txt || true
-          node -e "
-          const fs = require('fs');
-          try {
-            const baseline = new Set(fs.readFileSync('tsc_baseline.txt', 'utf8').split('\n').filter(l => l.trim()));
-            console.log('Baseline entries: ' + baseline.size);
-            const current = fs.readFileSync('tsc_current.txt', 'utf8').split('\n').filter(l => l.includes('error TS'));
-            console.log('Current errors: ' + current.length);
-            const newErrors = current.filter(e => !baseline.has(e.trim()));
-            if (newErrors.length > 0) {
-              console.error('::error::Found ' + newErrors.length + ' NEW tsc errors not in baseline:');
-              newErrors.slice(0, 20).forEach(e => console.error('  ' + e));
-              if (newErrors.length > 20) console.error('  ... and ' + (newErrors.length - 20) + ' more');
-              process.exit(1);
-            } else {
-              console.log('✓ No new tsc errors (quality ratchet passed)');
-              console.log('  Total current errors: ' + current.length + ' (baseline: ' + baseline.size + ')');
-            }
-          } catch (e) {
-            console.error('::error::Script failed: ' + e);
-            console.error(e.stack);
-            process.exit(1);
-          }
-          "
+          node .github/scripts/quality_ratchet_tsc.js
 
   build-frontend:
     name: Build Frontend (next build)
