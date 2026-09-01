@@ -7,6 +7,7 @@ apps/web/.next/
 # Secretos locales (mantener los .env.example versionados)
 apps/api/.env
 apps/web/.env.local
+.env.postgres
 
 # Datos y archivos subidos en desarrollo (SQLite local, uploads)
 apps/api/data/*.db

@@ -34,12 +34,16 @@ class WorkOrderReceipt(Base):
     work_order_id: Mapped[uuid.UUID] = mapped_column(nullable=False)
     content_html: Mapped[str] = mapped_column(Text, nullable=False)
     pdf_storage_key: Mapped[str | None] = mapped_column(String(500), nullable=True)
-    generated_by: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
+    generated_by: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id"), nullable=False
+    )
     generated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
     sent_to_email: Mapped[bool] = mapped_column(default=False, nullable=False)
     sent_to_whatsapp: Mapped[bool] = mapped_column(default=False, nullable=False)
-    last_sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_sent_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     work_order: Mapped["WorkOrder"] = relationship()

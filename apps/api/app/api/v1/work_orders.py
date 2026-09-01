@@ -16,12 +16,22 @@ Rutas disponibles (prefix: /api/v1/work-orders):
 - GET          /{wo_id}/photos/{photo_id}/file — Servir el binario de una fotografía
 - DELETE       /{wo_id}/photos/{photo_id}     — Eliminar fotografía
 """
+
+import mimetypes
 import uuid
 from datetime import datetime
-from typing import List, Optional
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
-from fastapi.responses import FileResponse
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    UploadFile,
+    status,
+)
+from fastapi.responses import Response
 from sqlalchemy.orm import Session
 
 from app.core.deps import get_current_tenant_id, get_current_user, require_roles
@@ -108,22 +118,32 @@ def _raise_from(e: Exception) -> None:
 
 # ── LISTAR ──────────────────────────────────────────────────────────
 
-@router.get("", response_model=List[WorkOrderOut])
+
+@router.get("", response_model=list[WorkOrderOut])
 def list_wo(
-    status_code: Optional[str] = Query(default=None, description="Código de estado (PENDING/IN_PROGRESS/COMPLETED/UNRESOLVED)"),
-    technician_id: Optional[uuid.UUID] = Query(default=None),
-    customer_id: Optional[uuid.UUID] = Query(default=None),
-    priority_id: Optional[uuid.UUID] = Query(default=None),
-    location_id: Optional[uuid.UUID] = Query(default=None),
-    asset_id: Optional[uuid.UUID] = Query(default=None),
-    q: Optional[str] = Query(default=None, description="Búsqueda libre: número, cliente, ubicación, activo o descripción"),
-    date_from: Optional[datetime] = Query(default=None),
-    date_to: Optional[datetime] = Query(default=None),
-    sort: Optional[str] = Query(default=None, description="date_desc (default) | date_asc | priority | updated | status"),
+    status_code: str | None = Query(
+        default=None,
+        description="Código de estado (PENDING/IN_PROGRESS/COMPLETED/UNRESOLVED)",
+    ),
+    technician_id: uuid.UUID | None = Query(default=None),
+    customer_id: uuid.UUID | None = Query(default=None),
+    priority_id: uuid.UUID | None = Query(default=None),
+    location_id: uuid.UUID | None = Query(default=None),
+    asset_id: uuid.UUID | None = Query(default=None),
+    q: str | None = Query(
+        default=None,
+        description="Búsqueda libre: número, cliente, ubicación, activo o descripción",
+    ),
+    date_from: datetime | None = Query(default=None),
+    date_to: datetime | None = Query(default=None),
+    sort: str | None = Query(
+        default=None,
+        description="date_desc (default) | date_asc | priority | updated | status",
+    ),
     db: Session = Depends(get_db),
     tenant_id: uuid.UUID = Depends(get_current_tenant_id),
     _: User = Depends(get_current_user),
-) -> List[WorkOrderOut]:
+) -> list[WorkOrderOut]:
     """Lista operativa de OT del tenant: búsqueda + filtros + orden se
     combinan libremente (ROADMAP §07, UI-UX-STANDARDS.md §10). Cualquier
     rol autenticado."""
@@ -146,6 +166,7 @@ def list_wo(
 
 # ── CREAR ──────────────────────────────────────────────────────────
 
+
 @router.post("", response_model=WorkOrderOut, status_code=status.HTTP_201_CREATED)
 def create_wo(
     payload: WorkOrderCreate,
@@ -161,7 +182,10 @@ def create_wo(
     try:
         if current_user.role.code == TENANT_TECHNICIAN:
             wo = service.create_wo_as_technician(
-                tenant_id, payload, technician_user_id=current_user.id, created_by=current_user.id
+                tenant_id,
+                payload,
+                technician_user_id=current_user.id,
+                created_by=current_user.id,
             )
         else:
             wo = service.create_wo(tenant_id, payload, created_by=current_user.id)
@@ -171,6 +195,7 @@ def create_wo(
 
 
 # ── OBTENER UNO ───────────────────────────────────────────────────
+
 
 @router.get("/{wo_id}", response_model=WorkOrderOut)
 def get_wo(
@@ -189,6 +214,7 @@ def get_wo(
 
 
 # ── ACTUALIZAR (no ejecutivos) ────────────────────────────────────
+
 
 @router.patch("/{wo_id}", response_model=WorkOrderOut)
 def update_wo(
@@ -210,6 +236,7 @@ def update_wo(
 
 # ── ASIGNAR TÉCNICO ───────────────────────────────────────────────
 
+
 @router.post("/{wo_id}/assign", response_model=WorkOrderOut)
 def assign_technician(
     wo_id: uuid.UUID,
@@ -221,13 +248,16 @@ def assign_technician(
     """Asignar técnico a OT. Oficina/Admin."""
     service = _service(db)
     try:
-        wo = service.assign_technician(tenant_id, wo_id, payload.technician_id, performed_by=current_user.id)
+        wo = service.assign_technician(
+            tenant_id, wo_id, payload.technician_id, performed_by=current_user.id
+        )
     except (WorkOrderNotFound, TechnicianNotFound, TerminalWorkOrder) as e:
         _raise_from(e)
     return _to_out(wo)
 
 
 # ── INICIAR OT ────────────────────────────────────────────────────
+
 
 @router.post("/{wo_id}/start", response_model=WorkOrderOut)
 def start_wo(
@@ -248,6 +278,7 @@ def start_wo(
 
 # ── REGISTRAR TRABAJO REALIZADO ────────────────────────────────────
 
+
 @router.post("/{wo_id}/register-work", response_model=WorkOrderOut)
 def register_work(
     wo_id: uuid.UUID,
@@ -260,13 +291,19 @@ def register_work(
     Cualquier usuario del tenant (típicamente el técnico en campo)."""
     service = _service(db)
     try:
-        wo = service.register_work(tenant_id, wo_id, payload.performed_description, performed_by=current_user.id)
+        wo = service.register_work(
+            tenant_id,
+            wo_id,
+            payload.performed_description,
+            performed_by=current_user.id,
+        )
     except (WorkOrderNotFound, TerminalWorkOrder) as e:
         _raise_from(e)
     return _to_out(wo)
 
 
 # ── FINALIZAR OT ────────────────────────────────────────────────────
+
 
 @router.post("/{wo_id}/finish", response_model=WorkOrderOut)
 def finish_wo(
@@ -288,6 +325,7 @@ def finish_wo(
 
 # ── REAPERTURA ────────────────────────────────────────────────────
 
+
 @router.post("/{wo_id}/reopen", response_model=WorkOrderOut)
 def reopen_wo(
     wo_id: uuid.UUID,
@@ -308,13 +346,14 @@ def reopen_wo(
 
 # ── HISTORIAL ─────────────────────────────────────────────────────
 
-@router.get("/{wo_id}/history", response_model=List[WorkOrderHistoryOut])
+
+@router.get("/{wo_id}/history", response_model=list[WorkOrderHistoryOut])
 def history_wo(
     wo_id: uuid.UUID,
     db: Session = Depends(get_db),
     tenant_id: uuid.UUID = Depends(get_current_tenant_id),
     _: User = Depends(get_current_user),
-) -> List[WorkOrderHistoryOut]:
+) -> list[WorkOrderHistoryOut]:
     """Historial de auditoría de una OT. Cualquier rol autenticado del tenant."""
     service = _service(db)
     try:
@@ -326,11 +365,16 @@ def history_wo(
 
 # ── FOTOGRAFÍAS ───────────────────────────────────────────────────
 
-@router.post("/{wo_id}/photos", response_model=WorkOrderPhotoOut, status_code=status.HTTP_201_CREATED)
+
+@router.post(
+    "/{wo_id}/photos",
+    response_model=WorkOrderPhotoOut,
+    status_code=status.HTTP_201_CREATED,
+)
 async def upload_photo(
     wo_id: uuid.UUID,
     file: UploadFile = File(...),
-    caption: Optional[str] = Form(default=None),
+    caption: str | None = Form(default=None),
     db: Session = Depends(get_db),
     tenant_id: uuid.UUID = Depends(get_current_tenant_id),
     current_user: User = Depends(get_current_user),
@@ -353,13 +397,13 @@ async def upload_photo(
     return WorkOrderPhotoOut.model_validate(photo)
 
 
-@router.get("/{wo_id}/photos", response_model=List[WorkOrderPhotoOut])
+@router.get("/{wo_id}/photos", response_model=list[WorkOrderPhotoOut])
 def list_photos(
     wo_id: uuid.UUID,
     db: Session = Depends(get_db),
     tenant_id: uuid.UUID = Depends(get_current_tenant_id),
     _: User = Depends(get_current_user),
-) -> List[WorkOrderPhotoOut]:
+) -> list[WorkOrderPhotoOut]:
     """Lista las fotografías de una OT. Cualquier rol autenticado del tenant."""
     service = _service(db)
     try:
@@ -376,17 +420,23 @@ def get_photo_file(
     db: Session = Depends(get_db),
     tenant_id: uuid.UUID = Depends(get_current_tenant_id),
     _: User = Depends(get_current_user),
-) -> FileResponse:
+) -> Response:
     """Sirve el binario de una fotografía. Siempre pasa por la API, que
     valida pertenencia al tenant antes de servir el archivo (arquitectura.md §7)."""
     service = _service(db)
     try:
-        path = service.get_photo_file_path(tenant_id, wo_id, photo_id)
+        photo = service.get_photo(tenant_id, wo_id, photo_id)
+        content = service.get_photo_content(tenant_id, wo_id, photo_id)
     except WorkOrderNotFound as e:
         _raise_from(e)
-    if not path.exists():
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Archivo no encontrado")
-    return FileResponse(path)
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Archivo no encontrado"
+        ) from None
+    media_type = (
+        mimetypes.guess_type(photo.storage_key)[0] or "application/octet-stream"
+    )
+    return Response(content=content, media_type=media_type)
 
 
 @router.delete("/{wo_id}/photos/{photo_id}", status_code=status.HTTP_204_NO_CONTENT)

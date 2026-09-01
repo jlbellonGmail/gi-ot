@@ -26,6 +26,8 @@ class ConfigTemplate(Base):
     __tablename__ = "config_templates"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
-    code: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
+    code: Mapped[str] = mapped_column(
+        String(50), unique=True, nullable=False, index=True
+    )
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)

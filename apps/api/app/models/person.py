@@ -2,7 +2,17 @@ import uuid
 from datetime import datetime, timezone
 from enum import Enum
 
-from sqlalchemy import Boolean, DateTime, Enum as SQLEnum, ForeignKey, ForeignKeyConstraint, Index, String, Text, UniqueConstraint
+from sqlalchemy import (
+    Boolean,
+    DateTime,
+    ForeignKey,
+    ForeignKeyConstraint,
+    Index,
+    String,
+    Text,
+    UniqueConstraint,
+)
+from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -27,6 +37,7 @@ class Person(Base):
     __tablename__ = "people"
     __table_args__ = (
         Index("ix_people_display_name", "tenant_id", "display_name"),
+        UniqueConstraint("tenant_id", "id", name="uq_people_tenant_id"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
@@ -34,7 +45,9 @@ class Person(Base):
         ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True
     )
     person_type: Mapped[PersonType] = mapped_column(
-        SQLEnum(PersonType, native_enum=False), nullable=False, default=PersonType.INDIVIDUAL
+        SQLEnum(PersonType, native_enum=False),
+        nullable=False,
+        default=PersonType.INDIVIDUAL,
     )
     display_name: Mapped[str] = mapped_column(String(200), nullable=False)
     address: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -42,7 +55,9 @@ class Person(Base):
     email: Mapped[str | None] = mapped_column(String(255), nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     status: Mapped[PersonStatus] = mapped_column(
-        SQLEnum(PersonStatus, native_enum=False), nullable=False, default=PersonStatus.ACTIVE
+        SQLEnum(PersonStatus, native_enum=False),
+        nullable=False,
+        default=PersonStatus.ACTIVE,
     )
 
     created_at: Mapped[datetime] = mapped_column(
@@ -53,8 +68,12 @@ class Person(Base):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )
-    created_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
-    updated_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    created_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id"), nullable=True
+    )
+    updated_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id"), nullable=True
+    )
 
     identifications: Mapped[list["PersonIdentification"]] = relationship(
         back_populates="person", cascade="all, delete-orphan"
@@ -76,9 +95,17 @@ class PersonIdentification(Base):
 
     __tablename__ = "person_identifications"
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["tenant_id", "person_id"],
+            ["people.tenant_id", "people.id"],
+            ondelete="CASCADE",
+        ),
         UniqueConstraint(
-            "tenant_id", "country_code", "identification_type", "identification_value",
-            name="uq_person_identifications_tenant_country_type_value"
+            "tenant_id",
+            "country_code",
+            "identification_type",
+            "identification_value",
+            name="uq_person_identifications_tenant_country_type_value",
         ),
     )
 
@@ -89,9 +116,15 @@ class PersonIdentification(Base):
     person_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("people.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    country_code: Mapped[str] = mapped_column(String(2), nullable=False)  # ISO 3166-1 alpha-2
-    identification_type: Mapped[str] = mapped_column(String(50), nullable=False)  # ej: DNI, CUIT, NIF, RUT
-    identification_value: Mapped[str] = mapped_column(String(50), nullable=False)  # valor normalizado
+    country_code: Mapped[str] = mapped_column(
+        String(2), nullable=False
+    )  # ISO 3166-1 alpha-2
+    identification_type: Mapped[str] = mapped_column(
+        String(50), nullable=False
+    )  # ej: DNI, CUIT, NIF, RUT
+    identification_value: Mapped[str] = mapped_column(
+        String(50), nullable=False
+    )  # valor normalizado
     is_primary: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     created_at: Mapped[datetime] = mapped_column(
@@ -117,7 +150,10 @@ class Customer(Base):
     )
 
     tenant_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("tenants.id", ondelete="CASCADE"), primary_key=True, nullable=False, index=True
+        ForeignKey("tenants.id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+        index=True,
     )
     person_id: Mapped[uuid.UUID] = mapped_column(primary_key=True, nullable=False)
 
@@ -129,11 +165,19 @@ class Customer(Base):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )
-    created_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
-    updated_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    created_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id"), nullable=True
+    )
+    updated_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id"), nullable=True
+    )
 
-    person: Mapped["Person"] = relationship(back_populates="customer", foreign_keys=[person_id])
-    locations: Mapped[list["Location"]] = relationship(back_populates="customer", cascade="all, delete-orphan")
+    person: Mapped["Person"] = relationship(
+        back_populates="customer", foreign_keys=[person_id]
+    )
+    locations: Mapped[list["Location"]] = relationship(
+        back_populates="customer", cascade="all, delete-orphan"
+    )
 
 
 class TechnicianStatus(str, Enum):
@@ -159,14 +203,19 @@ class Technician(Base):
     )
 
     tenant_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("tenants.id", ondelete="CASCADE"), primary_key=True, nullable=False, index=True
+        ForeignKey("tenants.id", ondelete="CASCADE"),
+        primary_key=True,
+        nullable=False,
+        index=True,
     )
     person_id: Mapped[uuid.UUID] = mapped_column(primary_key=True, nullable=False)
     profession: Mapped[str | None] = mapped_column(String(100), nullable=True)
     license_number: Mapped[str | None] = mapped_column(String(50), nullable=True)
     commission_percentage: Mapped[float | None] = mapped_column(nullable=True)
     status: Mapped[TechnicianStatus] = mapped_column(
-        SQLEnum(TechnicianStatus, native_enum=False), nullable=False, default=TechnicianStatus.ACTIVE
+        SQLEnum(TechnicianStatus, native_enum=False),
+        nullable=False,
+        default=TechnicianStatus.ACTIVE,
     )
     # Vínculo opcional hacia el User (login) con rol TENANT_TECHNICIAN que
     # opera este Technician en el flujo mobile ("Mis OT" — ROADMAP §06).
@@ -183,7 +232,13 @@ class Technician(Base):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )
-    created_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
-    updated_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    created_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id"), nullable=True
+    )
+    updated_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id"), nullable=True
+    )
 
-    person: Mapped["Person"] = relationship(back_populates="technician", foreign_keys=[person_id])
+    person: Mapped["Person"] = relationship(
+        back_populates="technician", foreign_keys=[person_id]
+    )

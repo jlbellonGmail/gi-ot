@@ -8,17 +8,21 @@ operaciones al endpoint /api/v1/sync y el backend las aplica idempotentemente.
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, Enum as SQLEnum, ForeignKey, Index, String, Text
+from sqlalchemy import ForeignKey, ForeignKeyConstraint, Index, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
-from app.enums import HistoryEventType
 
 
 class SyncOperation(Base):
     __tablename__ = "sync_operations"
 
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["tenant_id", "entity_id"],
+            ["work_orders.tenant_id", "work_orders.id"],
+            ondelete="SET NULL",
+        ),
         Index("ix_sync_ops_tenant_status", "tenant_id", "status", "created_at"),
         Index("ix_sync_ops_tenant_wo", "tenant_id", "entity_id"),
     )
@@ -37,9 +41,7 @@ class SyncOperation(Base):
     # Payload serializado con los datos de la operación
     payload: Mapped[str] = mapped_column(Text, nullable=False)
     # Estado: "pending", "synced", "error"
-    status: Mapped[str] = mapped_column(
-        default="pending", nullable=False
-    )
+    status: Mapped[str] = mapped_column(default="pending", nullable=False)
     # Intento actual (para reintentos)
     attempt: Mapped[int] = mapped_column(default=1, nullable=False)
     # Máximo de reintentos
@@ -53,5 +55,5 @@ class SyncOperation(Base):
     work_order: Mapped["WorkOrder | None"] = relationship(
         back_populates="sync_operations",
         foreign_keys="SyncOperation.entity_id",
-        primaryjoin="SyncOperation.entity_id==WorkOrder.id"
+        primaryjoin="SyncOperation.entity_id==WorkOrder.id",
     )

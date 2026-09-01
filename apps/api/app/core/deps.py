@@ -6,7 +6,9 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 from app.core.security import decode_access_token
+from app.db.rls import set_authenticated_context, set_user_identity_context
 from app.db.session import get_db
+from app.models.role import PLATFORM_OWNER
 from app.models.user import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
@@ -35,12 +37,21 @@ def get_current_user(
         raise credentials_error
 
     try:
-        user = db.get(User, uuid.UUID(user_id))
+        parsed_user_id = uuid.UUID(user_id)
     except ValueError:
         raise credentials_error from None
 
+    set_user_identity_context(db, parsed_user_id)
+    user = db.get(User, parsed_user_id)
+
     if user is None or not user.is_active:
         raise credentials_error
+
+    set_authenticated_context(
+        db,
+        tenant_id=user.tenant_id,
+        is_platform_admin=user.role.code == PLATFORM_OWNER,
+    )
 
     return user
 

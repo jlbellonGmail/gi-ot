@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 
@@ -13,26 +14,19 @@ from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
 from app.models.role import ALL_ROLE_CODES, Role
-from app.models.tenant import Tenant, TenantConfig
-from app.models.user import User
-from app.models.person import Person, Customer, Technician
-from app.models.location import Location, Asset
-from app.models.asset_type import AssetType
-from app.models.work_order import WorkOrder, WorkOrderHistory, WorkOrderPhoto
-from app.models.work_order_type import WorkOrderType
-from app.models.work_order_status import WorkOrderStatus
-from app.models.priority import Priority
-from app.models.work_order_receipt import WorkOrderReceipt
-from app.models.sync_operation import SyncOperation
-
 from tests.helpers import seed_default_config_template
 
-# Base de datos SQLite en memoria, aislada por test — nunca toca data/gi-ot.db.
-engine = create_engine(
-    "sqlite:///:memory:",
-    connect_args={"check_same_thread": False},
-    poolclass=StaticPool,
-)
+# SQLite en memoria por defecto. TEST_DATABASE_URL permite ejecutar exactamente
+# la misma suite funcional contra PostgreSQL real sin cambiar la aplicación.
+test_database_url = os.getenv("TEST_DATABASE_URL", "sqlite:///:memory:")
+if test_database_url.startswith("sqlite"):
+    engine = create_engine(
+        test_database_url,
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+else:
+    engine = create_engine(test_database_url, pool_pre_ping=True)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

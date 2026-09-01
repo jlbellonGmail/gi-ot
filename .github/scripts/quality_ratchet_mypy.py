@@ -2,12 +2,18 @@
 """Quality ratchet script for mypy - only fails on NEW errors not in baseline."""
 
 import sys
+import re
 from pathlib import Path
 
 
 def normalize_path(path):
     """Normalize file paths for cross-platform comparison."""
-    return path.replace('\\', '/')
+    normalized = path.replace('\\', '/')
+    for marker in ("apps/api/", "apps/web/"):
+        if marker in normalized:
+            normalized = marker + normalized.split(marker, 1)[1]
+            break
+    return re.sub(r":\d+(?::\d+)?:", ":", normalized, count=1)
 
 
 def main():

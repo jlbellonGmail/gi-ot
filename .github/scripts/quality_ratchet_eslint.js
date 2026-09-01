@@ -4,15 +4,23 @@
 const fs = require('fs');
 
 function normalizePath(path) {
-    return path.replace(/\\/g, '/');
-}
-
-function normalizeError(error) {
-    const normalized = { ...error };
-    if (normalized.filename) {
-        normalized.filename = normalizePath(normalized.filename);
+    const normalized = path.replace(/\\/g, '/');
+    for (const marker of ['apps/api/', 'apps/web/']) {
+        const index = normalized.indexOf(marker);
+        if (index >= 0) return normalized.slice(index);
     }
     return normalized;
+}
+
+function fingerprints(reports) {
+    return reports.flatMap(report => report.messages.map(message => JSON.stringify({
+        filePath: normalizePath(report.filePath || report.filename || ''),
+        ruleId: message.ruleId,
+        severity: message.severity,
+        message: message.message,
+        line: message.line,
+        column: message.column,
+    })));
 }
 
 function main() {
@@ -25,7 +33,7 @@ function main() {
         baseline = new Set();
     } else {
         console.log(`Loading baseline from ${baselinePath} (size: ${fs.statSync(baselinePath).size} bytes)`);
-        baseline = new Set(JSON.parse(fs.readFileSync(baselinePath, 'utf8')).map(e => JSON.stringify(normalizeError(e))));
+        baseline = new Set(fingerprints(JSON.parse(fs.readFileSync(baselinePath, 'utf8'))));
         console.log(`Baseline entries: ${baseline.size}`);
     }
 
@@ -34,9 +42,7 @@ function main() {
         return;
     }
 
-    const current = JSON.parse(fs.readFileSync(currentPath, 'utf8'))
-        .flatMap(r => r.messages)
-        .map(e => JSON.stringify(normalizeError(e)));
+    const current = fingerprints(JSON.parse(fs.readFileSync(currentPath, 'utf8')));
 
     console.log(`Current errors: ${current.length}`);
 

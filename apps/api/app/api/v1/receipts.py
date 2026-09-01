@@ -11,14 +11,12 @@ Endpoints disponibles (prefix: /api/v1/receipts):
 """
 
 import uuid
-from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 from sqlalchemy.orm import Session
 
 from app.core.deps import get_current_tenant_id, get_current_user, get_db
-from app.core.config import get_settings
 from app.models.user import User
 from app.models.work_order_receipt import WorkOrderReceipt
 from app.schemas.work_order_receipt import (
@@ -30,7 +28,6 @@ from app.schemas.work_order_receipt import (
     WorkOrderReceiptSend,
 )
 from app.services.receipt import ReceiptService
-
 
 router = APIRouter(prefix="/receipts", tags=["receipts"])
 
@@ -76,7 +73,9 @@ def update_branding(
     return updated
 
 
-@router.post("", response_model=WorkOrderReceiptOut, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "", response_model=WorkOrderReceiptOut, status_code=status.HTTP_201_CREATED
+)
 def generate_receipt(
     payload: WorkOrderReceiptGenerate,
     db: Session = Depends(get_db),
@@ -86,7 +85,9 @@ def generate_receipt(
     """Genera el comprobante de una OT finalizada (HTML + PDF opcional)."""
     service = _service(db)
     try:
-        receipt = service.generate_receipt(tenant_id, payload, generated_by=current_user.id)
+        receipt = service.generate_receipt(
+            tenant_id, payload, generated_by=current_user.id
+        )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     return WorkOrderReceiptOut.model_validate(receipt)
@@ -100,9 +101,11 @@ def get_receipt_html(
     _: User = Depends(get_current_user),
 ) -> HTMLResponse:
     """Devuelve el comprobante en HTML para visualizacion en navegador."""
-    receipt = db.query(WorkOrderReceipt).filter_by(
-        work_order_id=work_order_id, tenant_id=tenant_id
-    ).first()
+    receipt = (
+        db.query(WorkOrderReceipt)
+        .filter_by(work_order_id=work_order_id, tenant_id=tenant_id)
+        .first()
+    )
     if not receipt:
         raise HTTPException(status_code=404, detail="Comprobante no encontrado")
 
@@ -115,26 +118,31 @@ def get_receipt_pdf(
     db: Session = Depends(get_db),
     tenant_id: uuid.UUID = Depends(get_current_tenant_id),
     _: User = Depends(get_current_user),
-) -> FileResponse:
+) -> Response:
     """Descarga el comprobante en PDF."""
-    receipt = db.query(WorkOrderReceipt).filter_by(
-        work_order_id=work_order_id, tenant_id=tenant_id
-    ).first()
+    receipt = (
+        db.query(WorkOrderReceipt)
+        .filter_by(work_order_id=work_order_id, tenant_id=tenant_id)
+        .first()
+    )
     if not receipt:
         raise HTTPException(status_code=404, detail="Comprobante no encontrado")
 
     if not receipt.pdf_storage_key:
         raise HTTPException(status_code=404, detail="PDF no disponible")
 
-    settings = get_settings()
-    filepath = Path(settings.uploads_dir) / receipt.pdf_storage_key
-    if not filepath.exists():
+    service = _service(db)
+    try:
+        content = service.read_pdf(tenant_id, receipt.pdf_storage_key)
+    except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Archivo PDF no encontrado")
 
-    return FileResponse(
-        filepath,
+    return Response(
+        content=content,
         media_type="application/pdf",
-        filename=f"comprobante_ot_{work_order_id}.pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="comprobante_ot_{work_order_id}.pdf"'
+        },
     )
 
 
@@ -148,7 +156,9 @@ def send_receipt_email(
 ) -> None:
     """Envia el comprobante por email al destinatario indicado."""
     if payload.work_order_id != work_order_id:
-        raise HTTPException(status_code=400, detail="work_order_id en URL y payload no coinciden")
+        raise HTTPException(
+            status_code=400, detail="work_order_id en URL y payload no coinciden"
+        )
     service = _service(db)
     try:
         service.send_receipt_email(tenant_id, payload, sent_by=current_user.id)

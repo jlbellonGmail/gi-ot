@@ -2,20 +2,30 @@ import uuid
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, Enum as SQLEnum, ForeignKey, ForeignKeyConstraint, Index, Integer, String, Text, UniqueConstraint
+from sqlalchemy import (
+    DateTime,
+    ForeignKey,
+    ForeignKeyConstraint,
+    Index,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
+from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 from app.enums import HistoryEventType
 
 if TYPE_CHECKING:
+    from app.models.asset import Asset
+    from app.models.location import Location
     from app.models.person import Customer, Technician
+    from app.models.priority import Priority
+    from app.models.sync_operation import SyncOperation
     from app.models.work_order_status import WorkOrderStatus
     from app.models.work_order_type import WorkOrderType
-    from app.models.priority import Priority
-    from app.models.location import Location
-    from app.models.asset import Asset
-    from app.models.sync_operation import SyncOperation
 
 __all__ = ["HistoryEventType", "WorkOrder", "WorkOrderHistory", "WorkOrderPhoto"]
 
@@ -34,6 +44,7 @@ class WorkOrder(Base):
 
     __tablename__ = "work_orders"
     __table_args__ = (
+        UniqueConstraint("tenant_id", "id", name="uq_work_orders_tenant_id"),
         UniqueConstraint("tenant_id", "number", name="uq_work_orders_tenant_number"),
         ForeignKeyConstraint(
             ["tenant_id", "customer_id"],
@@ -42,6 +53,26 @@ class WorkOrder(Base):
         ForeignKeyConstraint(
             ["tenant_id", "technician_id"],
             ["technicians.tenant_id", "technicians.person_id"],
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "location_id"],
+            ["locations.tenant_id", "locations.id"],
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "asset_id"],
+            ["assets.tenant_id", "assets.id"],
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "work_order_type_id"],
+            ["work_order_types.tenant_id", "work_order_types.id"],
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "priority_id"],
+            ["priorities.tenant_id", "priorities.id"],
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "status_id"],
+            ["work_order_statuses.tenant_id", "work_order_statuses.id"],
         ),
         Index("ix_work_orders_tenant_status", "tenant_id", "status_id"),
         Index("ix_work_orders_tenant_technician", "tenant_id", "technician_id"),
@@ -75,12 +106,22 @@ class WorkOrder(Base):
     requested_description: Mapped[str] = mapped_column(Text, nullable=False)
     performed_description: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-    scheduled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    scheduled_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    started_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    finished_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
-    created_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
-    updated_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    created_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id"), nullable=True
+    )
+    updated_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id"), nullable=True
+    )
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
@@ -127,6 +168,11 @@ class WorkOrderHistory(Base):
 
     __tablename__ = "work_order_history"
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["tenant_id", "work_order_id"],
+            ["work_orders.tenant_id", "work_orders.id"],
+            ondelete="CASCADE",
+        ),
         Index("ix_work_order_history_tenant_wo", "tenant_id", "work_order_id"),
     )
 
@@ -142,7 +188,9 @@ class WorkOrderHistory(Base):
     )
     previous_value: Mapped[str | None] = mapped_column(String(100), nullable=True)
     new_value: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    performed_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    performed_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id"), nullable=True
+    )
     performed_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
@@ -161,6 +209,11 @@ class WorkOrderPhoto(Base):
 
     __tablename__ = "work_order_photos"
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["tenant_id", "work_order_id"],
+            ["work_orders.tenant_id", "work_orders.id"],
+            ondelete="CASCADE",
+        ),
         Index("ix_work_order_photos_tenant_wo", "tenant_id", "work_order_id"),
     )
 
@@ -176,7 +229,9 @@ class WorkOrderPhoto(Base):
     taken_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
-    uploaded_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    uploaded_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id"), nullable=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )

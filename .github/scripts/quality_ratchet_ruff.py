@@ -8,15 +8,20 @@ from pathlib import Path
 
 def normalize_path(path):
     """Normalize file paths for cross-platform comparison."""
-    return path.replace('\\', '/')
+    normalized = path.replace('\\', '/')
+    for marker in ("apps/api/", "apps/web/"):
+        if marker in normalized:
+            return marker + normalized.split(marker, 1)[1]
+    return normalized
 
 
 def normalize_error(error):
-    """Normalize error for cross-platform comparison."""
-    normalized = error.copy()
-    if 'filename' in normalized:
-        normalized['filename'] = normalize_path(normalized['filename'])
-    return normalized
+    """Stable fingerprint; excludes auto-fix payloads and absolute roots."""
+    return {
+        "filename": normalize_path(error.get("filename", "")),
+        "code": error.get("code"),
+        "message": error.get("message"),
+    }
 
 
 def main():

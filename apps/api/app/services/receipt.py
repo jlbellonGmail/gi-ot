@@ -5,21 +5,24 @@ y envía emails (WhatsApp se evalúa aparte).
 """
 
 import logging
-import os
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
 
 from fpdf import FPDF
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
+from app.files.storage import LocalFileStorage, tenant_storage_key
 from app.models.tenant import Tenant, TenantConfig
 from app.models.work_order import WorkOrder
 from app.models.work_order_receipt import WorkOrderReceipt
-from app.schemas.work_order_receipt import TenantBranding, WorkOrderReceiptGenerate, WorkOrderReceiptSend
+from app.schemas.work_order_receipt import (
+    TenantBranding,
+    WorkOrderReceiptGenerate,
+    WorkOrderReceiptSend,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +32,14 @@ class ReceiptService:
 
     def __init__(self, db: Session):
         self.db = db
+
+    def _storage(self) -> LocalFileStorage:
+        return LocalFileStorage(get_settings().uploads_dir)
+
+    def read_pdf(self, tenant_id: uuid.UUID, storage_key: str) -> bytes:
+        """Lee un PDF solo después de validar que la clave pertenece al tenant."""
+
+        return self._storage().read_for_tenant(tenant_id, storage_key)
 
     def _get_template_env(self) -> Environment:
         """Configura Jinja2 para templates."""
@@ -106,18 +117,24 @@ class ReceiptService:
         generated_by: uuid.UUID,
     ) -> WorkOrderReceipt:
         """Genera el comprobante HTML/PDF para una OT finalizada."""
-        wo = self.db.query(WorkOrder).filter_by(
-            id=payload.work_order_id, tenant_id=tenant_id
-        ).first()
+        wo = (
+            self.db.query(WorkOrder)
+            .filter_by(id=payload.work_order_id, tenant_id=tenant_id)
+            .first()
+        )
         if not wo:
             raise ValueError("OT no encontrada")
 
         if not wo.status.is_terminal:
-            raise ValueError("Solo se pueden generar comprobantes de OT en estado terminal")
+            raise ValueError(
+                "Solo se pueden generar comprobantes de OT en estado terminal"
+            )
 
-        existing = self.db.query(WorkOrderReceipt).filter_by(
-            work_order_id=payload.work_order_id, tenant_id=tenant_id
-        ).first()
+        existing = (
+            self.db.query(WorkOrderReceipt)
+            .filter_by(work_order_id=payload.work_order_id, tenant_id=tenant_id)
+            .first()
+        )
         if existing and not payload.force_regenerate:
             return existing
 
@@ -145,7 +162,9 @@ class ReceiptService:
         self.db.refresh(receipt)
         return receipt
 
-    def _generate_pdf(self, wo: WorkOrder, branding: TenantBranding, tenant_id: uuid.UUID) -> str | None:
+    def _generate_pdf(
+        self, wo: WorkOrder, branding: TenantBranding, tenant_id: uuid.UUID
+    ) -> str | None:
         """Genera PDF y guarda en storage."""
         try:
             pdf = FPDF()
@@ -153,13 +172,17 @@ class ReceiptService:
             pdf.set_font("Helvetica", size=12)
 
             pdf.set_font("Helvetica", "B", 16)
-            pdf.cell(0, 10, branding.company_name or "Comprobante de OT", ln=True, align="C")
+            pdf.cell(
+                0, 10, branding.company_name or "Comprobante de OT", ln=True, align="C"
+            )
             pdf.ln(5)
 
             pdf.set_font("Helvetica", size=10)
             pdf.cell(0, 6, f"OT N: {wo.number}", ln=True)
             pdf.cell(0, 6, f"Fecha: {wo.finished_at or wo.updated_at}", ln=True)
-            pdf.cell(0, 6, f"Estado: {wo.status.label if wo.status else 'N/A'}", ln=True)
+            pdf.cell(
+                0, 6, f"Estado: {wo.status.label if wo.status else 'N/A'}", ln=True
+            )
             pdf.ln(3)
 
             if wo.customer and wo.customer.person:
@@ -190,16 +213,17 @@ class ReceiptService:
             pdf.ln(10)
 
             pdf.set_font("Helvetica", "I", 8)
-            pdf.cell(0, 5, f"Generado el {datetime.now(timezone.utc).strftime('%d/%m/%Y %H:%M')}", align="C")
+            pdf.cell(
+                0,
+                5,
+                f"Generado el {datetime.now(timezone.utc).strftime('%d/%m/%Y %H:%M')}",
+                align="C",
+            )
 
-            settings = get_settings()
-            uploads_dir = Path(settings.uploads_dir) / "receipts" / str(tenant_id)
-            uploads_dir.mkdir(parents=True, exist_ok=True)
             filename = f"receipt_{wo.id}_{uuid.uuid4().hex[:8]}.pdf"
-            filepath = uploads_dir / filename
-            pdf.output(str(filepath))
-
-            return f"receipts/{tenant_id}/{filename}"
+            storage_key = tenant_storage_key(tenant_id, "receipts", filename)
+            self._storage().save(storage_key, bytes(pdf.output()))
+            return storage_key
         except Exception as e:
             logger.error(f"Error generating PDF for work_order {wo.id}: {e}")
             return None
@@ -211,9 +235,11 @@ class ReceiptService:
         sent_by: uuid.UUID,
     ) -> bool:
         """Envía el comprobante por email."""
-        receipt = self.db.query(WorkOrderReceipt).filter_by(
-            work_order_id=payload.work_order_id, tenant_id=tenant_id
-        ).first()
+        receipt = (
+            self.db.query(WorkOrderReceipt)
+            .filter_by(work_order_id=payload.work_order_id, tenant_id=tenant_id)
+            .first()
+        )
         if not receipt:
             raise ValueError("Comprobante no encontrado")
 
@@ -227,7 +253,7 @@ class ReceiptService:
         smtp_use_tls = getattr(settings, "smtp_use_tls", True)
 
         subject = payload.subject or f"Comprobante OT #{receipt.work_order_id}"
-        body = payload.body or f"Adjunto encontrará el comprobante de la OT."
+        body = payload.body or "Adjunto encontrará el comprobante de la OT."
 
         # Si no hay configuración SMTP, registrar como pendiente y retornar éxito condicional
         if not smtp_host or not smtp_user or not smtp_from:
@@ -241,9 +267,9 @@ class ReceiptService:
         # Enviar email real via SMTP
         try:
             import smtplib
-            from email.mime.text import MIMEText
-            from email.mime.multipart import MIMEMultipart
             from email.mime.application import MIMEApplication
+            from email.mime.multipart import MIMEMultipart
+            from email.mime.text import MIMEText
 
             msg = MIMEMultipart()
             msg["From"] = smtp_from
@@ -254,16 +280,18 @@ class ReceiptService:
 
             # Adjuntar PDF si existe
             if receipt.pdf_storage_key:
-                pdf_path = Path(settings.uploads_dir) / receipt.pdf_storage_key
-                if pdf_path.exists():
-                    with open(pdf_path, "rb") as f:
-                        pdf_attachment = MIMEApplication(f.read(), _subtype="pdf")
-                        pdf_attachment.add_header(
-                            "Content-Disposition",
-                            "attachment",
-                            filename=f"comprobante_ot_{receipt.work_order_id}.pdf",
-                        )
-                        msg.attach(pdf_attachment)
+                storage = self._storage()
+                if storage.exists_for_tenant(tenant_id, receipt.pdf_storage_key):
+                    pdf_attachment = MIMEApplication(
+                        storage.read_for_tenant(tenant_id, receipt.pdf_storage_key),
+                        _subtype="pdf",
+                    )
+                    pdf_attachment.add_header(
+                        "Content-Disposition",
+                        "attachment",
+                        filename=f"comprobante_ot_{receipt.work_order_id}.pdf",
+                    )
+                    msg.attach(pdf_attachment)
 
             with smtplib.SMTP(smtp_host, smtp_port) as server:
                 if smtp_use_tls:
@@ -272,11 +300,13 @@ class ReceiptService:
                     server.login(smtp_user, smtp_password)
                 server.send_message(msg)
 
-            logger.info(f"Email enviado exitosamente para receipt {receipt.id} a {payload.recipient_email}")
+            logger.info(
+                f"Email enviado exitosamente para receipt {receipt.id} a {payload.recipient_email}"
+            )
 
         except Exception as e:
             logger.error(f"Error enviando email para receipt {receipt.id}: {e}")
-            raise ValueError(f"Error al enviar email: {str(e)}")
+            raise ValueError(f"Error al enviar email: {e!s}")
 
         # Solo marcar como enviado después de confirmación válida
         receipt.sent_to_email = True
@@ -299,9 +329,11 @@ class ReceiptService:
         Cuando se tome la decisión técnica (proveedor: Twilio, Meta Cloud API, etc.),
         esta función debe implementarse completamente.
         """
-        receipt = self.db.query(WorkOrderReceipt).filter_by(
-            work_order_id=work_order_id, tenant_id=tenant_id
-        ).first()
+        receipt = (
+            self.db.query(WorkOrderReceipt)
+            .filter_by(work_order_id=work_order_id, tenant_id=tenant_id)
+            .first()
+        )
         if not receipt:
             raise ValueError("Comprobante no encontrado")
 

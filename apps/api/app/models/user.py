@@ -1,7 +1,15 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Index, String, text
+from sqlalchemy import (
+    Boolean,
+    DateTime,
+    ForeignKey,
+    Index,
+    String,
+    UniqueConstraint,
+    text,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -21,6 +29,7 @@ class User(Base):
 
     __tablename__ = "users"
     __table_args__ = (
+        UniqueConstraint("tenant_id", "id", name="uq_users_tenant_id"),
         Index(
             "ix_users_tenant_email",
             "tenant_id",

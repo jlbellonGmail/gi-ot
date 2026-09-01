@@ -16,7 +16,10 @@ class Priority(Base):
     """
 
     __tablename__ = "priorities"
-    __table_args__ = (UniqueConstraint("tenant_id", "code", name="uq_priorities_tenant_code"),)
+    __table_args__ = (
+        UniqueConstraint("tenant_id", "id", name="uq_priorities_tenant_id"),
+        UniqueConstraint("tenant_id", "code", name="uq_priorities_tenant_code"),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     tenant_id: Mapped[uuid.UUID] = mapped_column(

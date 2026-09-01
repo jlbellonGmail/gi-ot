@@ -4,7 +4,12 @@
 const fs = require('fs');
 
 function normalizePath(path) {
-    return path.replace(/\\/g, '/');
+    const normalized = path.replace(/\\/g, '/');
+    for (const marker of ['apps/api/', 'apps/web/']) {
+        const index = normalized.indexOf(marker);
+        if (index >= 0) return normalized.slice(index);
+    }
+    return normalized;
 }
 
 function main() {

@@ -11,82 +11,184 @@ env:
   NODE_VERSION: '20'
 
 jobs:
-  # ============================================================
-  # BACKEND VALIDATION
-  # ============================================================
-  tests-backend:
-    name: Tests Backend (pytest)
+  lint:
+    name: ci/lint
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/api
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-      - name: Run pytest
-        run: pytest -q
-
-  build-backend:
-    name: Build Backend (verify imports)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/api
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-      - name: Verify app imports
-        run: python -c "from app.main import app; print('OK')"
-
-  # ============================================================
-  # FRONTEND VALIDATION
-  # ============================================================
-  build-frontend:
-    name: Build Frontend (next build)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/web
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: npm
           cache-dependency-path: apps/web/package-lock.json
-      - name: Install dependencies
-        run: npm ci
-      - name: Build
-        run: npm run build
+      - name: Instalar dependencias backend
+        run: pip install -r apps/api/requirements.txt
+      - name: Instalar dependencias frontend
+        run: npm ci --prefix apps/web
+      - name: Quality ratchet Ruff
+        shell: bash
+        run: |
+          ruff check apps/api --exit-zero --output-format=json > ruff_current.json
+          python .github/scripts/quality_ratchet_ruff.py
+      - name: Quality ratchet mypy
+        shell: bash
+        run: |
+          set +e
+          mypy apps/api --no-error-summary > mypy_current.txt
+          status=$?
+          set -e
+          if [ "$status" -gt 1 ]; then exit "$status"; fi
+          python .github/scripts/quality_ratchet_mypy.py
+      - name: Quality ratchet ESLint
+        shell: bash
+        run: |
+          set +e
+          cd apps/web
+          npx eslint . --format json --output-file ../../eslint_current.json
+          status=$?
+          cd ../..
+          set -e
+          if [ "$status" -gt 1 ]; then exit "$status"; fi
+          node .github/scripts/quality_ratchet_eslint.js
+      - name: Quality ratchet TypeScript
+        shell: bash
+        run: |
+          set +e
+          cd apps/web
+          npx tsc --noEmit --pretty false > ../../tsc_current.txt
+          status=$?
+          cd ../..
+          set -e
+          if [ "$status" -ne 0 ] && [ ! -s tsc_current.txt ]; then exit "$status"; fi
+          node .github/scripts/quality_ratchet_tsc.js
 
-  # ============================================================
-  # AGGREGATE
-  # ============================================================
+  tests-backend:
+    name: ci/tests-backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+      - name: Suite completa SQLite
+        run: pytest -q tests
+
+  tests-postgresql:
+    name: ci/tests-postgresql
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: giot
+          POSTGRES_PASSWORD: ci-validation-only
+          POSTGRES_DB: giot
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U giot -d giot"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+    env:
+      DATABASE_URL: postgresql+psycopg://giot:ci-validation-only@localhost:5432/giot
+      POSTGRES_RLS_DATABASE_URL: postgresql+psycopg://giot:ci-validation-only@localhost:5432/giot
+      TEST_DATABASE_URL: postgresql+psycopg://giot:ci-validation-only@localhost:5432/giot
+      SECRET_KEY: ci-validation-secret-not-for-production
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+      - name: Convertir rol de servicio en rol de aplicación no privilegiado
+        env:
+          PGPASSWORD: ci-validation-only
+        run: >-
+          psql -h localhost -U giot -d giot -v ON_ERROR_STOP=1
+          -c "ALTER ROLE giot NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE NOREPLICATION"
+      - name: Alembic desde base vacía y reversibilidad del HEAD
+        run: |
+          alembic heads
+          alembic history
+          alembic upgrade head
+          alembic current
+          alembic check
+          alembic downgrade 9c8b2c1d4e5f
+          alembic upgrade head
+      - name: Tests PostgreSQL RLS sobre schema migrado
+        run: pytest -q tests_postgresql
+      - name: Suite funcional completa PostgreSQL
+        run: pytest -q tests
+
+  tests-frontend:
+    name: ci/tests-frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - run: npm ci --prefix apps/web
+      - name: Verificar contrato TypeScript
+        shell: bash
+        run: |
+          set +e
+          cd apps/web
+          npx tsc --noEmit --pretty false > ../../tsc_current.txt
+          status=$?
+          cd ../..
+          set -e
+          if [ "$status" -ne 0 ] && [ ! -s tsc_current.txt ]; then exit "$status"; fi
+          node .github/scripts/quality_ratchet_tsc.js
+
+  build:
+    name: ci/build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Build backend (imports)
+        run: |
+          pip install -r apps/api/requirements.txt
+          python -c "import sys; sys.path.insert(0, 'apps/api'); from app.main import app; print(app.title)"
+      - name: Build frontend
+        run: |
+          npm ci --prefix apps/web
+          npm run build --prefix apps/web
+
   ci-summary:
     name: CI Summary
     runs-on: ubuntu-latest
-    needs:
-      - tests-backend
-      - build-backend
-      - build-frontend
+    needs: [lint, tests-backend, tests-postgresql, tests-frontend, build]
     if: always()
     steps:
-      - name: Check all jobs passed
+      - name: Verificar todos los jobs
+        shell: bash
         run: |
-          if ${{ contains(needs.*.result, 'failure') }}; then
-            echo "::error::One or more CI jobs failed"
+          if ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}; then
+            echo "::error::Uno o más jobs de CI no terminaron correctamente"
             exit 1
           fi
-          echo "All CI checks passed"
+          echo "Todos los checks CI pasaron"

@@ -2,7 +2,16 @@ import uuid
 from datetime import datetime, timezone
 from enum import Enum
 
-from sqlalchemy import Boolean, DateTime, Enum as SQLEnum, ForeignKey, ForeignKeyConstraint, Index, String, Text, UniqueConstraint
+from sqlalchemy import (
+    DateTime,
+    ForeignKey,
+    ForeignKeyConstraint,
+    Index,
+    String,
+    Text,
+    UniqueConstraint,
+)
+from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -23,7 +32,10 @@ class Location(Base):
 
     __tablename__ = "locations"
     __table_args__ = (
-        UniqueConstraint("tenant_id", "customer_id", "name", name="uq_locations_tenant_customer_name"),
+        UniqueConstraint("tenant_id", "id", name="uq_locations_tenant_id"),
+        UniqueConstraint(
+            "tenant_id", "customer_id", "name", name="uq_locations_tenant_customer_name"
+        ),
         ForeignKeyConstraint(
             ["tenant_id", "customer_id"],
             ["customers.tenant_id", "customers.person_id"],
@@ -50,11 +62,17 @@ class Location(Base):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )
-    created_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
-    updated_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    created_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id"), nullable=True
+    )
+    updated_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id"), nullable=True
+    )
 
     customer: Mapped["Customer"] = relationship(back_populates="locations")
-    assets: Mapped[list["Asset"]] = relationship(back_populates="location", cascade="all, delete-orphan")
+    assets: Mapped[list["Asset"]] = relationship(
+        back_populates="location", cascade="all, delete-orphan"
+    )
 
 
 class Asset(Base):
@@ -64,6 +82,15 @@ class Asset(Base):
 
     __tablename__ = "assets"
     __table_args__ = (
+        UniqueConstraint("tenant_id", "id", name="uq_assets_tenant_id"),
+        ForeignKeyConstraint(
+            ["tenant_id", "location_id"],
+            ["locations.tenant_id", "locations.id"],
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "asset_type_id"],
+            ["asset_types.tenant_id", "asset_types.id"],
+        ),
         Index("ix_assets_qr_code", "tenant_id", "qr_code", unique=True),
     )
 
@@ -85,7 +112,9 @@ class Asset(Base):
     internal_code: Mapped[str | None] = mapped_column(String(50), nullable=True)
     qr_code: Mapped[str | None] = mapped_column(String(100), nullable=True)
     status: Mapped[AssetStatus] = mapped_column(
-        SQLEnum(AssetStatus, native_enum=False), nullable=False, default=AssetStatus.ACTIVE
+        SQLEnum(AssetStatus, native_enum=False),
+        nullable=False,
+        default=AssetStatus.ACTIVE,
     )
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
 
@@ -97,8 +126,12 @@ class Asset(Base):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )
-    created_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
-    updated_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    created_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id"), nullable=True
+    )
+    updated_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id"), nullable=True
+    )
 
     location: Mapped["Location"] = relationship(back_populates="assets")
     asset_type: Mapped["AssetType"] = relationship()

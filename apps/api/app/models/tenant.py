@@ -18,7 +18,9 @@ class Tenant(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     commercial_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
-    status: Mapped[str] = mapped_column(String(20), nullable=False, default=TENANT_ACTIVE)
+    status: Mapped[str] = mapped_column(
+        String(20), nullable=False, default=TENANT_ACTIVE
+    )
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
@@ -43,7 +45,9 @@ class TenantConfig(Base):
     tenant_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("tenants.id", ondelete="CASCADE"), unique=True, nullable=False
     )
-    commercial_display_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    commercial_display_name: Mapped[str | None] = mapped_column(
+        String(200), nullable=True
+    )
     contact_info: Mapped[str | None] = mapped_column(Text, nullable=True)
     receipt_info: Mapped[str | None] = mapped_column(Text, nullable=True)
     # Branding columns (added in migration 9c8b2c1d4e5f)
