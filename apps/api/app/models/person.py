@@ -76,7 +76,9 @@ class Person(Base):
     )
 
     identifications: Mapped[list["PersonIdentification"]] = relationship(
-        back_populates="person", cascade="all, delete-orphan"
+        back_populates="person",
+        cascade="all, delete-orphan",
+        foreign_keys="PersonIdentification.person_id",
     )
     customer: Mapped["Customer | None"] = relationship(
         back_populates="person", uselist=False, cascade="all, delete-orphan"
@@ -131,7 +133,9 @@ class PersonIdentification(Base):
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
 
-    person: Mapped["Person"] = relationship(back_populates="identifications")
+    person: Mapped["Person"] = relationship(
+        back_populates="identifications", foreign_keys=[person_id]
+    )
 
 
 class Customer(Base):

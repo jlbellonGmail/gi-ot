@@ -132,9 +132,11 @@ class WorkOrder(Base):
         onupdate=lambda: datetime.now(timezone.utc),
     )
 
-    status: Mapped["WorkOrderStatus"] = relationship()
-    work_order_type: Mapped["WorkOrderType"] = relationship()
-    priority: Mapped["Priority"] = relationship()
+    status: Mapped["WorkOrderStatus"] = relationship(foreign_keys=[status_id])
+    work_order_type: Mapped["WorkOrderType"] = relationship(
+        foreign_keys=[work_order_type_id]
+    )
+    priority: Mapped["Priority"] = relationship(foreign_keys=[priority_id])
     customer: Mapped["Customer"] = relationship(
         foreign_keys=[customer_id, tenant_id],
         primaryjoin="and_(WorkOrder.customer_id==Customer.person_id, WorkOrder.tenant_id==Customer.tenant_id)",
@@ -145,16 +147,22 @@ class WorkOrder(Base):
         primaryjoin="and_(WorkOrder.technician_id==Technician.person_id, WorkOrder.tenant_id==Technician.tenant_id)",
         viewonly=True,
     )
-    location: Mapped["Location"] = relationship()
-    asset: Mapped["Asset"] = relationship()
+    location: Mapped["Location"] = relationship(foreign_keys=[location_id])
+    asset: Mapped["Asset"] = relationship(foreign_keys=[asset_id])
     history: Mapped[list["WorkOrderHistory"]] = relationship(
-        back_populates="work_order", cascade="all, delete-orphan"
+        back_populates="work_order",
+        cascade="all, delete-orphan",
+        foreign_keys="WorkOrderHistory.work_order_id",
     )
     photos: Mapped[list["WorkOrderPhoto"]] = relationship(
-        back_populates="work_order", cascade="all, delete-orphan"
+        back_populates="work_order",
+        cascade="all, delete-orphan",
+        foreign_keys="WorkOrderPhoto.work_order_id",
     )
     sync_operations: Mapped[list["SyncOperation"]] = relationship(
-        back_populates="work_order", cascade="all, delete-orphan"
+        back_populates="work_order",
+        cascade="all, delete-orphan",
+        foreign_keys="SyncOperation.entity_id",
     )
 
 
@@ -196,7 +204,9 @@ class WorkOrderHistory(Base):
     )
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-    work_order: Mapped[WorkOrder] = relationship(back_populates="history")
+    work_order: Mapped[WorkOrder] = relationship(
+        back_populates="history", foreign_keys=[work_order_id]
+    )
 
 
 class WorkOrderPhoto(Base):
@@ -236,4 +246,6 @@ class WorkOrderPhoto(Base):
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
 
-    work_order: Mapped[WorkOrder] = relationship(back_populates="photos")
+    work_order: Mapped[WorkOrder] = relationship(
+        back_populates="photos", foreign_keys=[work_order_id]
+    )

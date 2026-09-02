@@ -8,7 +8,7 @@ operaciones al endpoint /api/v1/sync y el backend las aplica idempotentemente.
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import ForeignKey, ForeignKeyConstraint, Index, String, Text
+from sqlalchemy import DateTime, ForeignKey, ForeignKeyConstraint, Index, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -47,9 +47,10 @@ class SyncOperation(Base):
     # Máximo de reintentos
     max_attempts: Mapped[int] = mapped_column(default=3, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc)
     )
-    synced_at: Mapped[datetime | None] = mapped_column(nullable=True)
+    synced_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     # Relación con la OT (opcional, depende del operation_type)
     work_order: Mapped["WorkOrder | None"] = relationship(

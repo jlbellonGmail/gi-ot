@@ -5,11 +5,6 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, select, text
-from sqlalchemy.exc import DBAPIError, IntegrityError
-from sqlalchemy.orm import Session, sessionmaker
-
 from app.core.security import hash_password
 from app.db.rls import set_authenticated_context, set_platform_context
 from app.main import app
@@ -30,6 +25,10 @@ from app.models.work_order import (
 from app.models.work_order_receipt import WorkOrderReceipt
 from app.models.work_order_status import WorkOrderStatus
 from app.models.work_order_type import WorkOrderType
+from fastapi.testclient import TestClient
+from sqlalchemy import create_engine, select, text
+from sqlalchemy.exc import DBAPIError, IntegrityError
+from sqlalchemy.orm import Session, sessionmaker
 
 DATABASE_URL = os.getenv("POSTGRES_RLS_DATABASE_URL")
 pytestmark = pytest.mark.skipif(
@@ -66,7 +65,7 @@ def _graph(
     admin = User(
         tenant_id=tenant.id,
         role_id=role.id,
-        email=f"admin-{suffix}@rls.test",
+        email=f"admin-{suffix}@example.com",
         password_hash=hash_password("RlsPass123!"),
         full_name=f"Admin {suffix}",
     )
@@ -305,7 +304,7 @@ def test_fastapi_login_and_post_commit_context_survive_rls(graphs):
     client = TestClient(app)
     login = client.post(
         "/api/v1/auth/login",
-        json={"email": "admin-a@rls.test", "password": "RlsPass123!"},
+        json={"email": "admin-a@example.com", "password": "RlsPass123!"},
     )
     assert login.status_code == 200, login.text
     headers = {"Authorization": f"Bearer {login.json()['access_token']}"}
@@ -318,7 +317,7 @@ def test_fastapi_login_and_post_commit_context_survive_rls(graphs):
         "/api/v1/users",
         headers=headers,
         json={
-            "email": "second-a@rls.test",
+            "email": "second-a@example.com",
             "full_name": "Second A",
             "password": "SecondPass123!",
             "role_code": "TENANT_OFFICE",
@@ -329,6 +328,6 @@ def test_fastapi_login_and_post_commit_context_survive_rls(graphs):
     users = client.get("/api/v1/users", headers=headers)
     assert users.status_code == 200, users.text
     assert {item["email"] for item in users.json()} == {
-        "admin-a@rls.test",
-        "second-a@rls.test",
+        "admin-a@example.com",
+        "second-a@example.com",
     }

@@ -71,7 +71,9 @@ class Location(Base):
 
     customer: Mapped["Customer"] = relationship(back_populates="locations")
     assets: Mapped[list["Asset"]] = relationship(
-        back_populates="location", cascade="all, delete-orphan"
+        back_populates="location",
+        cascade="all, delete-orphan",
+        foreign_keys="Asset.location_id",
     )
 
 
@@ -133,5 +135,7 @@ class Asset(Base):
         ForeignKey("users.id"), nullable=True
     )
 
-    location: Mapped["Location"] = relationship(back_populates="assets")
-    asset_type: Mapped["AssetType"] = relationship()
+    location: Mapped["Location"] = relationship(
+        back_populates="assets", foreign_keys=[location_id]
+    )
+    asset_type: Mapped["AssetType"] = relationship(foreign_keys=[asset_type_id])
