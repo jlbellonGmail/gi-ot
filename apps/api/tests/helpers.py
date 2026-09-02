@@ -1,6 +1,3 @@
-from sqlalchemy import select
-from sqlalchemy.orm import Session
-
 from app.core.security import hash_password
 from app.models.config_template import DEFAULT_TEMPLATE_CODE, ConfigTemplate
 from app.models.role import PLATFORM_OWNER, Role
@@ -9,6 +6,8 @@ from app.models.template_priority import TemplatePriority
 from app.models.template_work_order_status import TemplateWorkOrderStatus
 from app.models.template_work_order_type import TemplateWorkOrderType
 from app.models.user import User
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 # Contenido de la plantilla DEFAULT — debe coincidir con la semilla de datos
 # de la migración `config_templates` para que tests y esquema real no diverjan.

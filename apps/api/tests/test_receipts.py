@@ -17,7 +17,6 @@ import uuid
 from pathlib import Path
 
 import pytest
-
 from app.models.asset_type import AssetType
 from app.models.location import Asset, Location
 from app.models.person import Customer, Person, PersonType, Technician

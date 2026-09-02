@@ -1,7 +1,6 @@
 import uuid
 
 import pytest
-
 from app.files.storage import (
     InvalidStorageKey,
     LocalFileStorage,

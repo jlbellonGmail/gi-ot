@@ -12,12 +12,11 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from sqlalchemy import select
-
 from app.core.security import hash_password
 from app.db.session import SessionLocal
 from app.models.role import PLATFORM_OWNER, Role
 from app.models.user import User
+from sqlalchemy import select
 
 
 def main() -> None:
