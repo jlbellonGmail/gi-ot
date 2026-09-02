@@ -132,6 +132,8 @@ jobs:
           alembic upgrade head
       - name: Tests PostgreSQL RLS sobre schema migrado
         run: pytest -q tests_postgresql
+      - name: Restablecer esquema antes de suite funcional PostgreSQL
+        run: alembic downgrade base
       - name: Suite funcional completa PostgreSQL
         run: pytest -q tests
 
