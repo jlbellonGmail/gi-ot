@@ -133,7 +133,13 @@ jobs:
       - name: Tests PostgreSQL RLS sobre schema migrado
         run: pytest -q tests_postgresql
       - name: Restablecer esquema antes de suite funcional PostgreSQL
-        run: alembic downgrade base
+        env:
+          PGPASSWORD: ci-validation-only
+        run: >-
+          psql -h localhost -U postgres -d giot -v ON_ERROR_STOP=1
+          -c "DROP SCHEMA public CASCADE"
+          -c "CREATE SCHEMA public"
+          -c "GRANT ALL ON SCHEMA public TO giot_app"
       - name: Suite funcional completa PostgreSQL
         run: pytest -q tests
 
