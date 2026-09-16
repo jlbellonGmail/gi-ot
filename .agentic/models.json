@@ -1,0 +1,7 @@
+{
+  "$schema": "./schemas/models.schema.json",
+  "default": {"role": "planner", "model": "default", "variant": "high"},
+  "allowedVariants": ["default", "minimal", "low", "medium", "high", "max"],
+  "routing": {"defaultSdd": "STANDARD", "profiles": {"LIGHT": {"quality": 1, "cost": 3, "latency": 2}, "STANDARD": {"quality": 2, "cost": 1, "latency": 1}, "FULL": {"quality": 4, "cost": 0, "latency": 0}}},
+  "providers": {}
+}

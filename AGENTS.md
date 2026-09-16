@@ -10,11 +10,12 @@ No duplicar aquí información disponible en documentos canónicos.
 
 ## Estado del proyecto
 
-**Modo actual: AI-NATIVE** (activado 2026-08-30)
+**Modo actual: AI-NATIVE v2** (adopción en curso en `feature/adopcion-template-v2`)
 
 Histórico:
 - Puntos 00–09 construidos bajo modo **BOOTSTRAP** (ver sección "Histórico BOOTSTRAP" abajo).
-- A partir de esta activación, todo nuevo trabajo (Feature/Milestone) debe utilizar el circuito formal AI-NATIVE definido en `.agentic/`.
+- La activación AI-NATIVE de agosto de 2026 es una transición legacy.
+- A partir del merge de esta feature, todo trabajo nuevo utilizará el mecanismo v2 definido en `.agentic/`.
 
 El repositorio Git ya está activo.
 
@@ -26,7 +27,7 @@ Durante AI-NATIVE se ejecutan obligatoriamente:
 
 * feature branches (una por feature/milestone);
 * Pull Requests hacia `develop`;
-* Circuito completo de agentes: Analyst → Reviewer → Builder → QA → Code Reviewer;
+* Circuito v2: Planner → Builder → Reviewer, con QA y Code Review como gates;
 * Auditorías formales y evidencias en `runs/<feature>/`;
 * HITL (Human-In-The-Loop) antes de merge;
 * `runs/<feature>/spec.md` como contrato inmutable;
@@ -321,27 +322,26 @@ Las SPEC futuras deben referenciar los documentos transversales en lugar de copi
 
 ### Roles y flujo obligatorio
 
+Los roles conceptuales canónicos son Planner, Builder y Reviewer. Son
+capacidades, no nombres de herramientas ni modelos.
+
 ```
-Analyst → Reviewer → Builder → QA → Code Reviewer → HITL → Merge a develop
+ASSESS → Planner → Builder → validaciones → Reviewer → convergence → HITL → PR
 ```
 
-Cada feature/milestone debe producir evidencias en `runs/<feature>/`:
-- `spec.md` (contrato inmutable)
-- `analysis.md`
-- `review.md`
-- `build.md`
-- `qa.md`
-- `codereview.md`
-- `hitl.md`
+Analyst, QA y Code Reviewer se conservan como aliases y responsabilidades
+legacy: Analyst pasa a Planner; QA y Code Reviewer son gates/capacidades
+consumidas por Reviewer. Las evidencias anteriores a v2 no se reinterpretan.
 
 ### Gates obligatorios
 
-1. **Post-Analyst**: Reviewer aprueba `analysis.md` + `spec.md`
-2. **Post-Reviewer**: Solo `APROBADO` permite continuar a Builder
-3. **Post-Builder**: Tests + lint + typecheck + build + migraciones = PASS
-4. **Post-QA**: Suite completa verde, criterios de aceptación PASS
-5. **Post-Code Reviewer**: Calidad, seguridad, arquitectura APROBADO
-6. **HITL**: Humano autoriza MERGE con evidencia completa
+1. ASSESS determinístico y SDD proporcional: LIGHT, STANDARD o FULL.
+2. Planner produce intención, alcance, riesgos y plan trazable.
+3. Builder implementa sólo el contrato aprobado y produce evidencia.
+4. Validaciones ejecutan tests, lint, typecheck, build y migraciones si aplican.
+5. Reviewer verifica intención, resultado, seguridad, arquitectura, QA y código.
+6. Convergence limita findings, iteraciones y presupuesto; falla de forma segura.
+7. HITL humano autoriza MERGE o RELEASE; el agente no mergea por iniciativa propia.
 
 ### Git (AI-NATIVE)
 
@@ -356,10 +356,9 @@ Estrategia formal en `.agentic/workflows/git.md`:
 
 ### CI/CD (GitHub Actions)
 
-Workflow obligatorio en `.github/workflows/ci.yml`:
-- Ejecuta en PR hacia `develop`/`main`
-- Lint (ruff/eslint), Typecheck (mypy/tsc), Tests (pytest/jest), Build
-- Required checks para merge: `ci/lint`, `ci/tests-backend`, `ci/tests-frontend`, `ci/build`
+`.github/workflows/ci.yml` separa gates de gobernanza/lifecycle, tests de
+producto y la validación PostgreSQL futura. La PR #2 de PostgreSQL no es
+baseline ni dependencia de esta adopción.
 
 ### HITL
 
@@ -368,6 +367,19 @@ Proceso en `.agentic/hitl.md`:
 - Pre-release a main (obligatorio)
 - Decisiones irreversibles (arquitectura, migraciones destructivas)
 - Registro inmutable en `runs/<feature>/hitl.md`
+
+### Fuentes de verdad
+
+Git/GitHub real prevalece sobre documentos derivados. `CONSTITUTION.md`
+contiene principios; `AGENTS.md` reglas operativas; `ROADMAP.md` dirección;
+el SDD contrato concreto; `SUMMARY.md` reentrada resumida; `runs/` evidencia;
+`.audit/` auditoría independiente; `STATUS.md` observación derivada.
+
+### Legacy
+
+`runs/09-comprobantes/**` y `runs/activar-ai-native/**` son evidencia
+`LEGACY EVIDENCE — PRE TEMPLATE V2`. Se preservan sin renombrar, mover,
+recalificar ni completar retroactivamente.
 
 ---
 

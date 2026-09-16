@@ -1,4 +1,6 @@
-# Analyst Role — gi-ot
+# Analyst Role — legacy alias de Planner
+
+> El rol conceptual canónico es `roles/planner.md`.
 
 ## Propósito
 Analizar el feature request, validar viabilidad técnica, descomponer en tasks accionables y producir la especificación formal (`spec.md`) y el análisis (`analysis.md`).

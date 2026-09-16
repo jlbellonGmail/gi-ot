@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","required":["slug","branch","baseCommit","headCommit"],"properties":{"slug":{"type":"string"},"branch":{"type":"string"},"baseCommit":{"type":"string"},"headCommit":{"type":"string"}}}

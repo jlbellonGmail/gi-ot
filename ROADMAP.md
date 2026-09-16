@@ -2,7 +2,12 @@
 
 ## Estado
 
-**Modo actual: BOOTSTRAP**
+**Modo actual: AI-NATIVE v2 en adopción**
+
+Los Puntos 00–09 fueron construidos bajo BOOTSTRAP y quedan cerrados como
+historia legacy. La activación AI-NATIVE de agosto de 2026 es una transición
+anterior. El mecanismo operativo v2 comienza con la feature
+`adopcion-template-v2`; ningún punto histórico se reinterpreta.
 
 Objetivo actual:
 
@@ -12,9 +17,13 @@ Evolución prevista:
 
 `PRD → ROADMAP → BOOTSTRAP → MVP vertical → SDD → AI-NATIVE`
 
-Durante BOOTSTRAP se prioriza velocidad, simplicidad y validación funcional sin activar todavía el circuito agéntico formal.
+Durante el período histórico BOOTSTRAP se priorizó velocidad, simplicidad y
+validación funcional sin activar todavía el circuito agéntico formal.
 
 Git ya está activo y `develop` funciona como rama de integración durante esta etapa.
+
+La adopción de gobernanza no modifica la funcionalidad ni los contratos de
+producto. El Punto 10 PostgreSQL permanece pendiente y fuera de esta feature.
 
 ---
 
@@ -431,29 +440,34 @@ Antes de considerar el producto apto para producción:
 
 ---
 
-# 12 — Activación AI-NATIVE / SDD
+# 12 — Activación AI-NATIVE / SDD (histórico legacy)
 
-La activación será una decisión explícita del usuario.
+Esta sección conserva el plan histórico de transición anterior a v2. No debe
+usarse para afirmar que los Puntos 01–09 fueron ejecutados bajo v2.
 
 El uso de Git durante BOOTSTRAP no implica que el circuito AI-NATIVE ya se encuentre activo.
 
-* [ ] Declarar cierre de BOOTSTRAP.
+* [x] Declarar BOOTSTRAP como etapa histórica cerrada para efectos de v2.
 * [ ] Reconciliar PRD, ROADMAP, documentación y código.
 * [x] Git inicializado y rama `develop` utilizada como integración durante BOOTSTRAP.
 * [ ] Definir línea base para la activación del circuito formal.
-* [ ] Incorporar la infraestructura AI-NATIVE del template.
+* [x] Incorporar la transición AI-NATIVE legacy; la adopción v2 se registra aparte.
 * [ ] Convertir trabajo pendiente en features/milestones SDD.
 * [ ] Crear especificaciones en `runs/<feature>/spec.md`.
 * [ ] Activar Claude/Codex/OpenCode.
-* [ ] Activar Analyst.
+* [x] Conservar Analyst como alias legacy de Planner.
 * [ ] Activar Reviewer.
 * [ ] Activar Builder.
-* [ ] Activar QA.
-* [ ] Activar Code Reviewer según el template vigente.
+* [x] Conservar QA y Code Reviewer como capacidades/gates legacy.
 * [ ] Activar evidencias en `runs/`.
 * [ ] Activar HITL.
-* [ ] Activar estrategia formal de ramas, worktrees y PR.
-* [ ] Activar CI/CD.
+* [x] Mantener estrategia formal legacy; v2 la materializa en la feature de adopción.
+* [x] Mantener CI/CD existente; v2 agrega gates separados.
+
+## Adopción v2 en curso
+
+* [-] `adopcion-template-v2` — gobernanza, lifecycle, ASSESS, SDD adaptativo,
+  evidencias, work units y gates; sin cambios funcionales.
 
 Las SPEC que afecten interfaces deberán leer:
 
