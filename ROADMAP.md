@@ -23,7 +23,8 @@ validación funcional sin activar todavía el circuito agéntico formal.
 Git ya está activo y `develop` funciona como rama de integración durante esta etapa.
 
 La adopción de gobernanza no modifica la funcionalidad ni los contratos de
-producto. El Punto 10 PostgreSQL permanece pendiente y fuera de esta feature.
+producto. El Punto 10 PostgreSQL se ejecuta como una work unit nativa v2,
+reutilizando selectivamente la referencia legacy PR #2.
 
 ---
 
@@ -407,6 +408,12 @@ WhatsApp no deberá bloquear la disponibilidad del MVP inicial.
 ---
 
 # 10 — Validación PostgreSQL
+
+**Estado v2:** en progreso en `feature/v2-10-validacion-postgresql`. La PR #2
+(`feature/10-validacion-postgresql`, HEAD `03a6f3b`) es únicamente referencia
+legacy; no se reinterpreta como work unit v2. Este punto sólo se marcará
+completado después de validación PostgreSQL real, aprobación Reviewer/HITL y
+merge de la nueva PR.
 
 Antes de considerar el producto apto para producción:
 

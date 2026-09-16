@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "assessment": "ASSESS",
+  "depth": "FULL",
+  "openCount": 0,
+  "findings": [
+    {
+      "id": "ALEMBIC-001",
+      "status": "CLOSED",
+      "fingerprint": "historical-sync-operations"
+    },
+    {
+      "id": "ALEMBIC-002",
+      "status": "CLOSED",
+      "fingerprint": "sort-order-replay"
+    },
+    {
+      "id": "PG-001",
+      "status": "PENDING_REMOTE",
+      "fingerprint": "postgresql-ci"
+    },
+    {
+      "id": "SQLITE-001",
+      "status": "CLOSED",
+      "fingerprint": "sqlite-replay"
+    },
+    {
+      "id": "QUALITY-001",
+      "status": "CLOSED",
+      "fingerprint": "quality-ratchets"
+    }
+  ],
+  "verdict": "CONVERGED",
+  "nextAction": "HITL_OR_CLOSE",
+  "iteration": 1
+}

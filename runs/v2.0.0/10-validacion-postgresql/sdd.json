@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "assessmentPath": "C:\\Proyectos\\worktrees\\v2-10-validacion-postgresql\\runs\\v2.0.0\\10-validacion-postgresql\\assess.jsonl",
+  "profile": "FULL",
+  "requiredEvidence": [
+    "SUMMARY.md",
+    "spec.md",
+    "plan.md",
+    "tasks.md",
+    "test-report-1.md",
+    "audit-1.md",
+    "code-review-1.md"
+  ],
+  "generatedAtUtc": "2026-09-16T21:37:31.2394270Z"
+}

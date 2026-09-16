@@ -35,6 +35,7 @@ class WorkOrder(Base):
     __tablename__ = "work_orders"
     __table_args__ = (
         UniqueConstraint("tenant_id", "number", name="uq_work_orders_tenant_number"),
+        UniqueConstraint("tenant_id", "id", name="uq_work_orders_tenant_id"),
         ForeignKeyConstraint(
             ["tenant_id", "customer_id"],
             ["customers.tenant_id", "customers.person_id"],
@@ -42,6 +43,23 @@ class WorkOrder(Base):
         ForeignKeyConstraint(
             ["tenant_id", "technician_id"],
             ["technicians.tenant_id", "technicians.person_id"],
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "location_id"], ["locations.tenant_id", "locations.id"]
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "asset_id"], ["assets.tenant_id", "assets.id"]
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "work_order_type_id"],
+            ["work_order_types.tenant_id", "work_order_types.id"],
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "priority_id"], ["priorities.tenant_id", "priorities.id"]
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "status_id"],
+            ["work_order_statuses.tenant_id", "work_order_statuses.id"],
         ),
         Index("ix_work_orders_tenant_status", "tenant_id", "status_id"),
         Index("ix_work_orders_tenant_technician", "tenant_id", "technician_id"),
@@ -91,9 +109,9 @@ class WorkOrder(Base):
         onupdate=lambda: datetime.now(timezone.utc),
     )
 
-    status: Mapped["WorkOrderStatus"] = relationship()
-    work_order_type: Mapped["WorkOrderType"] = relationship()
-    priority: Mapped["Priority"] = relationship()
+    status: Mapped["WorkOrderStatus"] = relationship(foreign_keys=[status_id])
+    work_order_type: Mapped["WorkOrderType"] = relationship(foreign_keys=[work_order_type_id])
+    priority: Mapped["Priority"] = relationship(foreign_keys=[priority_id])
     customer: Mapped["Customer"] = relationship(
         foreign_keys=[customer_id, tenant_id],
         primaryjoin="and_(WorkOrder.customer_id==Customer.person_id, WorkOrder.tenant_id==Customer.tenant_id)",
@@ -104,13 +122,17 @@ class WorkOrder(Base):
         primaryjoin="and_(WorkOrder.technician_id==Technician.person_id, WorkOrder.tenant_id==Technician.tenant_id)",
         viewonly=True,
     )
-    location: Mapped["Location"] = relationship()
-    asset: Mapped["Asset"] = relationship()
+    location: Mapped["Location"] = relationship(foreign_keys=[location_id])
+    asset: Mapped["Asset"] = relationship(foreign_keys=[asset_id])
     history: Mapped[list["WorkOrderHistory"]] = relationship(
-        back_populates="work_order", cascade="all, delete-orphan"
+        back_populates="work_order",
+        cascade="all, delete-orphan",
+        foreign_keys="WorkOrderHistory.work_order_id",
     )
     photos: Mapped[list["WorkOrderPhoto"]] = relationship(
-        back_populates="work_order", cascade="all, delete-orphan"
+        back_populates="work_order",
+        cascade="all, delete-orphan",
+        foreign_keys="WorkOrderPhoto.work_order_id",
     )
     sync_operations: Mapped[list["SyncOperation"]] = relationship(
         back_populates="work_order", cascade="all, delete-orphan"
@@ -127,6 +149,11 @@ class WorkOrderHistory(Base):
 
     __tablename__ = "work_order_history"
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["tenant_id", "work_order_id"],
+            ["work_orders.tenant_id", "work_orders.id"],
+            ondelete="CASCADE",
+        ),
         Index("ix_work_order_history_tenant_wo", "tenant_id", "work_order_id"),
     )
 
@@ -148,7 +175,9 @@ class WorkOrderHistory(Base):
     )
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-    work_order: Mapped[WorkOrder] = relationship(back_populates="history")
+    work_order: Mapped[WorkOrder] = relationship(
+        back_populates="history", foreign_keys=[work_order_id]
+    )
 
 
 class WorkOrderPhoto(Base):
@@ -161,6 +190,11 @@ class WorkOrderPhoto(Base):
 
     __tablename__ = "work_order_photos"
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["tenant_id", "work_order_id"],
+            ["work_orders.tenant_id", "work_orders.id"],
+            ondelete="CASCADE",
+        ),
         Index("ix_work_order_photos_tenant_wo", "tenant_id", "work_order_id"),
     )
 
@@ -181,4 +215,6 @@ class WorkOrderPhoto(Base):
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
 
-    work_order: Mapped[WorkOrder] = relationship(back_populates="photos")
+    work_order: Mapped[WorkOrder] = relationship(
+        back_populates="photos", foreign_keys=[work_order_id]
+    )
