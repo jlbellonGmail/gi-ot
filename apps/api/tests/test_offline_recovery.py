@@ -8,7 +8,6 @@ Cubre:
 """
 
 import json
-import uuid
 import pytest
 
 from app.models.sync_operation import SyncOperation
