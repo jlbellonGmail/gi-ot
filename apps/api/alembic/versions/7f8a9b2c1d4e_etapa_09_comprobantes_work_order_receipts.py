@@ -63,8 +63,8 @@ def upgrade() -> None:
         sa.Column('generated_by', sa.Uuid(), nullable=False),
         sa.Column('generated_at', sa.DateTime(timezone=True), nullable=False,
                   server_default=sa.text('CURRENT_TIMESTAMP')),
-        sa.Column('sent_to_email', sa.Boolean(), nullable=False, server_default=sa.text('0')),
-        sa.Column('sent_to_whatsapp', sa.Boolean(), nullable=False, server_default=sa.text('0')),
+        sa.Column('sent_to_email', sa.Boolean(), nullable=False, server_default=sa.false()),
+        sa.Column('sent_to_whatsapp', sa.Boolean(), nullable=False, server_default=sa.false()),
         sa.Column('last_sent_at', sa.DateTime(timezone=True), nullable=True),
         sa.ForeignKeyConstraint(
             ['generated_by'], ['users.id'],
