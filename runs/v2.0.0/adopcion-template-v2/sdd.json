@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "assessmentPath": "D:\\Proyectos\\worktrees\\adopcion-template-v2\\runs\\v2.0.0\\adopcion-template-v2\\assess.jsonl",
+  "profile": "STANDARD",
+  "requiredEvidence": [
+    "SUMMARY.md",
+    "spec.md",
+    "plan.md",
+    "test-report-1.md"
+  ],
+  "generatedAtUtc": "2026-09-16T20:05:52.8687092Z"
+}

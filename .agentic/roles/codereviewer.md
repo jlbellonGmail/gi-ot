@@ -1,4 +1,6 @@
-# Code Reviewer Role — gi-ot
+# Code Reviewer Role — legacy capability alias
+
+> Code Review permanece como gate consumido por Reviewer v2.
 
 ## Propósito
 Revisión final de calidad de código: estilo, arquitectura, seguridad, mantenibilidad, performance. Veredicto: **APROBADO** | **CAMBIOS REQUERIDOS**.

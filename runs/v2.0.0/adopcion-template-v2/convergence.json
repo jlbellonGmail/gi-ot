@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "assessment": "ASSESS",
+  "depth": "STANDARD",
+  "openCount": 0,
+  "findings": [],
+  "verdict": "CONVERGED",
+  "nextAction": "HITL_OR_CLOSE",
+  "iteration": 1
+}

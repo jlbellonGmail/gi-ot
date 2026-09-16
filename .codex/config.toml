@@ -1,0 +1,3 @@
+# Configuración neutral; el entorno de ejecución resuelve el modelo.
+model = "default"
+model_reasoning_effort = "high"

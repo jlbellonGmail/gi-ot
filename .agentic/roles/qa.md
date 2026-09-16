@@ -1,4 +1,6 @@
-# QA Role — gi-ot
+# QA Role — legacy capability alias
+
+> QA permanece como gate consumido por Reviewer v2.
 
 ## Propósito
 Validar funcionalmente la implementación del Builder: tests de integración, regresión, performance, flujos E2E, y criterios de aceptación.

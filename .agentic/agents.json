@@ -1,0 +1,8 @@
+{
+  "$schema": "./schemas/agents.schema.json",
+  "roles": {
+    "planner": {"description": "Interpreta objetivo, consume ASSESS y produce SDD proporcional.", "capabilities": ["context-analysis", "risk-analysis", "planning", "evidence-planning"], "prompt": ".agentic/roles/planner.md"},
+    "builder": {"description": "Materializa el contrato aprobado y produce evidencia técnica.", "capabilities": ["implementation", "tool-use", "testing", "debugging", "evidence-production"], "prompt": ".agentic/roles/builder.md"},
+    "reviewer": {"description": "Verifica de forma independiente intención, resultado, seguridad, QA y código.", "capabilities": ["acceptance-check", "architecture-review", "security-review", "regression-analysis", "code-review", "independent-judgment"], "prompt": ".agentic/roles/reviewer.md"}
+  }
+}

@@ -1,10 +1,14 @@
-# HITL (Human-In-The-Loop) — gi-ot
+# HITL (Human-In-The-Loop) — gi-ot v2
+
+El único punto de decisión humana normal es MERGE o NO MERGE sobre una PR con
+evidencia vigente y CI verde. El agente no decide ni ejecuta el merge por
+iniciativa propia.
 
 ## Propósito
 Punto de control humano obligatorio antes de merge a `develop` y antes de release a `main`.
 
 ## Cuándo se ejecuta
-1. **Pre-merge a develop** — Tras Code Reviewer APROBADO
+1. **Pre-merge a develop** — Tras Reviewer v2 APROBADO
 2. **Pre-release a main** — Tras merge a develop y validación en staging
 3. **Decisiones irreversibles** — Cambios de arquitectura, migraciones destructivas, eliminación de features
 
@@ -93,7 +97,7 @@ Se crea/actualiza `runs/<feature>/hitl.md`:
 ## Integración con GitHub
 
 ### Branch Protection (develop)
-- Require PR reviews: 1 (Code Reviewer)
+- Require PR reviews: 1 (Reviewer humano o responsable designado)
 - Require status checks: CI passes
 - Require conversation resolution: sí
 - Require signed commits: opcional

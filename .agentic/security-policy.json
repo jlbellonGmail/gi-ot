@@ -1,0 +1,6 @@
+{
+  "$schema": "./schemas/security-policy.schema.json",
+  "schemaVersion": 1,
+  "defaultDecision": "deny",
+  "capabilities": {"READ": "allow", "MODIFY_LOCAL": "allow", "EXECUTE": "gate", "NETWORK_READ": "gate", "EXTERNAL_WRITE": "deny", "GIT_WRITE": "gate", "REMOTE_WRITE": "gate", "MERGE": "deny", "DESTRUCTIVE": "deny", "SECRET_ACCESS": "deny"}
+}

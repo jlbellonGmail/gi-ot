@@ -1,4 +1,9 @@
-# Git Workflows — gi-ot (AI-NATIVE)
+# Git Workflows — gi-ot (AI-NATIVE v2)
+
+La unidad canónica es una work unit aislada: rama, worktree, run y contrato.
+La rama de integración es `develop`; `main` se reserva para releases. No hay
+commit directo, force push, merge sin PR, merge sin CI verde ni merge sin HITL.
+Los scripts deben ser fail-safe y no borrar trabajo ajeno.
 
 ## Ramas
 
@@ -37,10 +42,10 @@
 graph LR
     A[develop] -->|git checkout -b| B[feature/xyz]
     B -->|Commits + Push| C[CI Runs]
-    C -->|Verde| D[Analyst → Reviewer]
-    D -->|APROBADO| E[Builder]
-    E -->|Código + Tests| F[QA]
-    F -->|PASS| G[Code Reviewer]
+    C -->|Verde| D[Planner]
+    D -->|Plan aprobado| E[Builder]
+    E -->|Código + Tests| F[Validaciones]
+    F -->|PASS| G[Reviewer]
     G -->|APROBADO| H[HITL]
     H -->|MERGE| I[Squash Merge a develop]
     I -->|Delete| B
