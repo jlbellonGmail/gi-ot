@@ -52,7 +52,8 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['updated_by'], ['users.id'], ),
     sa.ForeignKeyConstraint(['work_order_type_id'], ['work_order_types.id'], ),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('tenant_id', 'number', name='uq_work_orders_tenant_number')
+    sa.UniqueConstraint('tenant_id', 'number', name='uq_work_orders_tenant_number'),
+    sa.UniqueConstraint('tenant_id', 'id', name='uq_work_orders_tenant_id')
     )
     op.create_index(op.f('ix_work_orders_asset_id'), 'work_orders', ['asset_id'], unique=False)
     op.create_index(op.f('ix_work_orders_location_id'), 'work_orders', ['location_id'], unique=False)
