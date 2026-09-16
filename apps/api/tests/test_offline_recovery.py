@@ -173,8 +173,12 @@ class TestOfflineRecovery:
         """Test que los reintentos funcionan y el estado pasa a 'error' después de max_attempts."""
         from app.models.sync_operation import SyncOperation
 
+        tenant = Tenant(name="Sync Retry Tenant")
+        db_session.add(tenant)
+        db_session.commit()
+
         sync_op = SyncOperation(
-            tenant_id=uuid.uuid4(),
+            tenant_id=tenant.id,
             operation_type="create_wo",
             entity_id=None,
             payload=json.dumps({"test": "data"}),
