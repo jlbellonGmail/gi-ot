@@ -16,7 +16,7 @@
     },
     {
       "id": "PG-001",
-      "status": "PENDING_REMOTE",
+      "status": "CLOSED",
       "fingerprint": "postgresql-ci"
     },
     {

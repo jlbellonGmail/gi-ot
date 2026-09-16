@@ -13,4 +13,6 @@ PASS local:
 - compileall: PASS.
 - Frontend `npm run build`: PASS.
 
-PENDING REMOTE POSTGRESQL VALIDATION: Docker local no está disponible.
+PostgreSQL remoto: PASS en CI `35162201672` — suite RLS/migraciones y 105 tests
+funcionales PASS. Docker local no estaba disponible; la evidencia válida es la
+ejecución PostgreSQL efímera de GitHub Actions.

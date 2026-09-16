@@ -3,5 +3,5 @@
 PASS local: SQLite 106 tests, replay/migraciones 3 tests, `alembic check`,
 compileall y ratchets mypy/Ruff.
 
-PENDING REMOTE POSTGRESQL VALIDATION: PostgreSQL vacío, RLS, suite funcional y
-CI remoto.
+PostgreSQL remoto: PASS en CI `35162201672` — migración desde vacío, replay,
+RLS y suite funcional PostgreSQL.

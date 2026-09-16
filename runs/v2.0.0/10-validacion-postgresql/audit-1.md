@@ -1,6 +1,6 @@
 # Audit — 10-validacion-postgresql
 
-Auditoría de pre-PR:
+Auditoría final pre-merge:
 
 - Alcance limitado a Punto 10 y reparación histórica demostrada.
 - PR #2 no fue modificada.
@@ -10,7 +10,8 @@ Auditoría de pre-PR:
   localmente.
 - La trazabilidad legacy → v2 y la reparación histórica están registradas.
 - El catálogo MCP permanece vacío y no se incorporan secretos.
-- PostgreSQL real queda pendiente exclusivamente para CI remoto.
+- PostgreSQL real PASS en CI remoto: replay Alembic, RLS y suite funcional.
 - No hay tags ni releases.
 
-Resultado: CONVERGED LOCALMENTE; PENDING REMOTE POSTGRESQL VALIDATION.
+Resultado: PASS — alcance, no regresión, trazabilidad, migraciones, CI,
+seguridad, evidencia y lifecycle verificados; listo para HITL.

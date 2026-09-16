@@ -1,6 +1,6 @@
 # SUMMARY — 10-validacion-postgresql
 
-Estado: IN_PROGRESS — implementación local validada; PostgreSQL remoto pendiente.
+Estado: READY FOR HITL — implementación, PostgreSQL remoto y CI v2 validados.
 
 Esta work unit nace desde `develop` bajo Template v2.0.0.
 
@@ -18,4 +18,4 @@ Reparación histórica autorizada: `7f8a9b2c1d4e` materializa
 bridge `a10f2c3d4e5f` normaliza estados existentes sin borrar datos.
 
 Estado de validación: SQLite PASS, replay Alembic PASS, quality ratchets PASS,
-PostgreSQL real PENDING REMOTE POSTGRESQL VALIDATION.
+PostgreSQL real PASS en CI `35162201672`, Reviewer/convergence/auditoría PASS.
