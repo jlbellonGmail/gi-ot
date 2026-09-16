@@ -3,13 +3,13 @@
 ## Contexto manual
 
 - Template v2.0.0: activo y vigente.
-- Work unit: `10-validacion-postgresql` en `feature/v2-10-validacion-postgresql`.
-- Baseline de la work unit: `develop` en `2cb2a1223117bfb127df61fa6cb89cb4132919dd`.
-- Alcance: reparación reproducible de Alembic y validación PostgreSQL/RLS,
-  preservando SQLite y los contratos funcionales.
-- PR #2: referencia legacy iniciada antes de Template v2; intacta y no
-  reinterpretada.
-- Estado: implementación y CI remoto validados; work unit lista para HITL.
+- Work unit `10-validacion-postgresql`: cerrada y mergeada en `develop` por PR #4.
+- Merge: `de04bac5e0f75997b5dcb820536544fd942e0a8a`.
+- Alcance completado: reparación reproducible de Alembic y validación
+  PostgreSQL/RLS, preservando SQLite y los contratos funcionales.
+- PR #2: referencia legacy iniciada antes de Template v2; cerrada como
+  superseded después del merge de PR #4, con trazabilidad conservada.
+- Estado: ninguna work unit activa; develop listo para el siguiente punto.
 - Release: GI-OT continúa pre-release; no existen tags ni releases.
 
 ## Fuentes
@@ -19,15 +19,18 @@ reemplaza Git, CI, `ROADMAP.md`, SDD, `runs/` ni `.audit/`.
 
 ## Próximo paso
 
-Mergear la PR v2 tras la autorización HITL ya concedida. No iniciar Punto 11.
+Iniciar únicamente la próxima work unit aprobada del ROADMAP. Punto 11 queda
+pendiente y no se inicia como parte del cierre de Punto 10.
 
 <!-- STATUS:AUTO:BEGIN -->
 ## Estado verificado automáticamente
 
-- Rama: feature/v2-10-validacion-postgresql
-- Base: 2cb2a1223117bfb127df61fa6cb89cb4132919dd
+- Rama: develop
+- HEAD: de04bac5e0f75997b5dcb820536544fd942e0a8a
 - Release: pre-release
-- PR: #4 OPEN
+- Work unit: ninguna activa
+- PR #4: MERGED
+- PR #2: CLOSED / SUPERSEDED
 - CI: PASS — governance, producto, PostgreSQL, quality y frontend
 
 <!-- STATUS:AUTO:END -->

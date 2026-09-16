@@ -409,23 +409,23 @@ WhatsApp no deberá bloquear la disponibilidad del MVP inicial.
 
 # 10 — Validación PostgreSQL
 
-**Estado v2:** en progreso en `feature/v2-10-validacion-postgresql`. La PR #2
-(`feature/10-validacion-postgresql`, HEAD `03a6f3b`) es únicamente referencia
-legacy; no se reinterpreta como work unit v2. Este punto sólo se marcará
-completado después de validación PostgreSQL real, aprobación Reviewer/HITL y
-merge de la nueva PR.
+**Estado v2:** completado mediante la work unit nativa
+`feature/v2-10-validacion-postgresql` y la PR #4, mergeada por squash en
+`develop` (`de04bac5e0f75997b5dcb820536544fd942e0a8a`). La PR #2
+(`feature/10-validacion-postgresql`, HEAD `03a6f3b`) queda como referencia
+legacy cerrada como superseded; no se reinterpreta como work unit v2.
 
 Antes de considerar el producto apto para producción:
 
-* [ ] Levantar entorno PostgreSQL de validación.
-* [ ] Ejecutar migraciones Alembic sobre PostgreSQL.
-* [ ] Verificar compatibilidad SQLite → PostgreSQL.
-* [ ] Ejecutar tests funcionales críticos.
-* [ ] Ejecutar tests de aislamiento multitenant.
-* [ ] Implementar y validar Row-Level Security.
-* [ ] Verificar índices y restricciones.
-* [ ] Validar almacenamiento externo de archivos.
-* [ ] Corregir incompatibilidades detectadas.
+* [x] Levantar entorno PostgreSQL de validación.
+* [x] Ejecutar migraciones Alembic sobre PostgreSQL.
+* [x] Verificar compatibilidad SQLite → PostgreSQL.
+* [x] Ejecutar tests funcionales críticos.
+* [x] Ejecutar tests de aislamiento multitenant.
+* [x] Implementar y validar Row-Level Security.
+* [x] Verificar índices y restricciones.
+* [x] Validar almacenamiento externo de archivos cuando es requerido por la integridad tenant.
+* [x] Corregir incompatibilidades detectadas.
 
 **Criterio:** el paso SQLite → PostgreSQL debe ser una evolución de infraestructura, no una reescritura del producto.
 
