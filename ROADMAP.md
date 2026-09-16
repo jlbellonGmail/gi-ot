@@ -466,7 +466,7 @@ El uso de Git durante BOOTSTRAP no implica que el circuito AI-NATIVE ya se encue
 
 ## Adopción v2 en curso
 
-* [-] `adopcion-template-v2` — gobernanza, lifecycle, ASSESS, SDD adaptativo,
+* [x] `adopcion-template-v2` — gobernanza, lifecycle, ASSESS, SDD adaptativo,
   evidencias, work units y gates; sin cambios funcionales.
 
 Las SPEC que afecten interfaces deberán leer:

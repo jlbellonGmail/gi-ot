@@ -2,8 +2,8 @@
 
 ## Contexto manual
 
-- Adopción: `feature/adopcion-template-v2`.
-- Baseline: `develop` en `3d698b4183d7ae08c0f13a1c16f5e0f021270e76`.
+- Adopción: cerrada mediante PR #3.
+- Baseline: `develop` en merge commit `a89520324e741e74328de7382ffeb554b8616e42`.
 - Alcance: gobernanza y lifecycle del Template v2.0.0.
 - Producto: sin cambios funcionales.
 - PostgreSQL: PR #2 excluida de esta unidad.
@@ -16,16 +16,16 @@ reemplaza Git, CI, `ROADMAP.md`, SDD, `runs/` ni `.audit/`.
 
 ## Próximo paso
 
-Completar validaciones de gobernanza, producto y adaptadores; después solicitar
-HITL explícito antes del merge.
+Continuar nuevas features bajo el mecanismo Template v2.0.0. No iniciar el
+Punto 10 como parte de este cierre.
 
 <!-- STATUS:AUTO:BEGIN -->
 ## Estado verificado automáticamente
 
-- Rama: feature/adopcion-template-v2
-- Base: 3d698b4183d7ae08c0f13a1c16f5e0f021270e76
+- Rama: develop
+- Base: a89520324e741e74328de7382ffeb554b8616e42
 - Release: pre-release
-- PR: pendiente
-- CI: pendiente
+- PR: #3 MERGED
+- CI: PASS
 
 <!-- STATUS:AUTO:END -->
