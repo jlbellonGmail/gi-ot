@@ -14,6 +14,7 @@ from app.models.sync_operation import SyncOperation
 from app.models.work_order import HistoryEventType, WorkOrder, WorkOrderHistory, WorkOrderPhoto
 from app.models.work_order_status import WorkOrderStatus
 from app.models.work_order_type import WorkOrderType
+from app.models.work_order_receipt import WorkOrderReceipt
 
 __all__ = [
     "Asset",
@@ -41,6 +42,7 @@ __all__ = [
     "WorkOrder",
     "WorkOrderHistory",
     "WorkOrderPhoto",
+    "WorkOrderReceipt",
     "WorkOrderStatus",
     "WorkOrderType",
 ]

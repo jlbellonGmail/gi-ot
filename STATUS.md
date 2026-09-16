@@ -2,11 +2,14 @@
 
 ## Contexto manual
 
-- Adopción: cerrada mediante PR #3.
-- Baseline: `develop` en merge commit `a89520324e741e74328de7382ffeb554b8616e42`.
-- Alcance: gobernanza y lifecycle del Template v2.0.0.
-- Producto: sin cambios funcionales.
-- PostgreSQL: PR #2 excluida de esta unidad.
+- Template v2.0.0: activo y vigente.
+- Work unit: `10-validacion-postgresql` en `feature/v2-10-validacion-postgresql`.
+- Baseline de la work unit: `develop` en `2cb2a1223117bfb127df61fa6cb89cb4132919dd`.
+- Alcance: reparación reproducible de Alembic y validación PostgreSQL/RLS,
+  preservando SQLite y los contratos funcionales.
+- PR #2: referencia legacy iniciada antes de Template v2; intacta y no
+  reinterpretada.
+- Estado: implementación y CI remoto validados; work unit lista para HITL.
 - Release: GI-OT continúa pre-release; no existen tags ni releases.
 
 ## Fuentes
@@ -16,16 +19,15 @@ reemplaza Git, CI, `ROADMAP.md`, SDD, `runs/` ni `.audit/`.
 
 ## Próximo paso
 
-Continuar nuevas features bajo el mecanismo Template v2.0.0. No iniciar el
-Punto 10 como parte de este cierre.
+Mergear la PR v2 tras la autorización HITL ya concedida. No iniciar Punto 11.
 
 <!-- STATUS:AUTO:BEGIN -->
 ## Estado verificado automáticamente
 
-- Rama: develop
-- Base: a89520324e741e74328de7382ffeb554b8616e42
+- Rama: feature/v2-10-validacion-postgresql
+- Base: 2cb2a1223117bfb127df61fa6cb89cb4132919dd
 - Release: pre-release
-- PR: #3 MERGED
-- CI: PASS
+- PR: #4 OPEN
+- CI: PASS — governance, producto, PostgreSQL, quality y frontend
 
 <!-- STATUS:AUTO:END -->

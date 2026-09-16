@@ -17,7 +17,10 @@ class AssetType(Base):
     """
 
     __tablename__ = "asset_types"
-    __table_args__ = (UniqueConstraint("tenant_id", "code", name="uq_asset_types_tenant_code"),)
+    __table_args__ = (
+        UniqueConstraint("tenant_id", "code", name="uq_asset_types_tenant_code"),
+        UniqueConstraint("tenant_id", "id", name="uq_asset_types_tenant_id"),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     tenant_id: Mapped[uuid.UUID] = mapped_column(

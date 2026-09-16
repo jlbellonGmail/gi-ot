@@ -1,12 +1,25 @@
 import uuid
 from datetime import datetime, timezone
 from enum import Enum
+from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, DateTime, Enum as SQLEnum, ForeignKey, ForeignKeyConstraint, Index, String, Text, UniqueConstraint
+from sqlalchemy import (
+    DateTime,
+    ForeignKey,
+    ForeignKeyConstraint,
+    Index,
+    String,
+    Text,
+    UniqueConstraint,
+)
+from sqlalchemy import Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 from app.models.asset_type import AssetType
+
+if TYPE_CHECKING:
+    from app.models.person import Customer
 
 
 class AssetStatus(str, Enum):
@@ -24,6 +37,7 @@ class Location(Base):
     __tablename__ = "locations"
     __table_args__ = (
         UniqueConstraint("tenant_id", "customer_id", "name", name="uq_locations_tenant_customer_name"),
+        UniqueConstraint("tenant_id", "id", name="uq_locations_tenant_id"),
         ForeignKeyConstraint(
             ["tenant_id", "customer_id"],
             ["customers.tenant_id", "customers.person_id"],
@@ -54,7 +68,11 @@ class Location(Base):
     updated_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
 
     customer: Mapped["Customer"] = relationship(back_populates="locations")
-    assets: Mapped[list["Asset"]] = relationship(back_populates="location", cascade="all, delete-orphan")
+    assets: Mapped[list["Asset"]] = relationship(
+        back_populates="location",
+        cascade="all, delete-orphan",
+        foreign_keys="Asset.location_id",
+    )
 
 
 class Asset(Base):
@@ -65,6 +83,14 @@ class Asset(Base):
     __tablename__ = "assets"
     __table_args__ = (
         Index("ix_assets_qr_code", "tenant_id", "qr_code", unique=True),
+        UniqueConstraint("tenant_id", "id", name="uq_assets_tenant_id"),
+        ForeignKeyConstraint(
+            ["tenant_id", "location_id"], ["locations.tenant_id", "locations.id"]
+        ),
+        ForeignKeyConstraint(
+            ["tenant_id", "asset_type_id"],
+            ["asset_types.tenant_id", "asset_types.id"],
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
@@ -100,5 +126,7 @@ class Asset(Base):
     created_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
     updated_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
 
-    location: Mapped["Location"] = relationship(back_populates="assets")
-    asset_type: Mapped["AssetType"] = relationship()
+    location: Mapped["Location"] = relationship(
+        back_populates="assets", foreign_keys=[location_id]
+    )
+    asset_type: Mapped["AssetType"] = relationship(foreign_keys=[asset_type_id])

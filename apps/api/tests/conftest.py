@@ -1,4 +1,5 @@
 import sys
+import os
 from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
@@ -10,6 +11,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.db.base import Base
+from app.db.rls import set_platform_context
 from app.db.session import get_db
 from app.main import app
 from app.models.role import ALL_ROLE_CODES, Role
@@ -27,19 +29,26 @@ from app.models.sync_operation import SyncOperation
 
 from tests.helpers import seed_default_config_template
 
-# Base de datos SQLite en memoria, aislada por test — nunca toca data/gi-ot.db.
-engine = create_engine(
-    "sqlite:///:memory:",
-    connect_args={"check_same_thread": False},
-    poolclass=StaticPool,
-)
+_test_database_url = os.environ.get("TEST_DATABASE_URL", "sqlite:///:memory:")
+_is_postgresql = _test_database_url.startswith("postgresql")
+_engine_kwargs = {}
+if _test_database_url.startswith("sqlite"):
+    _engine_kwargs = {
+        "connect_args": {"check_same_thread": False},
+        "poolclass": StaticPool,
+    }
+
+engine = create_engine(_test_database_url, **_engine_kwargs)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 @pytest.fixture(autouse=True)
 def _fresh_schema():
+    if _is_postgresql:
+        Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     session = TestingSessionLocal()
+    set_platform_context(session)
     default_labels = {
         "PLATFORM_OWNER": "Propietario de la plataforma",
         "TENANT_ADMIN": "Administrador de empresa",

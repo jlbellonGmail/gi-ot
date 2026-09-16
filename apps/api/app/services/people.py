@@ -63,7 +63,7 @@ class PersonService:
 
         stmt = (
             select(Person)
-            .join(PersonIdentification)
+            .join(PersonIdentification, PersonIdentification.person_id == Person.id)
             .where(
                 Person.tenant_id == tenant_id,
                 PersonIdentification.country_code == country_code.upper(),

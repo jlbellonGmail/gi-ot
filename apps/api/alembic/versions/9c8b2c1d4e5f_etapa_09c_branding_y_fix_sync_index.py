@@ -39,22 +39,17 @@ def upgrade() -> None:
         for col_name, col in branding_columns.items():
             if col_name not in columns:
                 op.add_column('tenant_configs', col)
+
+    # Punto 09 agregó sort_order al catálogo de estados en el modelo antes de
+    # que existiera una revisión Alembic que lo materializara.
+    if 'work_order_statuses' in tables:
+        columns = [col['name'] for col in inspector.get_columns('work_order_statuses')]
+        if 'sort_order' not in columns:
+            op.add_column(
+                'work_order_statuses',
+                sa.Column('sort_order', sa.Integer(), nullable=False, server_default='0'),
+            )
     
-    # Fix sync_operation index - only if table exists
-    if 'sync_operations' in inspector.get_table_names():
-        indexes = inspector.get_indexes('sync_operations')
-        index_names = [idx['name'] for idx in inspector.get_indexes('sync_operations')]
-        
-        if 'ix_sync_ops_tenant_wo' in index_names:
-            op.drop_index('ix_sync_ops_tenant_wo', table_name='sync_operations')
-        
-        # Create new index on entity_id
-        op.create_index(
-            'ix_sync_ops_tenant_wo',
-            'sync_operations',
-            ['tenant_id', 'entity_id'],
-            unique=False
-        )
 
 
 def downgrade() -> None:
@@ -62,23 +57,13 @@ def downgrade() -> None:
     inspector = inspect(conn)
     tables = inspector.get_table_names()
     
-    if 'sync_operations' in tables:
-        indexes = inspector.get_indexes('sync_operations')
-        index_names = [idx['name'] for idx in inspector.get_indexes('sync_operations')]
-        
-        if 'ix_sync_ops_tenant_wo' in index_names:
-            op.drop_index('ix_sync_ops_tenant_wo', table_name='sync_operations')
-        
-        # Recreate old index on work_order_id
-        op.create_index(
-            'ix_sync_ops_tenant_wo',
-            'sync_operations',
-            ['tenant_id', 'work_order_id'],
-            unique=False
-        )
-    
     if 'tenant_configs' in tables:
         columns = [col['name'] for col in inspector.get_columns('tenant_configs')]
         for col in ['tax_id', 'website', 'email', 'phone', 'address', 'secondary_color', 'primary_color', 'logo_url']:
             if col in columns:
                 op.drop_column('tenant_configs', col)
+
+    if 'work_order_statuses' in tables:
+        columns = [col['name'] for col in inspector.get_columns('work_order_statuses')]
+        if 'sort_order' in columns:
+            op.drop_column('work_order_statuses', 'sort_order')
