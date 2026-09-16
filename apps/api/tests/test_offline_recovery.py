@@ -144,8 +144,8 @@ class TestOfflineRecovery:
                 priority_id=priority_urgent.id,
                 status_id=status_pending.id,
                 requested_description="Trabajo de prueba",
-                created_by=tenant.id,
-                updated_by=tenant.id,
+                created_by=user.id,
+                updated_by=user.id,
             )
             db_session.add(wo)
             db_session.commit()

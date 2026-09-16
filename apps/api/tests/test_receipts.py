@@ -140,8 +140,8 @@ class TestReceiptGeneration:
             requested_description="Trabajo solicitado de prueba",
             performed_description="Trabajo realizado de prueba",
             technician_id=setup1["tech_person"].id,
-            created_by=tenant1.id,
-            updated_by=tenant1.id,
+            created_by=setup1["admin_user"].id,
+            updated_by=setup1["admin_user"].id,
         )
         db_session.add(wo_terminal)
         db_session.commit()
@@ -157,8 +157,8 @@ class TestReceiptGeneration:
             priority_id=setup1["priority"].id,
             status_id=setup1["status_pending"].id,
             requested_description="OT activa",
-            created_by=tenant1.id,
-            updated_by=tenant1.id,
+            created_by=setup1["admin_user"].id,
+            updated_by=setup1["admin_user"].id,
         )
         db_session.add(wo_active)
         db_session.commit()
@@ -420,14 +420,14 @@ class TestEmailSending:
             location_id=setup["location"].id, asset_id=setup["asset"].id,
             work_order_type_id=setup["wotype"].id, priority_id=setup["priority"].id,
             status_id=setup["status_completed"].id, requested_description="Test",
-            created_by=tenant.id, updated_by=tenant.id
+            created_by=setup["admin_user"].id, updated_by=setup["admin_user"].id
         )
         db_session.add(wo)
         db_session.commit()
 
         receipt = WorkOrderReceipt(
             tenant_id=tenant.id, work_order_id=wo.id,
-            content_html="<html>test</html>", generated_by=tenant.id
+            content_html="<html>test</html>", generated_by=setup["admin_user"].id
         )
         db_session.add(receipt)
         db_session.commit()
@@ -484,14 +484,14 @@ class TestWhatsAppSending:
             location_id=setup["location"].id, asset_id=setup["asset"].id,
             work_order_type_id=setup["wotype"].id, priority_id=setup["priority"].id,
             status_id=setup["status_completed"].id, requested_description="Test",
-            created_by=tenant.id, updated_by=tenant.id
+            created_by=setup["admin_user"].id, updated_by=setup["admin_user"].id
         )
         db_session.add(wo)
         db_session.commit()
 
         receipt = WorkOrderReceipt(
             tenant_id=tenant.id, work_order_id=wo.id,
-            content_html="<html>test</html>", generated_by=tenant.id
+            content_html="<html>test</html>", generated_by=setup["admin_user"].id
         )
         db_session.add(receipt)
         db_session.commit()
@@ -556,7 +556,7 @@ class TestReceiptHTMLPDFGeneration:
             requested_description="Instalar aire acondicionado",
             performed_description="Se instaló equipo split en living",
             technician_id=setup["tech_person"].id,
-            created_by=tenant.id, updated_by=tenant.id
+            created_by=setup["admin_user"].id, updated_by=setup["admin_user"].id
         )
         db_session.add(wo)
         db_session.commit()
@@ -594,7 +594,7 @@ class TestReceiptHTMLPDFGeneration:
             location_id=setup["location"].id, asset_id=setup["asset"].id,
             work_order_type_id=setup["wotype"].id, priority_id=setup["priority"].id,
             status_id=setup["status_completed"].id, requested_description="Test",
-            created_by=tenant.id, updated_by=tenant.id
+            created_by=setup["admin_user"].id, updated_by=setup["admin_user"].id
         )
         db_session.add(wo)
         db_session.commit()
