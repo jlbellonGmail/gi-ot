@@ -28,19 +28,6 @@ class TestOfflineRecovery:
 
     def test_save_operation_while_offline_and_sync_later(self, client, db_session):
         """Test que simula: técnico trabaja offline → recupera conexión → datos se sincronizan."""
-        from app.models.sync_operation import SyncOperation
-        from app.models.work_order import WorkOrder
-        from app.models.tenant import Tenant
-        from app.models.person import Customer
-        from app.models.location import Location
-        from app.models.asset_type import AssetType
-        from app.models.priority import Priority
-        from app.models.work_order_status import WorkOrderStatus
-        from app.models.work_order_type import WorkOrderType
-        from app.models.user import User
-        from app.models.role import Role
-        from app.models.person import Person, Customer, PersonType
-
         # Crear tenant y datos base si no existen
         tenant = db_session.query(Tenant).first()
         if not tenant:
@@ -170,8 +157,6 @@ class TestOfflineRecovery:
 
     def test_retry_mechanism_when_sync_fails(self, db_session):
         """Test que los reintentos funcionan y el estado pasa a 'error' después de max_attempts."""
-        from app.models.sync_operation import SyncOperation
-
         tenant = Tenant(name="Sync Retry Tenant")
         db_session.add(tenant)
         db_session.commit()
