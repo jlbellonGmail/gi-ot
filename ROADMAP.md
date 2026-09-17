@@ -2,12 +2,13 @@
 
 ## Estado
 
-**Modo actual: AI-NATIVE v2 en adopción**
+**Modo actual: AI-NATIVE v2 operativo**
 
 Los Puntos 00–09 fueron construidos bajo BOOTSTRAP y quedan cerrados como
 historia legacy. La activación AI-NATIVE de agosto de 2026 es una transición
 anterior. El mecanismo operativo v2 comienza con la feature
-`adopcion-template-v2`; ningún punto histórico se reinterpreta.
+`adopcion-template-v2`; ningún punto histórico se reinterpreta. El baseline
+pre-release `v0.1.0` consolida los Puntos 01–10.
 
 Objetivo actual:
 
