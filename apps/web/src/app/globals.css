@@ -1,13 +1,88 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Le indica al navegador que la app soporta ambos temas: evita que
+     Chrome/Android "adivine" un modo oscuro propio y rompa el contraste
+     (detectado en validación real desde celular, ROADMAP §07). */
+  color-scheme: light dark;
+
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-border: #e5e7eb;
+  --color-text: #171717;
+  --color-text-secondary: #6b7280;
+  --color-primary: #2563eb;
+  --color-primary-text: #ffffff;
+  --color-danger: #b91c1c;
+  --color-danger-bg: #fef2f2;
+  --color-warning: #92400e;
+  --color-warning-bg: #fef3cf;
+  --color-success: #166534;
+  --color-success-bg: #dcfce7;
+  --color-info-bg: #dbeafe;
+  --color-focus: #2563eb;
+
+  /* Variantes "sólidas": fondo de botón/acción con texto blanco encima.
+     Fijas en ambos temas a propósito — a diferencia de --color-danger/
+     --color-success (que sirven como texto de badge sobre su *-bg y sí
+     necesitan aclararse en oscuro), estas deben quedar lo bastante
+     saturadas para que el texto blanco pase 4.5:1 siempre. Verificado
+     con la fórmula de contraste WCAG (ROADMAP §07, "Accesibilidad"):
+     un tono más claro aquí llegaba a fallar 1.74:1 en modo oscuro. */
+  --color-danger-solid: #dc2626;
+  --color-success-solid: #15803d;
+
+  /* Barra de encabezado: color de marca, constante en ambos temas
+     (no es una superficie temática, es identidad visual). */
+  --color-header-bg: #0f172a;
+  --color-header-text: #ffffff;
+  --color-header-active: #2563eb;
+  --color-header-success: #4ade80;
+
+  --background: var(--color-bg);
+  --foreground: var(--color-text);
 }
 
+/* Modo oscuro: por preferencia del sistema (si el usuario no eligió
+   nada explícitamente en la app) o por elección explícita vía el
+   toggle claro/oscuro del header (data-theme="dark" en <html>, guardado
+   en localStorage por ThemeToggle.tsx). El selector ":not([data-theme=light])"
+   asegura que una elección explícita de "claro" gane incluso con el
+   sistema en oscuro. */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme="light"]) {
+    --color-bg: #0f172a;
+    --color-surface: #1e293b;
+    --color-border: #334155;
+    --color-text: #f1f5f9;
+    --color-text-secondary: #94a3b8;
+    --color-primary: #2563eb;
+    --color-primary-text: #ffffff;
+    --color-danger: #f87171;
+    --color-danger-bg: #450a0a;
+    --color-warning: #fbbf24;
+    --color-warning-bg: #451a03;
+    --color-success: #4ade80;
+    --color-success-bg: #052e16;
+    --color-info-bg: #1e3a8a;
+    --color-focus: #60a5fa;
   }
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-border: #334155;
+  --color-text: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-primary: #2563eb;
+  --color-primary-text: #ffffff;
+  --color-danger: #f87171;
+  --color-danger-bg: #450a0a;
+  --color-warning: #fbbf24;
+  --color-warning-bg: #451a03;
+  --color-success: #4ade80;
+  --color-success-bg: #052e16;
+  --color-info-bg: #1e3a8a;
+  --color-focus: #60a5fa;
 }
 
 html {
@@ -42,8 +117,69 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+/* Shell mobile-first de Oficina/Admin (ROADMAP §07 — "Interfaz
+   mobile-first Oficina/Admin"): el nav de escritorio se colapsa detrás
+   de un botón de menú en pantallas angostas para no desbordar. */
+.dashboard-nav-toggle {
+  display: none;
+}
+
+.dashboard-nav {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .dashboard-nav-toggle {
+    display: flex;
+  }
+
+  .dashboard-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    background: var(--color-header-bg);
+    padding: 0.5rem 1rem 1rem;
+    gap: 0.25rem;
+  }
+
+  .dashboard-nav.open {
+    display: flex;
+  }
+}
+
+/* Superficie de filtros (ROADMAP §07 — "Adaptar la superficie de
+   filtros al dispositivo"): bottom sheet de ancho completo en mobile
+   por defecto; en desktop se comporta como un panel flotante anclado
+   arriba a la derecha en vez de ocupar todo el ancho inferior. */
+.filter-panel {
+  position: fixed;
+  z-index: 31;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  top: auto;
+  width: 100%;
+  max-width: 420px;
+  border-radius: 1rem 1rem 0 0;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.2);
+}
+
+@media (min-width: 768px) {
+  .filter-panel {
+    left: auto;
+    right: 1.5rem;
+    top: 4.5rem;
+    bottom: auto;
+    transform: none;
+    width: 360px;
+    max-width: 360px;
+    border-radius: 0.75rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
   }
 }

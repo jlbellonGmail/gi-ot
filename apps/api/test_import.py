@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import sys
 sys.path.insert(0, ".")
 from app.models import Customer, Asset, Location, Priority, User, WorkOrderStatus, WorkOrderType, Technician

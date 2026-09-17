@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","required":["slug","version","branch","baseCommit"],"properties":{"slug":{"type":"string","pattern":"^[a-z0-9]+(?:-[a-z0-9]+)*$"},"version":{"type":"string"},"branch":{"type":"string"},"baseCommit":{"type":"string","pattern":"^[0-9a-f]{40}$"}}}

@@ -1,8 +1,13 @@
 "use client";
 
+import { theme } from "@/lib/theme";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { api } from "@/lib/api";
+import { ErrorBanner } from "@/components/ErrorBanner";
+import { Disclosure } from "@/components/Disclosure";
 import { CustomerCreate } from "@/lib/types";
 
 const COUNTRIES = [
@@ -131,15 +136,11 @@ export default function NewCustomerPage() {
   return (
     <div style={{ padding: "1rem", maxWidth: "600px", margin: "0 auto" }}>
       <h1>Nuevo Cliente</h1>
-      <p style={{ color: "#6b7280", marginBottom: "1.5rem" }}>
+      <p style={{ color: theme.textSecondary, marginBottom: "1.5rem" }}>
         Ingrese la identificación para verificar si la persona ya existe.
       </p>
 
-      {error && (
-        <div style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626", padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>
-          {error}
-        </div>
-      )}
+      {error && <ErrorBanner message={error} />}
 
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: "1rem" }}>
@@ -170,23 +171,25 @@ export default function NewCustomerPage() {
           </div>
         </div>
 
-        <fieldset style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem", marginBottom: "1rem" }}>
+        <fieldset style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem", marginBottom: "1rem" }}>
           <legend style={{ fontWeight: 600, marginBottom: "0.5rem" }}>Identificación</legend>
           {formData.identifications.map((ident, idx) => (
             <div key={idx} style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.5rem", alignItems: "flex-end" }}>
               <select
+                aria-label="País"
                 value={ident.country_code}
                 onChange={(e) => handleCountryChange(idx, e.target.value)}
-                style={{ padding: "0.5rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", minWidth: "120px" }}
+                style={{ padding: "0.5rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", minWidth: "120px" }}
               >
                 {COUNTRIES.map((c) => (
                   <option key={c.code} value={c.code}>{c.name}</option>
                 ))}
               </select>
               <select
+                aria-label="Tipo de identificación"
                 value={ident.identification_type}
                 onChange={(e) => handleIdentificationChange(idx, "identification_type", e.target.value)}
-                style={{ padding: "0.5rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", minWidth: "140px" }}
+                style={{ padding: "0.5rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", minWidth: "140px" }}
               >
                 {identificationTypes.map((t) => (
                   <option key={t} value={t}>{t}</option>
@@ -195,9 +198,10 @@ export default function NewCustomerPage() {
               <input
                 type="text"
                 placeholder="Número"
+                aria-label="Número de identificación"
                 value={ident.identification_value}
                 onChange={(e) => handleIdentificationChange(idx, "identification_value", e.target.value)}
-                style={{ flex: 1, minWidth: "150px", padding: "0.5rem", border: "1px solid #d1d5db", borderRadius: "0.375rem" }}
+                style={{ flex: 1, minWidth: "150px", padding: "0.5rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem" }}
               />
               <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
                 <input
@@ -211,7 +215,7 @@ export default function NewCustomerPage() {
                 <button
                   type="button"
                   onClick={() => removeIdentification(idx)}
-                  style={{ padding: "0.5rem", background: "#fee2e2", color: "#dc2626", border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
+                  style={{ padding: "0.5rem", background: theme.dangerBg, color: theme.danger, border: "none", borderRadius: "0.375rem", cursor: "pointer" }}
                 >
                   ×
                 </button>
@@ -219,63 +223,70 @@ export default function NewCustomerPage() {
             </div>
           ))}
           {formData.identifications.length < 3 && (
-            <button type="button" onClick={addIdentification} style={{ padding: "0.5rem 1rem", background: "#f3f4f6", border: "1px dashed #d1d5db", borderRadius: "0.375rem", cursor: "pointer" }}>
+            <button type="button" onClick={addIdentification} style={{ padding: "0.5rem 1rem", background: theme.bg, border: `1px dashed ${theme.border}`, borderRadius: "0.375rem", cursor: "pointer" }}>
               + Agregar otra identificación
             </button>
           )}
         </fieldset>
 
         <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Nombre / Razón social *</label>
+          <label htmlFor="customer-name" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Nombre / Razón social *</label>
           <input
+            id="customer-name"
             type="text"
             value={formData.display_name}
             onChange={(e) => handleChange("display_name", e.target.value)}
             required
-            style={{ width: "100%", padding: "0.75rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", fontSize: "1rem" }}
+            style={{ width: "100%", padding: "0.75rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", fontSize: "1rem" }}
           />
         </div>
 
-        <div style={{ marginBottom: "1rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Dirección</label>
+        <Disclosure label="Más datos (dirección, contacto, observaciones)">
+        <div>
+          <label htmlFor="customer-address" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Dirección</label>
           <input
+            id="customer-address"
             type="text"
             value={formData.address || ""}
             onChange={(e) => handleChange("address", e.target.value)}
-            style={{ width: "100%", padding: "0.75rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", fontSize: "1rem" }}
+            style={{ width: "100%", padding: "0.75rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", fontSize: "1rem" }}
           />
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
           <div>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Teléfono</label>
+            <label htmlFor="customer-phone" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Teléfono</label>
             <input
+              id="customer-phone"
               type="tel"
               value={formData.phone || ""}
               onChange={(e) => handleChange("phone", e.target.value)}
-              style={{ width: "100%", padding: "0.75rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", fontSize: "1rem" }}
+              style={{ width: "100%", padding: "0.75rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", fontSize: "1rem" }}
             />
           </div>
           <div>
-            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Email</label>
+            <label htmlFor="customer-email" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Email</label>
             <input
+              id="customer-email"
               type="email"
               value={formData.email || ""}
               onChange={(e) => handleChange("email", e.target.value)}
-              style={{ width: "100%", padding: "0.75rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", fontSize: "1rem" }}
+              style={{ width: "100%", padding: "0.75rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", fontSize: "1rem" }}
             />
           </div>
         </div>
 
-        <div style={{ marginBottom: "1.5rem" }}>
-          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Observaciones</label>
+        <div>
+          <label htmlFor="customer-notes" style={{ display: "block", marginBottom: "0.5rem", fontWeight: 500 }}>Observaciones</label>
           <textarea
+            id="customer-notes"
             value={formData.notes || ""}
             onChange={(e) => handleChange("notes", e.target.value)}
             rows={3}
-            style={{ width: "100%", padding: "0.75rem", border: "1px solid #d1d5db", borderRadius: "0.375rem", fontSize: "1rem" }}
+            style={{ width: "100%", padding: "0.75rem", border: `1px solid ${theme.border}`, borderRadius: "0.375rem", fontSize: "1rem" }}
           />
         </div>
+        </Disclosure>
 
         <div style={{ display: "flex", gap: "1rem" }}>
           <button
@@ -284,8 +295,8 @@ export default function NewCustomerPage() {
             style={{
               flex: 1,
               padding: "1rem",
-              background: loading ? "#93c5fd" : "#2563eb",
-              color: "white",
+              background: theme.primary, opacity: loading ? 0.6 : 1,
+              color: theme.primaryText,
               border: "none",
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -294,13 +305,13 @@ export default function NewCustomerPage() {
           >
             {loading ? "Guardando..." : "Crear Cliente"}
           </button>
-          <a
+          <Link
             href="/dashboard/customers"
             style={{
               flex: 1,
               padding: "1rem",
-              background: "#f3f4f6",
-              color: "#374151",
+              background: theme.bg,
+              color: theme.text,
               border: "none",
               borderRadius: "0.5rem",
               fontSize: "1rem",
@@ -309,7 +320,7 @@ export default function NewCustomerPage() {
             }}
           >
             Cancelar
-          </a>
+          </Link>
         </div>
       </form>
     </div>

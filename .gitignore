@@ -1,6 +1,9 @@
 # Entornos y dependencias
 apps/api/.venv/
 apps/api/**/__pycache__/
+**/__pycache__/
+*.pyc
+\.pytest_cache/
 apps/web/node_modules/
 apps/web/.next/
 
@@ -19,3 +22,4 @@ ngrok.log
 apps/api/all_tests_result.txt
 apps/api/test_output.txt
 apps/api/test_people_result.txt
+.claude/scheduled_tasks.lock

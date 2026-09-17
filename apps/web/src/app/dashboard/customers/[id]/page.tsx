@@ -1,9 +1,14 @@
 "use client";
 
+import { theme } from "@/lib/theme";
+
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import { Customer, CustomerUpdate } from "@/lib/types";
+import { ErrorBanner } from "@/components/ErrorBanner";
+import { SuccessBanner } from "@/components/SuccessBanner";
+import { Customer, CustomerUpdate, WorkOrder, Technician } from "@/lib/types";
+import { WorkOrderHistoryList } from "@/components/WorkOrderHistoryList";
 
 export default function CustomerDetailPage() {
   const params = useParams();
@@ -11,10 +16,13 @@ export default function CustomerDetailPage() {
   const personId = params.id as string;
 
   const [customer, setCustomer] = useState<Customer | null>(null);
+  const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
+  const [technicians, setTechnicians] = useState<Technician[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<CustomerUpdate>({
     person_type: "INDIVIDUAL",
@@ -28,6 +36,7 @@ export default function CustomerDetailPage() {
 
   useEffect(() => {
     loadCustomer();
+    loadWorkOrders();
   }, [personId]);
 
   async function loadCustomer() {
@@ -51,6 +60,17 @@ export default function CustomerDetailPage() {
     }
   }
 
+  async function loadWorkOrders() {
+    try {
+      const [data, techs] = await Promise.all([
+        api.get<WorkOrder[]>(`/work-orders?customer_id=${personId}`),
+        api.get<Technician[]>("/technicians?active_only=false"),
+      ]);
+      setWorkOrders(data);
+      setTechnicians(techs);
+    } catch (e) { console.error(e); }
+  }
+
   async function handleSave() {
     try {
       setSaving(true);
@@ -58,6 +78,8 @@ export default function CustomerDetailPage() {
       await api.patch(`/customers/${personId}`, formData);
       await loadCustomer();
       setEditMode(false);
+      setSuccessMessage("Cliente actualizado.");
+      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Error al guardar");
     } finally {
@@ -66,7 +88,7 @@ export default function CustomerDetailPage() {
   }
 
   if (loading) return <div style={{ padding: "1rem", textAlign: "center" }}>Cargando...</div>;
-  if (error && !customer) return <div style={{ padding: "1rem", color: "red" }}>{error}</div>;
+  if (error && !customer) return <div style={{ padding: "1rem", color: theme.danger }}>{error}</div>;
   if (!customer) return <div style={{ padding: "1rem" }}>Cliente no encontrado</div>;
 
   return (
@@ -77,26 +99,27 @@ export default function CustomerDetailPage() {
           <button onClick={() => setEditMode(!editMode)} style={{ padding: "0.5rem 1rem" }}>
             {editMode ? "Cancelar" : "Editar"}
           </button>
-          <button onClick={() => router.back()} style={{ padding: "0.5rem 1rem", background: "#f3f4f6" }}>
+          <button onClick={() => router.back()} style={{ padding: "0.5rem 1rem", background: theme.bg }}>
             Volver
           </button>
         </div>
       </div>
 
-      {error && <div style={{ background: "#fef2f2", color: "#dc2626", padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
+      {error && <ErrorBanner message={error} onRetry={loadCustomer} />}
+      {successMessage && <SuccessBanner message={successMessage} />}
 
       <div style={{ display: "grid", gap: "1rem" }}>
-        <div style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem" }}>
+        <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
           <h3 style={{ marginBottom: "0.75rem" }}>Identificaciones</h3>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
             {customer.identifications.map((ident) => (
               <span key={ident.id} style={{
-                background: ident.is_primary ? "#dbeafe" : "#f3f4f6",
-                color: ident.is_primary ? "#1d4ed8" : "#374151",
+                background: ident.is_primary ? theme.infoBg : theme.bg,
+                color: theme.text,
                 padding: "0.25rem 0.75rem",
                 borderRadius: "9999px",
                 fontSize: "0.875rem",
-                border: ident.is_primary ? "1px solid #3b82f6" : "none",
+                border: ident.is_primary ? `1px solid ${theme.primary}` : "none",
               }}>
                 {ident.identification_type}: {ident.identification_value} {ident.is_primary && "(principal)"}
               </span>
@@ -104,48 +127,48 @@ export default function CustomerDetailPage() {
           </div>
         </div>
 
-        <div style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem" }}>
+        <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
           <h3 style={{ marginBottom: "0.75rem" }}>Datos de contacto</h3>
           {editMode ? (
             <div style={{ display: "grid", gap: "1rem" }}>
               <div>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Tipo persona</label>
-                <select value={formData.person_type} onChange={(e) => setFormData({...formData, person_type: e.target.value as "INDIVIDUAL" | "LEGAL"})} style={{ width: "100%", padding: "0.5rem" }}>
+                <label htmlFor="edit-customer-type" style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Tipo persona</label>
+                <select id="edit-customer-type" value={formData.person_type} onChange={(e) => setFormData({...formData, person_type: e.target.value as "INDIVIDUAL" | "LEGAL"})} style={{ width: "100%", padding: "0.5rem" }}>
                   <option value="INDIVIDUAL">Física</option>
                   <option value="LEGAL">Jurídica</option>
                 </select>
               </div>
               <div>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Nombre / Razón social</label>
-                <input value={formData.display_name} onChange={(e) => setFormData({...formData, display_name: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} required />
+                <label htmlFor="edit-customer-name" style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Nombre / Razón social</label>
+                <input id="edit-customer-name" value={formData.display_name} onChange={(e) => setFormData({...formData, display_name: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} required />
               </div>
               <div>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Dirección</label>
-                <input value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} />
+                <label htmlFor="edit-customer-address" style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Dirección</label>
+                <input id="edit-customer-address" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} />
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Teléfono</label>
-                  <input value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} />
+                  <label htmlFor="edit-customer-phone" style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Teléfono</label>
+                  <input id="edit-customer-phone" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} />
                 </div>
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Email</label>
-                  <input value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} />
+                  <label htmlFor="edit-customer-email" style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Email</label>
+                  <input id="edit-customer-email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} style={{ width: "100%", padding: "0.5rem" }} />
                 </div>
               </div>
               <div>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Estado</label>
-                <select value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value as "ACTIVE" | "INACTIVE"})} style={{ width: "100%", padding: "0.5rem" }}>
+                <label htmlFor="edit-customer-status" style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Estado</label>
+                <select id="edit-customer-status" value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value as "ACTIVE" | "INACTIVE"})} style={{ width: "100%", padding: "0.5rem" }}>
                   <option value="ACTIVE">Activo</option>
                   <option value="INACTIVE">Inactivo</option>
                 </select>
               </div>
               <div>
-                <label style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Observaciones</label>
-                <textarea value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} rows={3} style={{ width: "100%", padding: "0.5rem" }} />
+                <label htmlFor="edit-customer-notes" style={{ display: "block", marginBottom: "0.25rem", fontWeight: 500 }}>Observaciones</label>
+                <textarea id="edit-customer-notes" value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} rows={3} style={{ width: "100%", padding: "0.5rem" }} />
               </div>
               <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
-                <button onClick={handleSave} disabled={saving} style={{ padding: "0.5rem 1.5rem", background: "#2563eb", color: "white", border: "none", borderRadius: "0.375rem" }}>
+                <button onClick={handleSave} disabled={saving} style={{ padding: "0.5rem 1.5rem", background: theme.primary, color: theme.primaryText, border: "none", borderRadius: "0.375rem" }}>
                   {saving ? "Guardando..." : "Guardar"}
                 </button>
               </div>
@@ -156,10 +179,15 @@ export default function CustomerDetailPage() {
               <dt>Dirección</dt><dd>{customer.address || "—"}</dd>
               <dt>Teléfono</dt><dd>{customer.phone || "—"}</dd>
               <dt>Email</dt><dd>{customer.email || "—"}</dd>
-              <dt>Estado</dt><dd><span style={{ background: customer.status === "ACTIVE" ? "#dcfce7" : "#fef2f2", color: customer.status === "ACTIVE" ? "#166534" : "#dc2626", padding: "0.125rem 0.5rem", borderRadius: "9999px", fontSize: "0.875rem" }}>{customer.status}</span></dd>
+              <dt>Estado</dt><dd><span style={{ background: customer.status === "ACTIVE" ? theme.successBg : theme.dangerBg, color: customer.status === "ACTIVE" ? theme.success : theme.danger, padding: "0.125rem 0.5rem", borderRadius: "9999px", fontSize: "0.875rem" }}>{customer.status}</span></dd>
               <dt>Observaciones</dt><dd>{customer.notes || "—"}</dd>
             </dl>
           )}
+        </div>
+
+        <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
+          <h3 style={{ marginBottom: "0.75rem" }}>Historial de Órdenes de Trabajo</h3>
+          <WorkOrderHistoryList workOrders={workOrders} technicians={technicians} emptyText="Este cliente todavía no tiene OT." />
         </div>
       </div>
     </div>

@@ -46,6 +46,15 @@ class TenantConfig(Base):
     commercial_display_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
     contact_info: Mapped[str | None] = mapped_column(Text, nullable=True)
     receipt_info: Mapped[str | None] = mapped_column(Text, nullable=True)
+    # Branding columns (added in migration 9c8b2c1d4e5f)
+    logo_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    primary_color: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    secondary_color: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    address: Mapped[str | None] = mapped_column(Text, nullable=True)
+    phone: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    email: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    website: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    tax_id: Mapped[str | None] = mapped_column(String(50), nullable=True)
 
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

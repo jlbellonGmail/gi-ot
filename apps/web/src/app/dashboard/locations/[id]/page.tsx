@@ -1,8 +1,12 @@
 "use client";
 
+import { theme } from "@/lib/theme";
+
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
+import { ErrorBanner } from "@/components/ErrorBanner";
+import { SuccessBanner } from "@/components/SuccessBanner";
 import { Location, Customer } from "@/lib/types";
 
 export default function LocationDetailPage() {
@@ -13,6 +17,7 @@ export default function LocationDetailPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [form, setForm] = useState({ name: "", address: "", city: "", province: "", notes: "" });
 
@@ -33,7 +38,14 @@ export default function LocationDetailPage() {
   }
 
   async function save() {
-    try { setSaving(true); setError(null); await api.patch(`/locations/${id}`, form); await load(); setEditMode(false); }
+    try {
+      setSaving(true); setError(null);
+      await api.patch(`/locations/${id}`, form);
+      await load();
+      setEditMode(false);
+      setSuccessMessage("Ubicación actualizada.");
+      setTimeout(() => setSuccessMessage(null), 3000);
+    }
     catch (e) { setError(e instanceof Error ? e.message : "Error al guardar"); }
     finally { setSaving(false); }
   }
@@ -47,11 +59,12 @@ export default function LocationDetailPage() {
         <h1>{loc.name}</h1>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           <button onClick={()=>setEditMode(!editMode)} style={{ padding: "0.5rem 1rem" }}>{editMode?"Cancelar":"Editar"}</button>
-          <button onClick={()=>router.back()} style={{ padding: "0.5rem 1rem", background: "#f3f4f6" }}>Volver</button>
+          <button onClick={()=>router.back()} style={{ padding: "0.5rem 1rem", background: theme.bg }}>Volver</button>
         </div>
       </div>
-      {error && <div style={{ background: "#fef2f2", color: "#dc2626", padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
-      <div style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem" }}>
+      {error && <ErrorBanner message={error} onRetry={load} />}
+      {successMessage && <SuccessBanner message={successMessage} />}
+      <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
         <dl style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: "0.5rem 1rem" }}>
           <dt>Dirección</dt><dd>{loc.address || "—"}</dd>
           <dt>Ciudad</dt><dd>{loc.city || "—"}</dd>
@@ -69,7 +82,7 @@ export default function LocationDetailPage() {
             </div>
             <textarea value={form.notes} onChange={e=>setForm({...form, notes: e.target.value})} rows={3} style={{ width: "100%", padding: "0.5rem" }} placeholder="Observaciones" />
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <button onClick={save} disabled={saving} style={{ padding: "0.5rem 1.5rem", background: "#2563eb", color: "white", border: "none", borderRadius: "0.375rem" }}>{saving?"Guardando...":"Guardar"}</button>
+              <button onClick={save} disabled={saving} style={{ padding: "0.5rem 1.5rem", background: theme.primary, color: theme.primaryText, border: "none", borderRadius: "0.375rem" }}>{saving?"Guardando...":"Guardar"}</button>
             </div>
           </div>
         )}

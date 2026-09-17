@@ -1,23 +1,31 @@
 "use client";
 
+import { theme } from "@/lib/theme";
+
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
-import { Asset, Location, AssetType } from "@/lib/types";
+import { ErrorBanner } from "@/components/ErrorBanner";
+import { SuccessBanner } from "@/components/SuccessBanner";
+import { Asset, Location, AssetType, WorkOrder, Technician } from "@/lib/types";
+import { WorkOrderHistoryList } from "@/components/WorkOrderHistoryList";
 
 export default function AssetDetailPage() {
   const params = useParams(); const router = useRouter(); const id = params.id as string;
   const [asset, setAsset] = useState<Asset | null>(null);
   const [locations, setLocations] = useState<Location[]>([]);
   const [assetTypes, setAssetTypes] = useState<AssetType[]>([]);
+  const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
+  const [technicians, setTechnicians] = useState<Technician[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const [form, setForm] = useState({ name: "", description: "", brand: "", model: "", serial_number: "", internal_code: "", qr_code: "", notes: "", asset_type_id: "", status: "ACTIVE" });
 
-  useEffect(() => { load(); }, [id]);
+  useEffect(() => { load(); loadWorkOrders(); }, [id]);
 
   async function load() {
     try {
@@ -41,8 +49,26 @@ export default function AssetDetailPage() {
     finally { setLoading(false); }
   }
 
+  async function loadWorkOrders() {
+    try {
+      const [data, techs] = await Promise.all([
+        api.get<WorkOrder[]>(`/work-orders?asset_id=${id}`),
+        api.get<Technician[]>("/technicians?active_only=false"),
+      ]);
+      setWorkOrders(data);
+      setTechnicians(techs);
+    } catch (e) { console.error(e); }
+  }
+
   async function save() {
-    try { setSaving(true); setError(null); await api.patch(`/assets/${id}`, form); await load(); setEditMode(false); }
+    try {
+      setSaving(true); setError(null);
+      await api.patch(`/assets/${id}`, form);
+      await load();
+      setEditMode(false);
+      setSuccessMessage("Activo actualizado.");
+      setTimeout(() => setSuccessMessage(null), 3000);
+    }
     catch (e) { setError(e instanceof Error ? e.message : "Error al guardar"); }
     finally { setSaving(false); }
   }
@@ -59,11 +85,12 @@ export default function AssetDetailPage() {
         <h1>{asset.name}</h1>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           <button onClick={()=>setEditMode(!editMode)} style={{ padding: "0.5rem 1rem" }}>{editMode?"Cancelar":"Editar"}</button>
-          <button onClick={()=>router.back()} style={{ padding: "0.5rem 1rem", background: "#f3f4f6" }}>Volver</button>
+          <button onClick={()=>router.back()} style={{ padding: "0.5rem 1rem", background: theme.bg }}>Volver</button>
         </div>
       </div>
-      {error && <div style={{ background: "#fef2f2", color: "#dc2626", padding: "1rem", borderRadius: "0.5rem", marginBottom: "1rem" }}>{error}</div>}
-      <div style={{ border: "1px solid #e5e7eb", borderRadius: "0.5rem", padding: "1rem" }}>
+      {error && <ErrorBanner message={error} onRetry={load} />}
+      {successMessage && <SuccessBanner message={successMessage} />}
+      <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem" }}>
         <dl style={{ display: "grid", gridTemplateColumns: "140px 1fr", gap: "0.5rem 1rem" }}>
           <dt>Ubicación</dt><dd>{loc?.name || asset.location_id}</dd>
           <dt>Tipo</dt><dd>{at?.label || asset.asset_type_id || "—"}</dd>
@@ -72,7 +99,7 @@ export default function AssetDetailPage() {
           <dt>N° Serie</dt><dd>{asset.serial_number || "—"}</dd>
           <dt>Código int.</dt><dd>{asset.internal_code || "—"}</dd>
           <dt>QR</dt><dd>{asset.qr_code || "—"}</dd>
-          <dt>Estado</dt><dd><span style={{ background: asset.status==="ACTIVE"?"#dcfce7":asset.status==="INACTIVE"?"#fef2f2":"#f3f4f6", color: asset.status==="ACTIVE"?"#166534":asset.status==="INACTIVE"?"#dc2626":"#6b7280", padding: "0.125rem 0.5rem", borderRadius: "9999px", fontSize: "0.875rem" }}>{asset.status}</span></dd>
+          <dt>Estado</dt><dd><span style={{ background: asset.status==="ACTIVE"?theme.successBg:asset.status==="INACTIVE"?theme.dangerBg:theme.bg, color: asset.status==="ACTIVE"?theme.success:asset.status==="INACTIVE"?theme.danger:theme.textSecondary, padding: "0.125rem 0.5rem", borderRadius: "9999px", fontSize: "0.875rem" }}>{asset.status}</span></dd>
           <dt>Descripción</dt><dd>{asset.description || "—"}</dd>
           <dt>Observaciones</dt><dd>{asset.notes || "—"}</dd>
         </dl>
@@ -100,10 +127,15 @@ export default function AssetDetailPage() {
             <textarea value={form.description} onChange={e=>setForm({...form, description: e.target.value})} rows={2} placeholder="Descripción" style={{ width: "100%", padding: "0.5rem" }} />
             <textarea value={form.notes} onChange={e=>setForm({...form, notes: e.target.value})} rows={2} placeholder="Observaciones" style={{ width: "100%", padding: "0.5rem" }} />
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <button onClick={save} disabled={saving} style={{ padding: "0.5rem 1.5rem", background: "#7c3aed", color: "white", border: "none", borderRadius: "0.375rem" }}>{saving?"Guardando...":"Guardar"}</button>
+              <button onClick={save} disabled={saving} style={{ padding: "0.5rem 1.5rem", background: theme.primary, color: theme.primaryText, border: "none", borderRadius: "0.375rem" }}>{saving?"Guardando...":"Guardar"}</button>
             </div>
           </div>
         )}
+      </div>
+
+      <div style={{ border: `1px solid ${theme.border}`, borderRadius: "0.5rem", padding: "1rem", marginTop: "1rem" }}>
+        <h3 style={{ marginBottom: "0.75rem" }}>Historial de intervenciones</h3>
+        <WorkOrderHistoryList workOrders={workOrders} technicians={technicians} emptyText="Este activo todavía no tiene OT registradas." />
       </div>
     </div>
   );

@@ -10,23 +10,49 @@ No duplicar aquí información disponible en documentos canónicos.
 
 ## Estado del proyecto
 
-**Modo actual: BOOTSTRAP**
+**Modo actual: AI-NATIVE v2** (adopción en curso en `feature/adopcion-template-v2`)
 
-Objetivo:
+Histórico:
+- Puntos 00–09 construidos bajo modo **BOOTSTRAP** (ver sección "Histórico BOOTSTRAP" abajo).
+- La activación AI-NATIVE de agosto de 2026 es una transición legacy.
+- A partir del merge de esta feature, todo trabajo nuevo utilizará el mecanismo v2 definido en `.agentic/`.
 
-Construir rápidamente un MVP vertical correcto antes de activar el circuito formal SDD / AI-NATIVE.
+El repositorio Git ya está activo.
 
-Durante BOOTSTRAP no ejecutar automáticamente:
+La rama de integración es:
 
-* feature branches;
-* worktrees;
-* PR;
-* Analyst / Reviewer / Builder / QA;
-* auditorías formales;
-* HITL por feature;
-* `runs/<feature>/spec.md`.
+`develop`
 
-La activación del circuito AI-NATIVE requiere decisión explícita del usuario.
+Durante AI-NATIVE se ejecutan obligatoriamente:
+
+* feature branches (una por feature/milestone);
+* Pull Requests hacia `develop`;
+* Circuito v2: Planner → Builder → Reviewer, con QA y Code Review como gates;
+* Auditorías formales y evidencias en `runs/<feature>/`;
+* HITL (Human-In-The-Loop) antes de merge;
+* `runs/<feature>/spec.md` como contrato inmutable;
+* CI/CD automático en PR (GitHub Actions).
+
+Git se utiliza con la estrategia formal definida en `.agentic/workflows/git.md`.
+
+---
+
+## Histórico BOOTSTRAP (Puntos 00–09)
+
+Los puntos 00–09 fueron construidos en modo BOOTSTRAP para validar rápidamente un MVP vertical:
+
+- **00** — Definición del producto (PRD, modelo funcional, arquitectura)
+- **01** — Fundación SaaS (multitenancy, auth, RBAC, roles base)
+- **02** — Parametrización (config templates, catálogos base)
+- **03** — Maestros (Person, Customer, Technician, Ubicaciones, Activos)
+- **04** — Núcleo OT (crear, asignar, ejecutar, cerrar, historial, reapertura)
+- **05** — MVP vertical (circuito completo punta a punta validado)
+- **06** — Mobile/PWA (mobile-first, cámara, QR, fotos, OT urgente)
+- **07** — Oficina/UX operativa (dashboard, listados, búsqueda, filtros, formularios, tema, accesibilidad)
+- **08** — Offline y sincronización (IndexedDB, Service Worker, cola, sync, conflictos, fotos)
+- **09** — Comprobantes y comunicaciones (generación HTML/PDF, branding tenant, email SMTP, WhatsApp evaluado)
+
+Este histórico **no se reescribe, rebasea ni reconstruye**. Sirve como contexto y línea base.
 
 ---
 
@@ -49,8 +75,11 @@ Leer según la tarea:
 5. `docs/tecnica/modelo-datos.md`
    Persistencia y modelo de datos.
 
-6. `.agentic/`
-   Reglas del circuito formal cuando AI-NATIVE esté activo.
+6. `docs/ui-ux/UI-UX-STANDARDS.md`
+   Estándar transversal obligatorio para toda interfaz, formulario, listado, navegación e interacción visual.
+
+7. `.agentic/`
+   **Reglas del circuito formal AI-NATIVE (fuente canónica obligatoria).**
 
 No duplicar contenido de estos documentos dentro de `AGENTS.md`.
 
@@ -67,7 +96,9 @@ No duplicar contenido de estos documentos dentro de `AGENTS.md`.
 * mobile-first;
 * preparado para offline;
 * simple;
-* extensible.
+* extensible;
+* visualmente consistente;
+* accesible.
 
 No crear variantes del código por cliente.
 
@@ -128,8 +159,74 @@ Ejemplos:
 Separar siempre:
 
 **semántica interna estable**
+
 de
+
 **etiqueta visible configurable**.
+
+La UI no debe asumir cantidades, nombres, colores o valores fijos cuando estos sean parametrizables por tenant.
+
+---
+
+## UI / UX
+
+Toda pantalla o formulario nuevo, y toda modificación significativa de una interfaz existente, debe cumplir:
+
+`docs/ui-ux/UI-UX-STANDARDS.md`
+
+El estándar aplica transversalmente a:
+
+* Oficina/Admin;
+* Técnico;
+* Personas;
+* Clientes;
+* Técnicos;
+* Ubicaciones;
+* Activos;
+* Órdenes de Trabajo;
+* Parametrización;
+* configuración;
+* futuros módulos.
+
+Principios mínimos:
+
+* mobile-first real;
+* baja saturación visual;
+* acciones primarias visibles;
+* acciones secundarias agrupadas;
+* búsqueda frecuente directamente accesible;
+* filtros y opciones complejas bajo controles compactos;
+* feedback visual de filtros, estados y operaciones activas;
+* formularios consistentes;
+* design tokens;
+* tema claro/oscuro;
+* accesibilidad;
+* estados de carga, vacío, error y éxito;
+* ausencia de scroll horizontal en flujos normales;
+* consistencia entre desktop y mobile.
+
+No llenar formularios, cabeceras, listados o cards con botones independientes cuando las acciones puedan organizarse mediante menú, popover, diálogo, drawer o equivalente.
+
+No ocultar una acción primaria o extremadamente frecuente únicamente para reducir elementos visibles.
+
+---
+
+## Skills de diseño
+
+Una Skill de frontend/UI puede utilizarse como herramienta auxiliar cuando la tarea afecte la experiencia visual.
+
+La Skill:
+
+* no sustituye el PRD;
+* no sustituye el ROADMAP;
+* no sustituye `UI-UX-STANDARDS.md`;
+* no decide reglas funcionales;
+* no puede introducir un nuevo design system por iniciativa propia;
+* no puede cambiar el stack aprobado.
+
+Si `frontend-design` u otra Skill equivalente está disponible, utilizarla solamente cuando aporte valor a tareas de diseño o implementación frontend.
+
+No instalar, eliminar o cambiar Skills automáticamente sin instrucción explícita del usuario.
 
 ---
 
@@ -141,10 +238,10 @@ No elegir tecnologías nuevas si el stack ya está definido en:
 
 No cambiar el stack sin decisión explícita.
 
-Durante el MVP:
+Arquitectura actual:
 
-* frontend/PWA en `apps/web/`;
-* API en `apps/api/`;
+* frontend/PWA en `apps/web/` (Next.js + React + TypeScript);
+* API en `apps/api/` (FastAPI + SQLAlchemy + Alembic);
 * monolito modular;
 * evitar microservicios y complejidad prematura.
 
@@ -195,9 +292,12 @@ Priorizar tests sobre:
 * reglas de negocio;
 * operaciones críticas;
 * sincronización;
-* regresiones.
+* regresiones;
+* flujos UI críticos cuando corresponda.
 
 No perseguir cobertura artificial.
+
+Las interfaces críticas deben verificarse al menos en viewport mobile y desktop.
 
 ---
 
@@ -209,35 +309,77 @@ Actualizar el documento canónico correspondiente cuando cambie:
 * roadmap;
 * stack;
 * arquitectura;
-* modelo de datos.
+* modelo de datos;
+* estándar UI/UX.
 
 No duplicar información entre documentos.
 
----
-
-## Evolución a SDD / AI-NATIVE
-
-Evolución prevista:
-
-`PRD → ROADMAP → BOOTSTRAP → MVP vertical → SDD → AI-NATIVE`
-
-Cuando el usuario active AI-NATIVE:
-
-1. reconciliar código, PRD y ROADMAP;
-2. convertir pendientes en features;
-3. utilizar `runs/<feature>/spec.md`;
-4. activar las reglas de `.agentic/`;
-5. aplicar auditoría, evidencias, HITL y Git según el template.
-
-No reestructurar la aplicación para realizar esta transición.
+Las SPEC futuras deben referenciar los documentos transversales en lugar de copiarlos.
 
 ---
 
-## Git
+## Circuito AI-NATIVE (fuente canónica: `.agentic/`)
 
-Durante BOOTSTRAP no inicializar ni modificar la estrategia Git sin instrucción explícita.
+### Roles y flujo obligatorio
 
-Cuando Git esté activo, los mensajes de commit serán en español.
+Los roles conceptuales canónicos son Planner, Builder y Reviewer. Son
+capacidades, no nombres de herramientas ni modelos.
+
+```
+ASSESS → Planner → Builder → validaciones → Reviewer → convergence → HITL → PR
+```
+
+Analyst, QA y Code Reviewer se conservan como aliases y responsabilidades
+legacy: Analyst pasa a Planner; QA y Code Reviewer son gates/capacidades
+consumidas por Reviewer. Las evidencias anteriores a v2 no se reinterpretan.
+
+### Gates obligatorios
+
+1. ASSESS determinístico y SDD proporcional: LIGHT, STANDARD o FULL.
+2. Planner produce intención, alcance, riesgos y plan trazable.
+3. Builder implementa sólo el contrato aprobado y produce evidencia.
+4. Validaciones ejecutan tests, lint, typecheck, build y migraciones si aplican.
+5. Reviewer verifica intención, resultado, seguridad, arquitectura, QA y código.
+6. Convergence limita findings, iteraciones y presupuesto; falla de forma segura.
+7. HITL humano autoriza MERGE o RELEASE; el agente no mergea por iniciativa propia.
+
+### Git (AI-NATIVE)
+
+Estrategia formal en `.agentic/workflows/git.md`:
+
+- `main` — Solo releases (protegida)
+- `develop` — Integración (protegida, solo PR)
+- `feature/<nombre>` — Una por feature, desde `develop`
+- `hotfix/<nombre>` — Solo correcciones críticas en `main`
+- **Prohibido**: commit directo a `develop`/`main`, force push, merge sin PR, merge sin CI verde, merge sin HITL
+- **Obligatorio**: squash merge, delete feature branch, mensajes en español
+
+### CI/CD (GitHub Actions)
+
+`.github/workflows/ci.yml` separa gates de gobernanza/lifecycle, tests de
+producto y la validación PostgreSQL futura. La PR #2 de PostgreSQL no es
+baseline ni dependencia de esta adopción.
+
+### HITL
+
+Proceso en `.agentic/hitl.md`:
+- Pre-merge a develop (obligatorio)
+- Pre-release a main (obligatorio)
+- Decisiones irreversibles (arquitectura, migraciones destructivas)
+- Registro inmutable en `runs/<feature>/hitl.md`
+
+### Fuentes de verdad
+
+Git/GitHub real prevalece sobre documentos derivados. `CONSTITUTION.md`
+contiene principios; `AGENTS.md` reglas operativas; `ROADMAP.md` dirección;
+el SDD contrato concreto; `SUMMARY.md` reentrada resumida; `runs/` evidencia;
+`.audit/` auditoría independiente; `STATUS.md` observación derivada.
+
+### Legacy
+
+`runs/09-comprobantes/**` y `runs/activar-ai-native/**` son evidencia
+`LEGACY EVIDENCE — PRE TEMPLATE V2`. Se preservan sin renombrar, mover,
+recalificar ni completar retroactivamente.
 
 ---
 
@@ -248,7 +390,10 @@ Ante varias alternativas válidas, priorizar:
 1. seguridad multitenant;
 2. simplicidad;
 3. parametrización;
-4. experiencia móvil;
-5. funcionamiento offline;
-6. mantenibilidad;
-7. mínima complejidad innecesaria.
+4. experiencia de usuario;
+5. experiencia móvil;
+6. funcionamiento offline;
+7. accesibilidad;
+8. consistencia visual;
+9. mantenibilidad;
+10. mínima complejidad innecesaria.

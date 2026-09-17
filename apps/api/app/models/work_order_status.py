@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Boolean, ForeignKey, String, UniqueConstraint
+from sqlalchemy import Boolean, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -16,7 +16,10 @@ class WorkOrderStatus(Base):
     """
 
     __tablename__ = "work_order_statuses"
-    __table_args__ = (UniqueConstraint("tenant_id", "code", name="uq_work_order_statuses_tenant_code"),)
+    __table_args__ = (
+        UniqueConstraint("tenant_id", "code", name="uq_work_order_statuses_tenant_code"),
+        UniqueConstraint("tenant_id", "id", name="uq_work_order_statuses_tenant_id"),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     tenant_id: Mapped[uuid.UUID] = mapped_column(
@@ -26,3 +29,4 @@ class WorkOrderStatus(Base):
     label: Mapped[str] = mapped_column(String(100), nullable=False)
     is_terminal: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    sort_order: Mapped[int] = mapped_column(Integer, nullable=False, default=0)

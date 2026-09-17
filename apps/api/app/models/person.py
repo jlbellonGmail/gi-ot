@@ -1,11 +1,15 @@
 import uuid
 from datetime import datetime, timezone
 from enum import Enum
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Boolean, DateTime, Enum as SQLEnum, ForeignKey, ForeignKeyConstraint, Index, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+
+if TYPE_CHECKING:
+    from app.models.location import Location
 
 
 class PersonType(str, Enum):
@@ -27,6 +31,7 @@ class Person(Base):
     __tablename__ = "people"
     __table_args__ = (
         Index("ix_people_display_name", "tenant_id", "display_name"),
+        UniqueConstraint("tenant_id", "id", name="uq_people_tenant_id"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
@@ -57,7 +62,9 @@ class Person(Base):
     updated_by: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id"), nullable=True)
 
     identifications: Mapped[list["PersonIdentification"]] = relationship(
-        back_populates="person", cascade="all, delete-orphan"
+        back_populates="person",
+        cascade="all, delete-orphan",
+        foreign_keys="PersonIdentification.person_id",
     )
     customer: Mapped["Customer | None"] = relationship(
         back_populates="person", uselist=False, cascade="all, delete-orphan"
@@ -80,6 +87,11 @@ class PersonIdentification(Base):
             "tenant_id", "country_code", "identification_type", "identification_value",
             name="uq_person_identifications_tenant_country_type_value"
         ),
+        ForeignKeyConstraint(
+            ["tenant_id", "person_id"],
+            ["people.tenant_id", "people.id"],
+            ondelete="CASCADE",
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
@@ -98,7 +110,9 @@ class PersonIdentification(Base):
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
 
-    person: Mapped["Person"] = relationship(back_populates="identifications")
+    person: Mapped["Person"] = relationship(
+        back_populates="identifications", foreign_keys=[person_id]
+    )
 
 
 class Customer(Base):

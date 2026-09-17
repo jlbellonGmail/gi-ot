@@ -38,7 +38,8 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['created_by'], ['users.id'], ),
     sa.ForeignKeyConstraint(['tenant_id'], ['tenants.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['updated_by'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('tenant_id', 'id', name='uq_people_tenant_id')
     )
     op.create_index('ix_people_display_name', 'people', ['tenant_id', 'display_name'], unique=False)
     op.create_index(op.f('ix_people_tenant_id'), 'people', ['tenant_id'], unique=False)

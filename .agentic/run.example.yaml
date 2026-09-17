@@ -1,0 +1,5 @@
+# Declaración mínima de ejecución; no define proveedores ni contratos de roles.
+execution:
+  model: default
+  variant: high
+  fallback: []
