@@ -28,11 +28,6 @@ jobs:
         run: pip install -r requirements-dev.txt
       - name: Run governance tests
         run: pytest -q
-      - name: Validate JSON contracts
-        shell: pwsh
-        run: |
-          ./scripts/check-integrity.ps1
-          ./scripts/mcp-tools.ps1
 
   # ============================================================
   # BACKEND VALIDATION

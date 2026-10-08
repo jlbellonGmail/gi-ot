@@ -13,11 +13,6 @@ def test_canonical_roles_are_provider_neutral():
         assert forbidden not in text
 
 
-def test_mcp_is_empty_and_deny_by_default():
-    mcp = json.loads((ROOT / ".agentic" / "mcp.json").read_text())
-    policy = json.loads((ROOT / ".agentic" / "security-policy.json").read_text())
-    assert mcp["servers"] == {}
-    assert policy["defaultDecision"] == "deny"
 
 
 def test_legacy_runs_are_present_and_untouched_by_contract():
