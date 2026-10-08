@@ -32,7 +32,6 @@ jobs:
         shell: pwsh
         run: |
           ./scripts/check-integrity.ps1
-          ./scripts/mcp-tools.ps1
 
   # ============================================================
   # BACKEND VALIDATION

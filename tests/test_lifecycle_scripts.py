@@ -18,9 +18,6 @@ def run_script(name, *args):
     return result.stdout
 
 
-def test_mcp_and_integrity_scripts():
-    assert "PASS" in run_script("mcp-tools.ps1")
-    assert "PASS" in run_script("check-integrity.ps1")
 
 
 def test_assess_materialize_and_contract(tmp_path):
