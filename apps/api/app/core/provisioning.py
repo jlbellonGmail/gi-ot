@@ -1,4 +1,6 @@
 import uuid
+from collections.abc import Sequence
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -28,13 +30,13 @@ def _copy_missing(db: Session, template_model, tenant_model, template_id: uuid.U
     referencia a la plantilla — de modo que personalizarlas después nunca
     modifica la plantilla ni otro tenant.
     """
-    template_rows = db.scalars(
+    template_rows: Sequence[Any] = db.scalars(
         select(template_model).where(template_model.template_id == template_id)
     ).all()
     if not template_rows:
         return
 
-    existing_codes = set(db.scalars(select(tenant_model.code).where(tenant_model.tenant_id == tenant_id)))
+    existing_codes: set[Any] = set(db.scalars(select(tenant_model.code).where(tenant_model.tenant_id == tenant_id)))
     for row in template_rows:
         if row.code in existing_codes:
             continue
