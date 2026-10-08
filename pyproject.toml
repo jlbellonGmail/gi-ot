@@ -1,0 +1,14 @@
+# M6 / gate L3 de AI-Native: el perfil python-service ejecuta `pip install . -r requirements-dev.txt`.
+# gi-ot es una aplicacion (apps/api con su propio requirements), no un paquete: se declara un paquete vacio
+# solo para que `pip install .` sea valido en la raiz. Las dependencias del producto siguen en apps/api/requirements*.txt.
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gi-ot"
+version = "0.0.0"
+requires-python = ">=3.12"
+
+[tool.setuptools]
+packages = []
