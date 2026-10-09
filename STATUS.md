@@ -2,7 +2,7 @@
 
 ## Contexto manual
 
-- Template v2.0.0: activo y vigente.
+- Plataforma vigente: AI-Native v3.0.1 (M6). Template v2.0.0: adoptado antes de M6; hoy LEGACY/TRANSITION.
 - Versión vigente: `v0.1.0` pre-release, primer baseline formal de desarrollo.
 - Work unit `10-validacion-postgresql`: cerrada y mergeada en `develop` por PR #4.
 - Merge: `de04bac5e0f75997b5dcb820536544fd942e0a8a`.

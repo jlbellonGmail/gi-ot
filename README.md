@@ -5,7 +5,7 @@ arquitectura funcional está documentada en `docs/` y no es sustituida por el
 circuito agéntico.
 
 **Baseline actual:** `v0.1.0` pre-release, con los Puntos 01–10 completados,
-PostgreSQL y SQLite validados, y Template v2.0.0 operativo.
+PostgreSQL y SQLite validados, y circuito Template v2.0.0 adoptado (plataforma vigente desde M6: AI-Native v3.0.1).
 
 ## Gobernanza v2
 
